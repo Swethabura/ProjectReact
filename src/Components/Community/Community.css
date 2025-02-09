@@ -1,0 +1,23 @@
+.community{
+    /* border: 2px solid red; */
+    width: 85%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+.community img{
+    width: 50%;
+    height: 75%;
+}
+.community h1{
+    color: #4b6982;
+}
+.community p{
+    color: black;
+    font-weight: 600;
+    text-align: center;
+}

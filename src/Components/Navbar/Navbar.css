@@ -1,0 +1,165 @@
+@import url("https://fonts.googleapis.com/css2?family=Marcellus&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+
+header {
+  width: 100vw;
+  height: 15vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #4b6982;
+  color: #f5f6f7;
+  position: fixed;
+  z-index: 1000;
+  padding: 0 4rem;
+}
+
+.logoSec {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-title h1 {
+  font-family: "Bona Nova SC", serif;
+  font-size: 1.8rem;
+}
+
+.logo-title p {
+  font-family: "Great Vibes", serif;
+  font-size: 1.2rem;
+  text-align: center;
+  letter-spacing: 1.5px;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 3rem;
+}
+
+.navlinks {
+  font-size: 1.2rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+button {
+  background-color: #ffffff;
+  color: #4b6982;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #d9e3f0;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: none;
+  cursor: pointer;
+  color: #ffffff;
+}
+
+/* ⭐ 1024px - 1280px (Laptops) */
+@media screen and (max-width: 1280px) {
+  header {
+    padding: 0 3rem;
+  }
+  nav {
+    gap: 2rem;
+  }
+  nav ul {
+    gap: 2rem;
+  }
+  .navlinks {
+    font-size: 1.1rem;
+  }
+  button {
+    font-size: 0.9rem;
+    padding: 0.4rem 1.2rem;
+  }
+}
+
+/* ⭐ 768px - 1024px (Tablets) */
+@media screen and (max-width: 1024px) {
+  header {
+    padding: 0 2rem;
+  }
+  .logo-title h1 {
+    font-size: 1.5rem;
+  }
+  .logo-title p {
+    font-size: 1rem;
+  }
+  .hamburger {
+    display: block;
+  }
+  nav {
+    position: absolute;
+    top: 15vh;
+    left: 0;
+    width: 100%;
+    background-color: #4b6982;
+    flex-direction: column;
+    align-items: center;
+    display: none;
+    transition: all 0.3s ease-in-out;
+  }
+  nav ul {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .nav-active {
+    display: flex;
+    padding: 1rem 0;
+  }
+}
+
+/* ⭐ 600px - 768px (Small Tablets) */
+@media screen and (max-width: 768px) {
+  .logo-title h1 {
+    font-size: 1.4rem;
+  }
+  .logo-title p {
+    font-size: 0.9rem;
+  }
+  .hamburger {
+    display: block;
+  }
+}
+
+/* ⭐ 320px - 480px (Mobile Phones) */
+@media screen and (max-width: 480px) {
+  header {
+    padding: 0 1rem;
+  }
+  .logo-title{
+    margin-left: -1rem;
+  }
+  .logo-title h1 {
+    font-size: 1.2rem;
+  }
+  .logo-title p {
+    font-size: 0.6rem;
+  }
+  .hamburger {
+    display: block;
+  }
+  nav button {
+    width: 90%;
+    margin: 1rem 0;
+  }
+}
