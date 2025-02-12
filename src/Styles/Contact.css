@@ -1,0 +1,71 @@
+.contact {
+  background-color: var(--background-light);
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-light);
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.contact h1 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.contact p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 0.8rem;
+}
+
+.contact-info p {
+  margin: 0.5rem 0;
+}
+
+.contact-info a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+/* Dark Mode */
+.dark-theme .contact {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.dark-theme .contact h1 {
+  color: var(--secondary-color);
+}
+
+.dark-theme .contact-info a {
+  color: var(--secondary-color);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .contact {
+    padding: 1.5rem;
+  }
+
+  .contact p {
+    font-size: 1rem;
+  }
+
+  .contact h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .contact p {
+    font-size: 0.95rem;
+  }
+
+  .contact h1 {
+    font-size: 1.6rem;
+  }
+}

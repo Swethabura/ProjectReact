@@ -1,0 +1,145 @@
+.features {
+  width: 100%;
+  background-color: var(--background-light);
+  padding-bottom: 3rem;
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Heading Section */
+.features-heading {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.features-heading h1 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.features-heading p {
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* Features Container */
+.feature-container {
+  width: 85%;
+  margin: auto;
+}
+
+/* Feature Cards */
+.feature {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--background-light);
+  box-shadow: 0 4px 8px rgba(75, 105, 130, 0.2);
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.feature-reverse {
+  flex-direction: row-reverse;
+}
+
+.feature-content {
+  width: 50%;
+}
+
+.feature-content h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.feature-content p {
+  font-weight: 500;
+  color: var(--text-light);
+  text-align: justify;
+}
+
+.feature-img {
+  width: 40%;
+}
+
+.feature-img img {
+  width: 100%;
+  height: 60vh;
+  border-radius: 15px;
+  object-fit: cover;
+}
+
+/* Dark Mode */
+.dark-theme .features {
+  background-color: var(--background-dark);
+}
+
+.dark-theme .feature {
+  background-color: #2a2a2a;
+  box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .features-heading h1,
+.dark-theme .feature-content h2 {
+  color: var(--text-dark);
+}
+
+.dark-theme .features-heading p,
+.dark-theme .feature-content p {
+  color: var(--text-dark);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .feature-container {
+    width: 95%;
+  }
+
+  .feature {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .feature-reverse {
+    flex-direction: column;
+  }
+
+  .feature-content {
+    width: 90%;
+  }
+
+  .feature-img {
+    width: 80%;
+  }
+
+  .feature-img img {
+    height: 50vh;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .feature-img img {
+    height: 45vh;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .features-heading h1 {
+    font-size: 1.8rem;
+  }
+
+  .features-heading p {
+    font-size: 1rem;
+  }
+
+  .feature-img {
+    width: 100%;
+  }
+
+  .feature-img img {
+    height: 40vh;
+  }
+}

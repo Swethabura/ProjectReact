@@ -1,15 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap");
 
-*{
+:root {
+  /* Light Theme Colors */
+  --primary-color: #0073e6; /* Accent Blue */
+  --background-color: #f8f9fa; /* Soft White */
+  --navbar-bg: #ffffff; /* Pure White */
+  --text-color: #212529; /* Dark Gray */
+  --secondary-text: #6c757d; /* Muted Gray */
+  --border-color: #dee2e6; /* Soft Gray */
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Colors */
+  --primary-color: #4da8ff; /* Light Blue */
+  --background-color: #121212; /* Deep Black */
+  --navbar-bg: #1e1e1e; /* Dark Gray */
+  --text-color: #eaeaea; /* Almost White */
+  --secondary-text: #a0a0a0; /* Soft Gray */
+  --border-color: #292929; /* Slightly Lighter Black */
+}
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Cormorant Garamond", serif;
 }
+
 ::-webkit-scrollbar {
   display: none;
 }
-body{
-  background-color: #e8ecf1;
 
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

@@ -1,0 +1,57 @@
+/* Default Light Theme */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333;
+  --nav-bg: #f8f9fa;
+  --nav-text: #000;
+  --post-btn-bg: #1677ff;
+  --post-btn-hover: #0056b3;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --bg-color: #181818;
+  --text-color: #ffffff;
+  --nav-bg: #222;
+  --nav-text: #ffffff;
+  --post-btn-bg: #ff9800;
+  --post-btn-hover: #e68900;
+}
+
+.main-container {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.navbar1 {
+  width: 100vw;
+  height: 12vh;
+  position: fixed;
+  z-index: 1000;
+  background-color: var(--nav-bg);
+  color: var(--nav-text);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 3rem;
+  /* border: 1px solid red; */
+}
+.post-btn {
+  background-color: var(--post-btn-bg);
+}
+.post-btn:hover {
+  background-color: var(--post-btn-hover);
+}
+.nav-links{
+  /* border: 1px solid red; */
+  display: flex;
+  gap: 4rem;
+}
+.nav-right{
+  /* border: 1px solid black; */
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+}

@@ -1,0 +1,87 @@
+.community {
+  width: 85%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: var(--background-light);
+  transition: background-color 0.3s ease-in-out;
+}
+
+.community img {
+  width: 50%;
+  max-height: 75vh;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.community h1 {
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.community p {
+  color: var(--text-light);
+  font-weight: 600;
+  text-align: center;
+  max-width: 800px;
+}
+
+/* Dark Mode */
+.dark-theme .community {
+  background-color: var(--background-dark);
+}
+
+.dark-theme .community h1 {
+  color: var(--text-dark);
+}
+
+.dark-theme .community p {
+  color: var(--text-dark);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .community {
+    width: 90%;
+  }
+
+  .community img {
+    width: 60%;
+    max-height: 60vh;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .community img {
+    width: 70%;
+    max-height: 50vh;
+  }
+
+  .community h1 {
+    font-size: 1.8rem;
+  }
+
+  .community p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .community img {
+    width: 90%;
+    max-height: 40vh;
+  }
+
+  .community h1 {
+    font-size: 1.5rem;
+  }
+
+  .community p {
+    font-size: 0.95rem;
+  }
+}

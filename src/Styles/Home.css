@@ -1,0 +1,150 @@
+.home {
+  text-align: center;
+  padding-top: 17.5vh;
+  color: var(--text-light); /* Uses text color from index.css */
+}
+
+/* Carousel Styling */
+.carousel-container {
+  max-width: 90vw;
+  margin: auto;
+}
+
+.slick-slide img {
+  width: 100%;
+  height: 75vh;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Intro Section */
+.intro-section {
+  max-width: 85%;
+  margin: 50px auto;
+}
+
+.intro-section h1 {
+  font-size: 2.5rem;
+  font-family: "Merriweather", serif;
+  color: var(--text-light); /* Uses light theme text */
+}
+
+.intro-section p {
+  max-width: 70%;
+  text-align: center;
+  margin: 20px auto;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--text-light); /* Uses text color based on theme */
+}
+
+/* Buttons */
+.btns {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btns button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.signup-btn {
+  text-decoration: none;
+  background: rgb(243, 243, 18);
+  color: var(--primary-color);
+}
+
+.signup-btn:hover {
+  background: #ffdb4d;
+}
+
+.login-btn {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
+.login-btn:hover {
+  background: #365066;
+}
+
+/* Apply Dark Mode Styles */
+.dark-theme .home {
+  color: var(--text-dark); /* Text becomes light in dark mode */
+}
+
+.dark-theme .intro-section h1,
+.dark-theme .intro-section p {
+  color: var(--text-dark); /* Ensures high contrast in dark mode */
+}
+
+.dark-theme .signup-btn {
+  background: rgb(243, 243, 18);
+  color: var(--primary-color);
+}
+
+.dark-theme .login-btn {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+.dark-theme .login-btn:hover,
+.dark-theme .signup-btn:hover {
+  background: #ffd700;
+}
+
+/* Responsive Fixes */
+@media screen and (max-width: 1024px) {
+  .slick-slide img {
+    height: 65vh;
+  }
+  .intro-section h1 {
+    font-size: 2rem;
+  }
+  .intro-section p {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .home {
+    padding-top: 12vh;
+  }
+  .slick-slide img {
+    height: 50vh;
+  }
+  .intro-section h1 {
+    font-size: 1.8rem;
+  }
+  .intro-section p {
+    max-width: 90%;
+  }
+  .btns {
+    flex-direction: column;
+  }
+  .btns button {
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .home {
+    padding-top: 10vh;
+  }
+  .slick-slide img {
+    height: 40vh;
+  }
+  .intro-section h1 {
+    font-size: 1.5rem;
+  }
+  .btns button {
+    width: 100%;
+  }
+}

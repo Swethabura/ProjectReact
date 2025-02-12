@@ -1,6 +1,7 @@
 import React from "react";
 import Slider from "react-slick";
-import "./Home.css";
+import { Link } from "react-router-dom";
+import "../../Styles/Home.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -13,25 +14,26 @@ function HomePage() {
   const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 600,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000,
+    autoplaySpeed: 5000,
+    arrows: false,
   };
 
   return (
     <div className="home">
-      {/* Carousel Section - Now at the Top */}
+      {/* Carousel Section */}
       <div className="carousel-container">
         <Slider {...settings}>
-          <div>
+          <div className="slide">
             <img src={codeTogether} alt="Code Together" />
           </div>
-          <div>
+          <div className="slide">
             <img src={collaborateLearn} alt="Collaborate & Learn" />
           </div>
-          <div>
+          <div className="slide">
             <img src={showcaseWork} alt="Showcase Your Work" />
           </div>
         </Slider>
@@ -49,8 +51,16 @@ function HomePage() {
 
         {/* Sign Up & Login Buttons */}
         <div className="btns">
-          <button>Sign Up</button>
-          <button>Login</button>
+          <button className="signup-btn">
+            <Link to="/signup" className="signup-btn">
+              Sign Up
+            </Link>
+          </button>
+          <button className="login-btn">
+            <Link to="/login" className="log-in">
+              Login
+            </Link>
+          </button>
         </div>
       </div>
     </div>
