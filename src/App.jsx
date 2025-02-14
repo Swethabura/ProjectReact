@@ -38,7 +38,7 @@ function App() {
       {/* Routes without Navbar */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-      <Route path="/main/*" element={<Mainpage />} /> {/* Nested Routes */}
+      <Route path="/main/*" element={<Mainpage />} />    {/* Nested Routes */}
     </Routes>
   );
 }

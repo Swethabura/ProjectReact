@@ -1,82 +1,102 @@
-import { Avatar, Drawer, Switch, Button, Modal } from 'antd'
-import '../../Styles/MainPage.css'
-import { EditOutlined, FileImageOutlined, LogoutOutlined, TrophyOutlined, UserOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import CreatePost from './CreatePost'
+import React, { useEffect, useState } from "react";
+import { Drawer, Avatar, Button, Switch } from "antd";
+import {
+  MenuOutlined,
+  UserOutlined,
+  EditOutlined,
+  TrophyOutlined,
+  LogoutOutlined,
+  FileImageOutlined,
+  BulbOutlined,
+} from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import "../../Styles/MainNav.css"; // Import your CSS file
 
+const MainNav = () => {
+  const [visible, setVisible] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const navigate = useNavigate();
 
-function MainNav({ addPost }){
-    const [visible, setVisible] = useState(false);
-    const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-    const [isModelVisible, setIsModelVisible] = useState(false)
-    const navigate = useNavigate()
+  // Effect to apply the theme to the document
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-    useEffect(()=>{
-        document.documentElement.setAttribute("data-theme",theme);
-        localStorage.setItem("theme",theme);
-    },[theme])
+  //   toggle theme
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
-    const toggleTheme = ()=>{
-        setTheme(theme==="light" ? "dark" : "light");
-    }
+  const showDrawer = () => {
+    setVisible(true);
+  };
 
-    // open modal
-    const handleOpenModal =()=>{
-        setIsModelVisible(true)
-    }
-    const handleCloseModal = ()=>{
-        setIsModelVisible(false)
-    }
+  const closeDrawer = () => {
+    setVisible(false);
+  };
 
-    return(
-        <nav className='navbar1'>
-            {/* Left: User avatar */}
-            <Avatar 
-            size="large"
-            icon={<UserOutlined />}
-            className='user-avatar'
-            onClick={()=> setVisible(true)}/>
-            {/* center navigation links */}
-            <div className="nav-links">
-               <Button type="link" onClick={() => navigate("/main/feed")}>Feed</Button>
-              <Button type="link" onClick={() => navigate("/main/questions")}>Questions</Button>  
-              <Button type='link' onClick={()=> navigate("/main/mainCommunity")}>Community</Button>
-            </div>
-            {/* right: post button and toggle */}
-            <div className="nav-right">
-                <Switch 
-                checked={theme=="dark"}
-                onChange={toggleTheme}
-                checkedChildren="🌙"
-                unCheckedChildren="☀️"/>
-                <Button type="primary" className="post-btn" onClick={handleOpenModal}>Post</Button>
-            </div>
-             {/* Sidebar (Drawer) */}
-             <Drawer 
-             title="Profile Menu"
-             placement='left'
-             onClose={()=> setVisible(false)}
-             open={visible}
-             width={250}>
-             <p>
-                <FileImageOutlined /> Change Profile Picture
-             </p>
-             <p>
-                <EditOutlined /> Edit Profile
-             </p>
-             <p>
-                <TrophyOutlined /> View Achievements
-             </p>
-             <p>
-                <LogoutOutlined />Logout
-             </p>
-             </Drawer>
-             {/* Create Post Modal */}
-             <Modal open={isModelVisible} onCancel={handleCloseModal} footer={null}>
-                 <CreatePost closeModal={handleCloseModal} addPost={addPost} />
-             </Modal>
-        </nav>
-    )
-}
- export default MainNav
+  return (
+    <nav className="navbar">
+      {/* Left: User Avatar */}
+      <Avatar
+        size="large"
+        icon={<UserOutlined />}
+        className="user-avatar"
+        onClick={showDrawer}
+      />
+
+      {/* Center: Navigation Links */}
+      <div className="nav-links">
+        <Button type="link" onClick={() => navigate("/main/feed")}>
+          Feed
+        </Button>
+        <Button type="link" onClick={() => navigate("/main/questions")}>
+          Questions
+        </Button>
+        <Button type="link" onClick={() => navigate("/main/maincommunity")}>
+          Community
+        </Button>
+      </div>
+
+      {/* Right: Post Button */}
+      {/* right: post button and toggle */}
+      <div className="nav-right">
+        <Switch
+          checked={theme == "dark"}
+          onChange={toggleTheme}
+          checkedChildren="🌙"
+          unCheckedChildren="☀️"
+          style={{marginRight:"15px"}}
+        />
+        <Button type="primary" className="post-btn">
+          Post
+        </Button>
+      </div>
+
+      {/* Sidebar (Drawer) */}
+      <Drawer
+        title="Profile Menu"
+        placement="left"
+        onClose={closeDrawer}
+        open={visible}
+        width={250}
+      >
+        <p>
+          <FileImageOutlined /> Change Profile Picture
+        </p>
+        <p>
+          <EditOutlined /> Edit Profile
+        </p>
+        <p>
+          <TrophyOutlined /> View Achievements
+        </p>
+        <p>
+          <LogoutOutlined /> Logout
+        </p>
+      </Drawer>
+    </nav>
+  );
+};
+
+export default MainNav;

@@ -24,7 +24,7 @@ function Navbar() {
     <header>
       <div className="logoSec">
         <div className="logo">
-          <img src={theme === "light" ? logoDark : logoLight} alt="logo" width={95} height={85} />
+          <img src={theme === "light" ? logoDark : logoLight} alt="logo" width={80} height={75} />
         </div>
         <span className="logo-title">
           <h1>DevConnect</h1>

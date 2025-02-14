@@ -1,61 +1,64 @@
-import { useEffect, useState } from "react";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import "../../Styles/MainPage.css";
-import MainNav from "./MainNav";
-import Feed from "./Feed";
+import React, { useState, useCallback, useEffect } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import MainNav from "./MainNav"
+import Feed from "./Feed"
 import Questions from "./Questions";
-import MainCommunity from "./MainCommunity";
+import FloatingButton from "./FloatingBtn";
+import { posts as initialPosts } from "./dummydata";
 
-function Mainpage() {
-  // const [user, setUser] = useState("");
-  // const navigate = useNavigate();
-  const [posts, setPosts] = useState([]);
 
-  // Load posts from localStorage on mount
+function MainPage(){
+  // Load posts from localStorage or use initialPosts if empty
+  const [posts, setPosts] = useState(() => {
+    const savedPosts = localStorage.getItem("posts");
+    return savedPosts ? JSON.parse(savedPosts) : initialPosts;
+  });
+
+  const [questions, setQuestions] = useState(() => {
+    const savedQuestions = localStorage.getItem("questions");
+    return savedQuestions ? JSON.parse(savedQuestions) : [];
+  });
+  
   useEffect(() => {
-    const storedPosts = JSON.parse(localStorage.getItem("posts")) || [];
-    setPosts(storedPosts);
+    localStorage.setItem("questions", JSON.stringify(questions));
+  }, [questions]);
+
+  const addNewQuestion = useCallback((newQuestion) => {
+    setQuestions((prevQuestions) => [newQuestion, ...prevQuestions]);
+  }, []);
+  
+  // Save posts to localStorage whenever they change
+  useEffect(()=>{
+    localStorage.setItem("posts", JSON.stringify(posts));
+  },[posts])
+
+  // Function to add a new post
+  const addNewPost = useCallback((newPost) => {
+    setPosts((prevPosts) => {
+      const updatedPosts = [newPost, ...prevPosts];
+      localStorage.setItem("posts", JSON.stringify(updatedPosts)); // Save immediately
+      return updatedPosts;
+    });
   }, []);
 
-   // Function to add a new post
-   const addPost = (newPost) => {
-    setPosts((prevPosts) => {
-      const updatedPosts = [newPost, ...prevPosts]; // Add new post at the top
-      localStorage.setItem("posts", JSON.stringify(updatedPosts)); // Save to localStorage
-      return updatedPosts; // Update state
-    });
+  const updatePosts = (updatedPosts) =>{
+    setPosts(updatedPosts);
+    localStorage.setItem("posts",JSON.stringify(updatedPosts));
   };
-  
 
-  // useEffect(() => {
-  //   const LoggedInUser = localStorage.getItem("LoggedInUser");
-  //   if (!LoggedInUser) {
-  //     navigate("/login");
-  //   } else {
-  //     setUser(LoggedInUser);
-  //   }
-  // }, [navigate]);
-  return (
-    <div className="main-container">
-        <MainNav addPost={addPost}/>
+  return(
+    <div>
+      <MainNav />
       <Routes>
-        <Route path="/" element={<Navigate to='feed' replace/>}/>  {/*for default routing*/}
-        <Route path="feed" element={<Feed posts={posts} addPost={addPost}/>}/>
-        <Route path="questions" element={<Questions />}/>
-        <Route path="mainCommunity" element={<MainCommunity />}/>
+        <Route path="/" element={<Navigate to="feed" replace />} />  {/* Default to feed */}
+        <Route path="feed" element={<Feed posts={posts} updatePosts={updatePosts}/>} />
+        <Route path="questions" element={<Questions questions={questions}/>} />
       </Routes>
-      {/* <h1>Welcome {user} !!</h1>
-      <p>This is your new World into the DevConnect...</p>
-      <button
-        onClick={() => {
-          localStorage.removeItem("LoggedInUser");
-          navigate("/login");
-        }}
-      >
-        Logout
-      </button> */}
+      <FloatingButton key={location.pathname} addNewPost={location.pathname === "/main/feed" ? addNewPost : null}
+        addNewQuestion={location.pathname === "/main/questions" ? addNewQuestion : null}/>
+
     </div>
-  );
+  )
 }
 
-export default Mainpage;
+export default MainPage

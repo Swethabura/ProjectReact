@@ -1,0 +1,20 @@
+.floating-button {
+    position: fixed;  /* Stay fixed in viewport */
+    bottom: 20px;      /* Distance from bottom */
+    right: 20px;       /* Distance from right */
+    background-color: #1890ff;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 10000;  /* Ensure it appears on top */
+    transition: background-color 0.3s ease;
+  }
+  
+  .floating-button:hover {
+    background-color: #40a9ff;
+  }
+  
