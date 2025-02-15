@@ -61,6 +61,8 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
       likes: 0,
       comments: [],
       likedBy: [],
+      answers:[],
+      saved: false,
     };
 
     // Call the correct function (either addNewPost or addNewQuestion)

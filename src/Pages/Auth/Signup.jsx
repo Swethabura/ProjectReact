@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import "../../Styles/Auth.css";
+import { message } from "antd";
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -12,6 +13,14 @@ function SignupPage() {
   const [otp,setOtp] = useState("")
   const [generatedOtp, setGenratedOtp] = useState("");
   const navigate = useNavigate();
+  const [messageApi,contextHolder] = message.useMessage();
+
+  const success = ()=>{
+     messageApi.open({
+      type:'success',
+      content:'Registered Succesfully!! Redirecting to login...'
+     })
+  }
 
   const handleSignup = (e) => {
     e.preventDefault();
@@ -32,8 +41,10 @@ function SignupPage() {
 
     users.push({username,email,password});
     localStorage.setItem("users",JSON.stringify(users));
-    alert("Registered Succesfully!! Redirecting to login...")
-    navigate("/login")
+    success();
+    setTimeout(() => {
+      navigate("/login"); // Delay navigation to allow message to appear
+    }, 1500);
   };
 //   generate otp when component loads
 useEffect(()=>{
@@ -55,7 +66,8 @@ useEffect(()=>{
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
-        />
+          />
+          {contextHolder}
         <input
           type="email"
           placeholder="enter email"

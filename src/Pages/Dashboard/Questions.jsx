@@ -1,55 +1,73 @@
 import { useEffect, useState } from "react";
-import FloatingButton from "./FloatingBtn";
-import { Card, message } from "antd";
+// import FloatingButton from "./FloatingBtn";
+// import { Avatar, Button, Card, message } from "antd";
+import { Typography } from "antd";
 import "../../Styles/Questions.css";
+import QuestionItem from "./QuestionItem";
 
-function Questions({ questions }) {
-//   const [questions, setQuestions] = useState([]);
-//   const [messageApi, contextHolder] = message.useMessage();
+const { Title } = Typography;
 
-//   // Load questions from localStorage on mount
-//   useEffect(() => {
-//     const savedQuestions = JSON.parse(localStorage.getItem("questions")) || [];
-//     setQuestions(savedQuestions);
-//   }, []);
+function Questions({ questions, setQuestions}) {
+  const [questionList, setQuestionList] = useState(()=>{
+    const savedQuestions = JSON.parse(localStorage.getItem("questions"));
+    return savedQuestions || questions
+  });
+  
+  useEffect(() => {
+    setQuestionList((prevQuestions) => {
+      return questions.map((newQ) => {
+        const existingQ = prevQuestions.find((q) => q.id === newQ.id);
+        return existingQ ? existingQ : newQ;  // Keep existing answers if the question exists
+      });
+    });
+  }, [questions]);
 
-//   const sucessMsg = () => {
-//     messageApi.open({
-//       type: "success",
-//       content: "Question Posted Successfully!!",
-//     });
-//   };
+  useEffect(() => {
+    localStorage.setItem("questions", JSON.stringify(questionList));
+  }, [questionList]);
+  
+  // Adding the new answer
+  const addAnswer = (questionId, newAnswer) => {
+    setQuestionList((prevQuestions) =>
+      prevQuestions.map((q) =>
+        q.id === questionId
+          ? { ...q, answers: [newAnswer, ...q.answers] }
+          : q
+      )
+    );
+  };
 
-  // Function to add a new question
-//     const addNewQuestion = (newQuestion) => {
-//     const updatedQuestions = [newQuestion, ...questions];
-//     setQuestions(updatedQuestions);
-//     localStorage.setItem("questions", JSON.stringify(updatedQuestions));
-//     sucessMsg();
-//   };
+  // update the vote
+  const updateVote = (questionId, updatedAnswers) => {
+    console.log("Before updating vote - updatedAnswers:", updatedAnswers);
+  
+    setQuestionList((prevQuestions) => {
+      const updatedQuestions = prevQuestions.map((q) =>
+        q.id === questionId ? { ...q, answers: updatedAnswers } : q
+      );
+  
+      console.log("Updated Questions:", updatedQuestions);
+  
+      setQuestions(updatedQuestions);  
+      localStorage.setItem("questions", JSON.stringify(updatedQuestions)); 
+  
+      return updatedQuestions;
+    });
+  };
+
   return (
-    <div className="questions" style={{ maxWidth: "600px", margin: "auto" }}>
-        {/* {contextHolder} */}
-      <h2>Questions</h2>
-      {/* Floating Button to create new question */}
-      {/* <FloatingButton addNewQuestion={addNewQuestion} /> */}
-      {/* Display questions */}
-      {questions?.length > 0 ? (
-        questions.map((q) => (
-          <Card key={q.id} style={{ marginBottom: "10px" }}>
-            <p>
-              <strong>{q.user}</strong>
-            </p>
-            <p>{q.content}</p>
-            {q.image && (
-              <img src={q.image} alt="Question" style={{ width: "100%" }} />
-            )}
-          </Card>
-        ))
-      ) : (
+    <div className="questions">
+      <Title level={2}>Questions</Title>
+      
+      {questionList.length === 0 ? (
         <p>No questions yet. Be the first to ask!</p>
+      ) : (
+        questionList.map((q) => (
+          <QuestionItem key={q.id} question={q} addAnswer={addAnswer} updateVote={updateVote}/>
+        ))
       )}
     </div>
   );
 }
+
 export default Questions;

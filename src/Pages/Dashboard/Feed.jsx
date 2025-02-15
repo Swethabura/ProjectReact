@@ -104,7 +104,7 @@ function Feed({ posts, updatePosts }) {
             >
               {post.likes} Likes
             </Button>
-            <Button type="text" onClick={()=>toggleComments(post.id)} icon={<CommentOutlined />}>{post.comments.length}</Button>
+            <Button onClick={()=>toggleComments(post.id)} icon={<CommentOutlined />}>{post.comments.length}</Button>
             <Button icon={<SaveOutlined />}>Save</Button>
             <Button icon={<ShareAltOutlined />}>Share</Button>
           </div>
