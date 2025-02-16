@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-scroll";
-import { Link as RouterLink } from "react-router-dom"; 
-import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi"; // Added theme icons
+import { Link as RouterLink } from "react-router-dom";
+import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import "./Navbar.css";
-import logoDark from "../../assets/devconnect1.png";
 import logoLight from "../../assets/devconnect (2).png";
-
+import { Button } from "antd";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,11 +23,10 @@ function Navbar() {
     <header>
       <div className="logoSec">
         <div className="logo">
-          <img src={theme === "light" ? logoDark : logoLight} alt="logo" width={80} height={75} />
+          <img src={logoLight} alt="logo" width={65} height={60} />
         </div>
         <span className="logo-title">
-          <h1>DevConnect</h1>
-          <p>Code. Connect. Collaborate</p>
+          <strong>DevConnect</strong> Code. Connect. Collaborate
         </span>
       </div>
 
@@ -89,9 +87,11 @@ function Navbar() {
             </Link>
           </li>
         </ul>
-        <button className="login-btn" onClick={() => setMenuOpen(false)}>
-        <RouterLink to="/login" className="log-in">Login</RouterLink>
-        </button>
+        <Button onClick={() => setMenuOpen(false)} className="login-Btn">
+          <RouterLink to="/login" className="log-in">
+            Login
+          </RouterLink>
+        </Button>
       </nav>
     </header>
   );

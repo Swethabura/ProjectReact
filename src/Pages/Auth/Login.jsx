@@ -28,24 +28,30 @@ function LoginPage() {
       {error && <p className="error">{error}</p>}
       {/* the form details */}
       <form onSubmit={handleLogin}>
+      <div className="floating-label">
         <input
           type="text"
-          placeholder="enter your username"
+          placeholder=""
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+        <label>Enter Username</label>
+        </div>
+        <div className="floating-label">
         <input
           type="password"
-          placeholder="enter your password"
+          placeholder=""
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
+        <label>Enter Password</label>
+        </div>
+        <button type="submit" >Login</button>
       </form>
       <p>
-        New User? <Link to="/signup">Sign Up</Link>
+        New User? <Link to="/signup" className="signup">Sign Up</Link>
       </p>
     </div>
   );

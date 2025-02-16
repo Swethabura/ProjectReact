@@ -2,19 +2,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Bona+Nova+SC:ital,wght@0,400;0,700;1,400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
 
+/* Base Styles */
 header {
   width: 100vw;
-  height: 15vh;
+  height: 12vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--navbar-bg);
-  color: var(--text-color);
+  background-color: var(--navbar-bg); 
+  color: var(--text-color); 
   position: fixed;
   z-index: 1000;
   padding: 0 4rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  /* transition: background-color 0.3s ease, color 0.3s ease; */
 }
 
 .logoSec {
@@ -22,21 +23,31 @@ header {
   align-items: center;
   gap: 1rem;
 }
+.logo-title{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
-.logo-title h1 {
+.logo-title strong {
   font-family: "Bona Nova SC", serif;
   font-size: 1.8rem;
+  color: var(--text-color); 
 }
 
 .logo-title p {
   font-family: "Great Vibes", serif;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   text-align: center;
   letter-spacing: 1.5px;
+  color: var(--secondary-text); 
 }
 
 nav {
+  /* border: 1px solid red; */
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 3rem;
 }
@@ -45,75 +56,83 @@ nav ul {
   list-style: none;
   display: flex;
   gap: 3rem;
+  padding-top: 1rem;
 }
 
 .navlinks {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--text-color);
   cursor: pointer;
   position: relative;
-  transition: color 0.3s ease-in-out;
+  display: inline-block; /* Ensures scaling works properly */
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
 }
 
 .navlinks::after {
   content: "";
-  display: block;
-  width: 0;
-  height: 2px;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease-in-out;
   position: absolute;
-  left: 0;
+  left: 50%;
   bottom: -5px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--text-color);
+  transition: width 0.4s ease, left 0.4s ease;
 }
 
 .navlinks:hover {
-  color: var(--primary-color);
+  transform: scale(1.1); /* Now scaling works */
 }
 
 .navlinks:hover::after {
-  width: 100%;
+  width: 120%;
+  left: -10%;
 }
-
 /* Theme Toggle Button */
 .theme-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-color);
+  color: var(--text-color); 
   font-size: 1.5rem;
   transition: color 0.3s ease-in-out;
 }
 
 .theme-toggle:hover {
-  color: var(--primary-color);
+  color: var( --border-color); 
 }
 
-.login-btn {
-  background-color: var(--primary-color);
+.login-Btn {
+  background-color: var(--btn-color, #ffdb4d) !important; /* Default fallback color */
   padding: 0.5rem 1.5rem;
-  border: none;
+  border: none !important;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease-in-out;
 }
-.log-in{
-  font-size: 1rem;
-  color: #ffffff;
-  text-decoration: none;
 
+.log-in {
+  border: none !important;
+  /* border: 1px solid red; */
+  font-size: 1.1rem;
+  color: var(--primary-color) !important;
+  text-decoration: none !important;
+  width: 100%;
+  height: 100%;
 }
 
-.login-btn:hover {
-  filter: brightness(1.2);
+.login-Btn:hover {
+  background-color: #fce40c!important;
+  color: #000 !important; /* Ensure text remains visible */
 }
 
 /* Hamburger Icon */
 .hamburger {
   display: none;
   cursor: pointer;
-  color: var(--text-color);
+  color: var(--text-color); 
 }
+
+/* Responsive Design */
 
 /* ⭐ 1024px - 1280px (Laptops) */
 @media screen and (max-width: 1280px) {
@@ -154,7 +173,7 @@ nav ul {
     top: 12vh;
     left: 0;
     width: 100%;
-    background-color: var(--navbar-bg);
+    background-color: var(--navbar-bg); 
     flex-direction: column;
     align-items: center;
     display: none;
@@ -188,4 +207,4 @@ nav ul {
     width: 90%;
     margin: 1rem 0;
   }
-}
+} 

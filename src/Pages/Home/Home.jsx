@@ -52,7 +52,7 @@ function HomePage() {
         {/* Sign Up & Login Buttons */}
         <div className="btns">
           <button className="signup-btn">
-            <Link to="/signup" className="signup-btn">
+            <Link to="/signup" className="sign-up">
               Sign Up
             </Link>
           </button>
