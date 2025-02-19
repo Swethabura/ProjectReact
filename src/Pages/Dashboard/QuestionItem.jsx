@@ -114,7 +114,7 @@ function QuestionItem({ question, addAnswer, updateVote }) {
         <img
           src={question.image}
           alt="Question"
-          style={{ width: "100%", marginTop: 10 }}
+          style={{ width: "50%", marginTop: 10 }}
         />
       )}
 

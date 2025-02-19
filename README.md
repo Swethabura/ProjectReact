@@ -1,8 +1,76 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# DevConnect  
+A MERN-based community platform for developers, combining features of LinkedIn & Stack Overflow.  
+Users can share progress, ask questions, and collaborate in a structured way.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo  
+[Check it out here](https://devconnect-reactproject.vercel.app/)  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features  
+- 📌 User authentication (Signup/Login)  
+- ✍️ Create, edit, delete posts  
+- 💬 Ask and answer questions  
+- 🏆 Earn badges & achievements  
+- 🔄 Dark mode toggle  
+- 🎯 Mobile-friendly UI  
+
+## 🛠 Tech Stack  
+**Frontend:** React, React Router, Ant Design, CSS  
+**State Management:** Context API  
+**Backend (Upcoming):** Node.js, Express.js, MongoDB  
+
+## 📅 Daily Progress  
+
+### ✅ **February 9, 2025**  
+- 🎨 Designed Landing Page  
+- 🔄 Implemented smooth routing within the page (bookmarkings) 
+
+### ✅ **February 10, 2025**  
+- 🎨 Designed Login & Signup pages  
+- 🔄 Implemented smooth routing between pages  
+- 🔐 Stored user data in localStorage
+
+### ✅ **February 11, 2025** 
+- 🛠 Started working on user dashboard implementation  
+- 🚀 Created Navbar with icons & sliding sidebar  
+- 🎨 Added basic dark/light mode toggle  
+- 🔧 Structured folder setup for components  
+
+### ✅ **February 12, 2025**  
+- 📌 Improved UI with Ant Design  
+- ✨ Styled floating post button  
+- 📝 Working on Feed Page
+- 🔧 Added functionalities such as like, comment
+
+### ✅ **February 13, 2025**  
+- ❌ Found errors in Feed Page 
+- 🛠  Fixed the errors
+- 📝 Changed the Feed Page 
+
+### ✅ **February 14, 2025**  
+- 📝 Completed the Feed Page
+- 📌 Improved UI with Ant Design  
+- 📝 Started the Questions Page
+
+### ✅ **February 15, 2025**  
+- 📝 Completed the Questions Page
+- 📌 Improved UI with Ant Design  
+- 📌 Added Features such as question post, answering, commenting to answer, Voting for the best answer
+
+### ✅ **February 16, 2025**  
+- ✨ Styled the Landing page with added Theme colors
+
+### ✅ **February 17, 2025**  
+- 📌 Responsive Login and Signup Pages
+
+### ✅ **February 18, 2025**  
+- ❌ Found errors  
+- 🛠  Fixed the errors
+
+### ✅ **February 19, 2025**  
+- ✨ Styled the Login and signup pages
+- 📌 Improved UI with Ant Design  
+- 🔧 Added icons and completed checking all the routes error free.
+
+
+
