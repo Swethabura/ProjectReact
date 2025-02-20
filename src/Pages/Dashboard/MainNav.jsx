@@ -48,13 +48,13 @@ const MainNav = () => {
 
       {/* Center: Navigation Links */}
       <div className="nav-links">
-        <Button type="link" onClick={() => navigate("/main/feed")}>
+        <Button type="link" onClick={() => navigate("/main/feed")} className={`link ${location.pathname === "/main/feed" ? "active" : ""}`}>
           Feed
         </Button>
-        <Button type="link" onClick={() => navigate("/main/questions")}>
+        <Button type="link" onClick={() => navigate("/main/questions")} className={`link ${location.pathname === "/main/questions" ? "active" : ""}`}>
           Questions
         </Button>
-        <Button type="link" onClick={() => navigate("/main/maincommunity")}>
+        <Button type="link" onClick={() => navigate("/main/maincommunity")} className={`link ${location.pathname === "/main/maincommunity" ? "active" : ""}`}>
           Community
         </Button>
       </div>
@@ -81,6 +81,8 @@ const MainNav = () => {
         onClose={closeDrawer}
         open={visible}
         width={250}
+        style={{backgroundColor: "var(--navbar-bg)",
+          color: "var(--text-color)"}}
       >
         <p>
           <FileImageOutlined /> Change Profile Picture

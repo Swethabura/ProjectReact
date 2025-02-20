@@ -13,7 +13,7 @@ function SignupPage() {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [error, setError] = useState({});  // Store errors for specific fields
+  const [error, setError] = useState({}); // Store errors for specific fields
 
   // Refs for input focus on error
   const usernameRef = useRef(null);
@@ -21,21 +21,21 @@ function SignupPage() {
   const otpRef = useRef(null);
 
   // error message
-  const showError = (msg,ref, fieldName) => {
+  const showError = (msg, ref, fieldName) => {
     messageApi.open({
       type: "error",
-      content : msg
+      content: msg,
     });
-    if (ref && ref.current){
-      ref.current.focus()   // Focus on the specific input with error
+    if (ref && ref.current) {
+      ref.current.focus(); // Focus on the specific input with error
     }
     // Highlight the field with red border
-    setError((prev)=> ({...prev, [fieldName]: true}));
+    setError((prev) => ({ ...prev, [fieldName]: true }));
 
     // Remove the red border after 2 seconds
-    setTimeout(()=>{
-      setError((prev)=> ({...prev, [fieldName]: false}));
-    },2000)
+    setTimeout(() => {
+      setError((prev) => ({ ...prev, [fieldName]: false }));
+    }, 2000);
   };
 
   const success = () => {
@@ -45,14 +45,14 @@ function SignupPage() {
     });
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    if (users.find((u) => u.username === username)) {
-      showError("Username Already exists!!", usernameRef, "username");
-      return;
-    }
+    // const users = JSON.parse(localStorage.getItem("users")) || [];
+    // if (users.find((u) => u.username === username)) {
+    //   showError("Username Already exists!!", usernameRef, "username");
+    //   return;
+    // }
     if (password !== confirmPassword) {
       showError("Passwords do not match!", passwordRef, "confirmPassword");
       return;
@@ -61,12 +61,29 @@ function SignupPage() {
       showError("OTP doesn't match!", otpRef, "otp");
       return;
     }
-    users.push({ username, email, password });
-    localStorage.setItem("users", JSON.stringify(users));
-    success();
-    setTimeout(() => {
-      navigate("/login"); // Delay navigation to allow message to appear
-    }, 1500);
+    // users.push({ username, email, password });
+    // localStorage.setItem("users", JSON.stringify(users));
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, email }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        showError(data.msg, usernameRef, "username");
+        return;
+      }
+
+      success();
+      setTimeout(() => {
+        navigate("/login"); // Delay navigation to allow message to appear
+      }, 1500);
+    } catch (error) {
+      showError("Something went wrong! Try again after sometime!", null, "");
+    }
   };
 
   useEffect(() => {
@@ -80,89 +97,89 @@ function SignupPage() {
 
   return (
     <div className="main-container">
-    <div className="auth-container">
-      <h2>Sign-Up</h2>
-      {contextHolder}
-      <form onSubmit={handleSignup}>
-        {/* Username Input */}
-        <div className="floating-label">
-          <input
-            type="text"
-            placeholder=" "
-            ref={usernameRef}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={error.username ? "error-border" : ""}
-            required
-          />
-          <label>Enter Username</label>
-        </div>
+      <div className="auth-container">
+        <h2>Sign-Up</h2>
+        {contextHolder}
+        <form onSubmit={handleSignup}>
+          {/* Username Input */}
+          <div className="floating-label">
+            <input
+              type="text"
+              placeholder=" "
+              ref={usernameRef}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={error.username ? "error-border" : ""}
+              required
+            />
+            <label>Enter Username</label>
+          </div>
 
-        {/* Email Input */}
-        <div className="floating-label">
-          <input
-            type="email"
-            placeholder=" "
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <label>Enter Email</label>
-        </div>
+          {/* Email Input */}
+          <div className="floating-label">
+            <input
+              type="email"
+              placeholder=" "
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <label>Enter Email</label>
+          </div>
 
-        {/* Password Input */}
-        <div className="floating-label">
-          <input
-            type="password"
-            placeholder=" "
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <label>Enter Password</label>
-        </div>
+          {/* Password Input */}
+          <div className="floating-label">
+            <input
+              type="password"
+              placeholder=" "
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <label>Enter Password</label>
+          </div>
 
-        {/* Confirm Password Input */}
-        <div className="floating-label">
-          <input
-            type="password"
-            placeholder=" "
-            ref={passwordRef}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className={error.confirmPassword ? "error-border" : ""}
-            required
-          />
-          <label>Confirm Password</label>
-        </div>
+          {/* Confirm Password Input */}
+          <div className="floating-label">
+            <input
+              type="password"
+              placeholder=" "
+              ref={passwordRef}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className={error.confirmPassword ? "error-border" : ""}
+              required
+            />
+            <label>Confirm Password</label>
+          </div>
 
-        {/* OTP Input */}
-        <div className="otp-box">{generatedOtp}</div>
-        <div className="floating-label">
-          <input
-            type="text"
-            placeholder=" "
-            ref={otpRef}
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            className={error.otp ? "error-border" : ""}
-            required
-          />
-          <label>Enter OTP</label>
-        </div>
+          {/* OTP Input */}
+          <div className="otp-box">{generatedOtp}</div>
+          <div className="floating-label">
+            <input
+              type="text"
+              placeholder=" "
+              ref={otpRef}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className={error.otp ? "error-border" : ""}
+              required
+            />
+            <label>Enter OTP</label>
+          </div>
 
-        <button onClick={generateOtp}>Regenerate OTP</button>
-        <button type="submit" >Sign Up</button>
-      </form>
-      <p>
-        Already registered?{"  --  "}
-        <RouterLink to="/login" className="login">
-          Login
-        </RouterLink>
-      </p>
-    </div>
+          <button onClick={generateOtp}>Regenerate OTP</button>
+          <button type="submit">Sign Up</button>
+        </form>
+        <p>
+          Already registered?{"  --  "}
+          <RouterLink to="/login" className="login">
+            Login
+          </RouterLink>
+        </p>
+      </div>
     </div>
   );
 }
 
-export default SignupPage;   
+export default SignupPage;

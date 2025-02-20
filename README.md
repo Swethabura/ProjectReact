@@ -72,5 +72,9 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📌 Improved UI with Ant Design  
 - 🔧 Added icons and completed checking all the routes error free.
 
+### ✅ **February 20, 2025**  
+- 📝 Backend connection for login and signup
+- 🛠  Fixed the errors in backend and front end.
+
 
 

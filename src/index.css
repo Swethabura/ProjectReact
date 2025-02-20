@@ -17,7 +17,7 @@
 [data-theme="dark"] {
   /* Dark Theme Colors */
   --primary-color: #3D5A80; /* Muted Blue for a professional look */
-  --background-color: #121212; /* Deep Black for contrast */
+  --background-color: #2b2a2a; /* Deep Black for contrast */
   --navbar-bg: var(--primary-color); /* Primary color to make navbar pop */
   --text-color: #eaeaea; /* Almost White for readability */
   --secondary-text: #e0e0e0;  /* Lighter Gray for secondary text */
@@ -27,7 +27,6 @@
   --error-color: #ff4d4f; /* Bright Red for error messages */
   --btn-color:#F3F312;
 }
-
 
 * {
   margin: 0;

@@ -80,7 +80,7 @@ nav ul {
 }
 
 .navlinks:hover {
-  transform: scale(1.1); /* Now scaling works */
+  transform: scale(1.1);
 }
 
 .navlinks:hover::after {
