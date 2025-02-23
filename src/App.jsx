@@ -7,6 +7,7 @@ import ContactPage from "./Pages/Home/Contact";
 import LoginPage from "./Pages/Auth/Login";
 import SignupPage from "./Pages/Auth/Signup";
 import Mainpage from "./Pages/Dashboard/MainPage";
+import AdminDashboard from "./Pages/Admin/AdminDashboard";
 
 // Layout component with Navbar
 function Layout({ children }) {
@@ -39,6 +40,7 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/main/*" element={<Mainpage />} />    {/* Nested Routes */}
+      <Route path="/admin/*" element={<AdminDashboard />}/>
     </Routes>
   );
 }

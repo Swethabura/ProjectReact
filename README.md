@@ -76,5 +76,10 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📝 Backend connection for login and signup
 - 🛠  Fixed the errors in backend and front end.
 
+### ✅ **February 23, 2025** 
+- 📌 Setting up the Redux for state managment
+- 📌 Routing to admin/user dashboard based on role and jwt token.
+- 📌 Created admin dashboard
+- 🔧 Posts and Questions data fetching from the backend - integration of backend and frontend.
 
 

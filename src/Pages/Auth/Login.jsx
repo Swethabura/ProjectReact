@@ -61,9 +61,16 @@ function LoginPage() {
         return;
       }
 
+      // Save token and user info
       localStorage.setItem("token", data.token);
       localStorage.setItem("LoggedInUser", username);
-      navigate("/main"); //navigate to main page/dashboard
+      localStorage.setItem("UserRole", data.user.role); // Save role in localStorage
+      // Redirect based on role
+      if (data.user.role === "admin") {
+        navigate("/admin/posts"); // Redirect admin to admin dashboard
+      } else {
+        navigate("/main"); // Redirect normal user to main dashboard
+      }
     } catch (error) {
       errorMsg("Something went wrong. Please try again!");
     }
