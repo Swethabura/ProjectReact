@@ -3,75 +3,78 @@ import { useLocation } from "react-router-dom";
 import "../../Styles/FloatingBtn.css";
 import { Button, Input, message, Modal, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { addPost, addQuestion } from "../redux/userSlice";
 
 const FloatingButton = ({ addNewPost, addNewQuestion }) => {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState(null);
-  const [content, setcontent] = useState("");
+  const [title, setTitle] = useState(""); // Needed for questions and only used for questions
+  const [content, setContent] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
+  const dispatch = useDispatch();
 
-  // Use useMemo to avoid unnecessary re-renders
   let buttonText = "";
-  let submitFunction = null;
+  let isQuestion = false;
 
   if (location.pathname === "/main/feed") {
     buttonText = "Create Post";
-    submitFunction = addNewPost;
   } else if (location.pathname === "/main/questions") {
     buttonText = "Ask Question";
-    submitFunction = addNewQuestion;
+    isQuestion = true;
+  } else {
+    return null; // If not in feed or questions, don't render the button
   }
-  else if (location.pathname === "/main/maincommunity")
-    buttonText = "Start Collaboration";
-  else return null;
 
-  // Handle file upload
-  // const handleUpload = (info) => {
-  //   if (info.file.status === "done" || info.file.status === "uploading") {
-  //     const file = info.file.originFileObj;
-  //     if (file) {
-  //       setImage(URL.createObjectURL(file));
-  //     }
-  //   }
-  // };
-
-  const error = () => {
+  const showError = (msg) => {
     messageApi.open({
       type: "error",
-      content: "Post cannot be empty!",
+      content: msg,
     });
   };
 
-  // Handle post submission
-  const handlePost = () => {
-    if (!content || !content.trim()) {
-      error();
+  const handleSubmit = async () => {
+    if (isQuestion && !title.trim()) {
+      showError("Title cannot be empty!");
+      return;
+    }
+    if (!content.trim()) {
+      showError(isQuestion ? "Question cannot be empty!" : "Post cannot be empty!");
       return;
     }
 
     const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
-    // Create new post object
-    const newEntry = {
-      id: Date.now(),
-      user: loggedInUser,
-      avatar: `https://via.placeholder.com/40`, // Placeholder avatar
-      content,
-      image: image || "",
-      likes: 0,
-      comments: [],
-      likedBy: [],
-      answers:[],
-      saved: false,
-    };
 
-    // Call the correct function (either addNewPost or addNewQuestion)
-    if (submitFunction) {
-      submitFunction(newEntry);
+    let newEntry;
+    if (isQuestion) {
+      newEntry = {
+        user: loggedInUser,
+        avatar: `https://via.placeholder.com/40`, // Placeholder avatar
+        title,
+        content,
+        image: image || "",
+        answers: [],
+        votes: 0,
+        votedBy: [],
+      };
+      await dispatch(addQuestion(newEntry)); // Dispatch `addNewQuestion`
+    } else {
+      newEntry = {
+        user: loggedInUser,
+        avatar: `https://via.placeholder.com/40`, // Placeholder avatar
+        content,
+        image: image || "",
+        likes: 0,
+        likedBy: [],
+        comments: [],
+      };
+      await dispatch(addPost(newEntry)); // Dispatch `addNewPost`
     }
 
     setIsModalOpen(false);
-    setcontent("");
+    setTitle("");
+    setContent("");
     setImage(null);
   };
 
@@ -85,16 +88,23 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         title={buttonText}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        onOk={handlePost}
-        okText="Post"
+        onOk={handleSubmit}
+        okText={isQuestion ? "Ask" : "Post"}
         cancelText="Cancel"
       >
+        {isQuestion && (
+          <Input
+            placeholder="Enter your question title..."
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+        )}
         <Input.TextArea
-          name="postInput"
           rows={3}
-          placeholder="What's on your mind?"
+          placeholder={isQuestion ? "Describe your question..." : "What's on your mind?"}
           value={content}
-          onChange={(e) => setcontent(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
         />
         <Upload
           listType="picture"
@@ -103,21 +113,21 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
-              setImage(reader.result); 
+              setImage(reader.result);
             };
-            return false; // Prevent default upload
+            return false;
           }}
         >
           <Button icon={<UploadOutlined />}>Upload Image</Button>
         </Upload>
-        {image ? (
+        {image && (
           <img
             src={image}
             alt="preview"
             style={{ width: "100%", marginTop: "10px" }}
-            onError={(e) => (e.target.style.display = "none")} // Hide broken images
+            onError={(e) => (e.target.style.display = "none")}
           />
-        ) : null}
+        )}
       </Modal>
     </>
   );

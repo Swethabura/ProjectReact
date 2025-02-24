@@ -82,4 +82,10 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📌 Created admin dashboard
 - 🔧 Posts and Questions data fetching from the backend - integration of backend and frontend.
 
+### ✅ **February 24, 2025** 
+- 📝 Backend connection for Feed and Questions
+- 📝 Setting up the admin and public routes to handle and get the feed and questions.
+- 📝 Backend connection for newPost and newQuestion and also addNewAnswer.
+
+
 

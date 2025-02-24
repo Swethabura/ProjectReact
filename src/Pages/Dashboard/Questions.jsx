@@ -1,71 +1,67 @@
 import { useEffect, useState } from "react";
-// import FloatingButton from "./FloatingBtn";
-// import { Avatar, Button, Card, message } from "antd";
-import { Typography } from "antd";
+import { Typography,Spin } from "antd";
 import "../../Styles/Questions.css";
 import QuestionItem from "./QuestionItem";
+import { fetchQuestions,addQuestion } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import FloatingButton from "./FloatingBtn";
 
 const { Title } = Typography;
 
-function Questions({ questions, setQuestions}) {
-  const [questionList, setQuestionList] = useState(()=>{
-    const savedQuestions = JSON.parse(localStorage.getItem("questions"));
-    return savedQuestions || questions
-  });
-  
-  useEffect(() => {
-    setQuestionList((prevQuestions) => {
-      return questions.map((newQ) => {
-        const existingQ = prevQuestions.find((q) => q.id === newQ.id);
-        return existingQ ? existingQ : newQ;  // Keep existing answers if the question exists
-      });
-    });
-  }, [questions]);
+function Questions() {
+  const {questions, loading, error} = useSelector((state)=> state.questions);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    localStorage.setItem("questions", JSON.stringify(questionList));
-  }, [questionList]);
-  
-  // Adding the new answer
-  const addAnswer = (questionId, newAnswer) => {
-    setQuestionList((prevQuestions) =>
-      prevQuestions.map((q) =>
-        q.id === questionId
-          ? { ...q, answers: [newAnswer, ...q.answers] }
-          : q
-      )
-    );
-  };
+    useEffect(()=>{
+      dispatch(fetchQuestions());
+    },[dispatch])
 
-  // update the vote
-  const updateVote = (questionId, updatedAnswers) => {
-    console.log("Before updating vote - updatedAnswers:", updatedAnswers);
+  if (loading) return <Spin size="large" />;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
   
-    setQuestionList((prevQuestions) => {
-      const updatedQuestions = prevQuestions.map((q) =>
-        q.id === questionId ? { ...q, answers: updatedAnswers } : q
-      );
+  // // Adding the new answer
+  // const addAnswer = (questionId, newAnswer) => {
+  //   setQuestionList((prevQuestions) =>
+  //     prevQuestions.map((q) =>
+  //       q.id === questionId
+  //         ? { ...q, answers: [newAnswer, ...q.answers] }
+  //         : q
+  //     )
+  //   );
+  // };
+
+  // // update the vote
+  // const updateVote = (questionId, updatedAnswers) => {
+  //   console.log("Before updating vote - updatedAnswers:", updatedAnswers);
   
-      console.log("Updated Questions:", updatedQuestions);
+  //   setQuestionList((prevQuestions) => {
+  //     const updatedQuestions = prevQuestions.map((q) =>
+  //       q.id === questionId ? { ...q, answers: updatedAnswers } : q
+  //     );
   
-      setQuestions(updatedQuestions);  
-      localStorage.setItem("questions", JSON.stringify(updatedQuestions)); 
+  //     console.log("Updated Questions:", updatedQuestions);
   
-      return updatedQuestions;
-    });
+  //     setQuestions(updatedQuestions);  
+  //     localStorage.setItem("questions", JSON.stringify(updatedQuestions)); 
+  
+  //     return updatedQuestions;
+  //   });
+  // };
+
+   // Function to add new Question
+   const addNewQuestion = (newQuestion) => {
+    setPosts([newQuestion, ...questions]); // Add new post to the top of the feed
   };
 
   return (
     <div className="questions">
       <Title level={2}>Questions</Title>
-      
-      {questionList.length === 0 ? (
+      {questions.length === 0 ? (
         <p>No questions yet. Be the first to ask!</p>
       ) : (
-        questionList.map((q) => (
-          <QuestionItem key={q.id} question={q} addAnswer={addAnswer} updateVote={updateVote}/>
-        ))
+        questions.map((q) => <QuestionItem key={q.id} question={q} />)
       )}
+      <FloatingButton addNewQuestion={(question) => dispatch(addQuestion(question))}/>
     </div>
   );
 }

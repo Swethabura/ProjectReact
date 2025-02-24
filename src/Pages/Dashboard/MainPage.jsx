@@ -33,12 +33,12 @@ function MainPage(){
   const [posts, setPosts] = useState(() => {
     success()
     const savedPosts = localStorage.getItem("posts");
-    return savedPosts ? JSON.parse(savedPosts) : initialPosts;
+    // return savedPosts ? JSON.parse(savedPosts) : initialPosts;
   });
   
   const [questions, setQuestions] = useState(() => {
     const savedQuestions = localStorage.getItem("questions");
-    return savedQuestions ? JSON.parse(savedQuestions) : [];
+    // return savedQuestions ? JSON.parse(savedQuestions) : [];
   });
   
   useEffect(() => {
@@ -84,12 +84,11 @@ function MainPage(){
       {contextHolder}
       <Routes>
         <Route path="/" element={<Navigate to="feed" replace />} />  {/* Default to feed */}
-        <Route path="feed" element={<Feed posts={posts} updatePosts={updatePosts}/>} />
-        <Route path="questions" element={<Questions questions={questions} setQuestions={setQuestions}/>} />
+        <Route path="feed" element={<Feed  updatePosts={updatePosts}/>} />
+        <Route path="questions" element={<Questions setQuestions={setQuestions}/>} />
       </Routes>
-      <FloatingButton key={location.pathname} addNewPost={location.pathname === "/main/feed" ? addNewPost : null}
-        addNewQuestion={location.pathname === "/main/questions" ? addNewQuestion : null}/>
-
+      <FloatingButton key={location.pathname}/>
+      ;
     </div>
   )
 }

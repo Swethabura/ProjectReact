@@ -18,84 +18,52 @@ import {
   UploadOutlined,
   LikeFilled,
 } from "@ant-design/icons";
+import { fetchAnswers,addAnswer } from "../redux/answersSlice" ;
+import { useDispatch, useSelector } from "react-redux";
 
 const { TextArea } = Input;
 
-function QuestionItem({ question, addAnswer, updateVote }) {
+function QuestionItem({ question }) {
+  const dispatch = useDispatch();
   const [answerInput, setAnswerInput] = useState("");
   const [image, setImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [answers, setAnswers] = useState(question.answers);
+  const answers = useSelector((state) => state.answers.answers?.[question._id] || []);
 
   const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
 
-  // Sync answers state with question.answers prop
+  /// Fetch answers when expanded is true
   useEffect(() => {
-    setAnswers(question.answers);
-  }, [question.answers]);
-
-  useEffect(() => {
-    const storedVotes = JSON.parse(
-      localStorage.getItem(`votes_${question.id}`)
-    );
-    if (storedVotes) {
-      setAnswers(storedVotes);
+    if (expanded && question._id) {
+      dispatch(fetchAnswers(question._id));
     }
-  }, [question.id]);
+  }, [expanded, dispatch, question._id]);
 
-  //   handle the answer
-  const handleAnswerSubmit = () => {
-    const error = () => {
-      messageApi.open({
-        type: "error",
-        content: "The answer cannot be empty!",
-      });
-    };
-
-    if (answerInput.trim() === "") {
-      error();
+  // Handle adding an answer
+  const handleAnswerSubmit = async () => {
+    if (!answerInput.trim()) {
+      messageApi.error("Answer cannot be empty!");
       return;
     }
-
     const newAnswer = {
-      id: Date.now(),
+      questionId: question._id, // Ensure correct ID usage
       user: loggedInUser,
-      avatar: "https://via.placeholder.com/40",
       content: answerInput,
+      avatar: `https://via.placeholder.com/40`,
       image,
-      votes: 0,
-      votedBy: [],
     };
-
-    addAnswer(question.id, newAnswer);
-    setAnswerInput("");
-    setModalVisible(false);
-  };
-
-  //   handle the voting system
-  const handleVoting = (answerId) => {
-    const updatedAnswers = answers.map((answer) => {
-      if (answer.id === answerId) {
-        const alreadyVoted = answer.votedBy.includes(loggedInUser);
-        return {
-          ...answer,
-          votes: alreadyVoted ? answer.votes - 1 : answer.votes + 1,
-          votedBy: alreadyVoted
-            ? answer.votedBy.filter((user) => user !== loggedInUser)
-            : [...answer.votedBy, loggedInUser],
-        };
-      }
-      return answer;
-    });
-
-    setAnswers(updatedAnswers);
-    localStorage.setItem(
-      `votes_${question.id}`,
-      JSON.stringify(updatedAnswers)
-    );
-    updateVote(question.id, updatedAnswers);
+  
+    try {
+      await dispatch(addAnswer(newAnswer)).unwrap();
+      setAnswerInput("");
+      setImage(null);
+      setModalVisible(false);
+      messageApi.success("Answer posted successfully!");
+    } catch (error) {
+      messageApi.error("Failed to post answer!");
+    }
   };
 
   return (
@@ -109,6 +77,7 @@ function QuestionItem({ question, addAnswer, updateVote }) {
       }
     >
       {contextHolder}
+      <h3>{question.title}</h3> {/* Display title */}
       <p>{question.content}</p>
       {question.image && (
         <img
@@ -117,7 +86,6 @@ function QuestionItem({ question, addAnswer, updateVote }) {
           style={{ width: "50%", marginTop: 10 }}
         />
       )}
-
       <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
         <Button type="primary" onClick={() => setModalVisible(true)}>
           Answer
@@ -126,78 +94,54 @@ function QuestionItem({ question, addAnswer, updateVote }) {
           {expanded ? "Hide Answers" : "See Answers"}
         </Button>
       </div>
-
       {expanded && (
-        <div style={{ marginTop: 10 }}>
-          {/* <TextArea
-            placeholder="Write your answer..."
-            value={answerInput}
-            onChange={(e) => setAnswerInput(e.target.value)}
-            rows={2}
-          />
-          <Button
-            type="primary"
-            onClick={handleAnswerSubmit}
-            style={{ marginTop: 5 }}
-          >
-            Post
-          </Button> */}
-
-          <List
-            itemLayout="horizontal"
-            dataSource={answers}
-            renderItem={(answer) => {
-              const hasVoted =
-                answer.votedBy && answer.votedBy.includes(loggedInUser);
-
-              return (
-                <List.Item
-                  actions={[
-                    <Button
-                      type="text"
-                      icon={
-                        hasVoted ? (
-                          <LikeFilled style={{ color: "blue" }} />
-                        ) : (
-                          <LikeOutlined />
-                        )
-                      }
-                      onClick={() => handleVoting(answer.id)}
-                    >
-                      {answer.votes}
-                    </Button>,
-                    <Button icon={<MessageOutlined />}>Comment</Button>,
-                    <Button icon={<ShareAltOutlined />}>Share</Button>,
-                    <Button icon={<StarOutlined />}>Save</Button>,
-                  ]}
+        <List
+          itemLayout="horizontal"
+          dataSource={answers}
+          renderItem={(answer) => (
+            <List.Item
+              actions={[
+                <Button
+                  type="text"
+                  icon={
+                    answer?.votedBy?.includes(loggedInUser) ? (
+                      <LikeFilled style={{ color: "blue" }} />
+                    ) : (
+                      <LikeOutlined />
+                    )
+                  }
                 >
-                  <List.Item.Meta
-                    avatar={<Avatar src={answer.avatar} />}
-                    title={answer.user}
-                    description={
-                      <>
-                        <p>{answer.content}</p>
-                        {answer.image && (
-                          <Image
-                            src={answer.image}
-                            alt="Answer"
-                            style={{
-                              width: "100%",
-                              marginTop: 10,
-                              borderRadius: 5,
-                            }}
-                          />
-                        )}
-                      </>
-                    }
-                  />
-                </List.Item>
-              );
-            }}
-          />
-        </div>
+                  {answer.votes}
+                </Button>,
+                <Button icon={<MessageOutlined />}>Comment</Button>,
+                <Button icon={<ShareAltOutlined />}>Share</Button>,
+                <Button icon={<StarOutlined />}>Save</Button>,
+              ]}
+            >
+              <List.Item.Meta
+                avatar={<Avatar src={answer.avatar} />}
+                title={answer.user}
+                description={
+                  <>
+                    <p>{answer.content}</p>
+                    {answer.image && (
+                      <Image
+                        src={answer.image}
+                        alt="Answer"
+                        style={{
+                          width: "100%",
+                          marginTop: 10,
+                          borderRadius: 5,
+                        }}
+                      />
+                    )}
+                  </>
+                }
+              />
+            </List.Item>
+          )}
+        />
       )}
-
       <Modal
         title="Write Your Answer"
         open={modalVisible}

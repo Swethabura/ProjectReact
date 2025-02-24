@@ -1,4 +1,4 @@
-import { Avatar, Card, Button, Image, Input, message } from "antd";
+import { Avatar, Card, Button, Image, Input, message, Spin } from "antd";
 import {
   LikeOutlined,
   CommentOutlined,
@@ -8,14 +8,36 @@ import {
   HeartOutlined,
 } from "@ant-design/icons";
 import "../../Styles/Feed.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchPosts,addPost } from "../redux/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import FloatingButton from "./FloatingBtn";
 
-function Feed({ posts, updatePosts }) {
+function Feed() {
   const loggedInUser =
   localStorage.getItem("LoggedInUser") || "Guest";
   const [commentInput, setCommentInput] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({});
   const [messageApi, contextHolder] = message.useMessage()
+  const dispatch = useDispatch();
+  const {posts:fetchedPosts, loading, error} = useSelector((state)=> state.posts);
+  const [posts, setPosts] = useState([]);  // Store posts locally
+  
+  useEffect(() => {
+    dispatch(fetchPosts()); // Fetch posts from API
+  }, [dispatch]);
+
+  useEffect(() => {
+    setPosts(fetchedPosts); // Update local state when Redux state changes
+  }, [fetchedPosts]);
+
+  if (loading) return <Spin size="large" />;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+
+  // Function to add new post
+  const addNewPost = (newPost) => {
+    setPosts([newPost, ...posts]); // Add new post to the top of the feed
+  };
 
   // Handle Like Toggle
   const handleLike = (postId) => {
@@ -32,14 +54,14 @@ function Feed({ posts, updatePosts }) {
       }
       return post;
     });
-    updatePosts(updatedPosts);
+    setPosts(updatedPosts);
     localStorage.setItem("posts", JSON.stringify(updatedPosts));
   };
 
   // toggle to make visible and hide the comment section
-  const toggleComments = (postId)=>{
+  const toggleComments = (postUser)=>{
     setExpandedPosts((prev)=>({ ...prev,
-      [postId] : !prev[postId]
+      [postUser] : !prev[postUser]
     }));
   };
 
@@ -50,7 +72,7 @@ function Feed({ posts, updatePosts }) {
     }));
   };
   
-  const error = () =>{
+  const showError = () =>{
     messageApi.open({
       type: 'error',
       content: 'Comment cannot be empty!',
@@ -61,7 +83,7 @@ function Feed({ posts, updatePosts }) {
   const handleAddComment = (postId)=>{
      const commentText = commentInput[postId]?.trim();
      if(!commentText){
-      error();
+      showError();
       return;
      }
      
@@ -73,14 +95,15 @@ function Feed({ posts, updatePosts }) {
       }
       return post;
     });
-    updatePosts(updatedPosts);
+    setPosts(updatedPosts);
     localStorage.setItem("posts", JSON.stringify(updatedPosts));
-    setCommentInput((prev)=> ({...prev, [postId]: ""})); // Clear input after adding
+    setCommentInput((prev) => ({ ...prev, [postId]: "" })); // Clear input
   };
 
   return (
     <div className="feed-container">
       {contextHolder}
+      <FloatingButton addNewPost={(post) => dispatch(addPost(post))} />; 
       {posts.map((post) => (
         <Card key={post.id} className="feed-card">
           <div className="post-header">
@@ -104,17 +127,17 @@ function Feed({ posts, updatePosts }) {
             >
               {post.likes} Likes
             </Button>
-            <Button onClick={()=>toggleComments(post.id)} icon={<CommentOutlined />}>{post.comments.length}</Button>
+            <Button onClick={()=>toggleComments(post.user)} icon={<CommentOutlined />}>{post.comments.length}</Button>
             <Button icon={<SaveOutlined />}>Save</Button>
             <Button icon={<ShareAltOutlined />}>Share</Button>
           </div>
           {/* Comments Section */}
-          {expandedPosts[post.id] && 
+          {expandedPosts[post.user] && 
             <div className="comments-section">
               <Input 
                 placeholder="Write a comment..."
-                value={commentInput[post.id] || ""}
-                onChange={(e)=> handleCommentChange(post.id,e.target.value)}
+                value={commentInput[post.user] || ""}
+                onChange={(e)=> handleCommentChange(post.user,e.target.value)}
                 style={{ marginTop: "10px" }}
               />
               <Button type="primary" onClick={()=>handleAddComment(post.id)} style={{ marginTop: "5px" }}>Add Comment</Button>
