@@ -1,6 +1,5 @@
 import { Avatar, Card, Button, Image, Input, message, Spin } from "antd";
 import {
-  LikeOutlined,
   CommentOutlined,
   ShareAltOutlined,
   SaveOutlined,
@@ -9,7 +8,12 @@ import {
 } from "@ant-design/icons";
 import "../../Styles/Feed.css";
 import { useEffect, useState } from "react";
-import { fetchPosts, addPost, updateLike } from "../redux/userSlice";
+import {
+  fetchPosts,
+  addPost,
+  updateLike,
+  addPostComment,
+} from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
 
@@ -45,27 +49,42 @@ function Feed() {
 
   // Handle Like Toggle
   const handleLike = (postId) => {
+    // Find the post before updating the state
+    const post = posts.find((p) => p._id === postId);
+    if (!post) return; // Safety check
+
+    const isLiked = post.likedBy.includes(loggedInUser); // Check if the user has already liked the post
+
+    // Dispatch the like/unlike action
     dispatch(updateLike({ postId, userId: loggedInUser }));
+
+    // Update local state for immediate UI response
     setPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post._id === postId
+      prevPosts.map((p) =>
+        p._id === postId
           ? {
-              ...post,
-              likes: post.likedBy.includes(loggedInUser)
-                ? post.likes - 1
-                : post.likes + 1,
-              likedBy: post.likedBy.includes(loggedInUser)
-                ? post.likedBy.filter((user) => user !== loggedInUser)
-                : [...post.likedBy, loggedInUser],
+              ...p,
+              likes: isLiked ? p.likes - 1 : p.likes + 1,
+              likedBy: isLiked
+                ? p.likedBy.filter((user) => user !== loggedInUser)
+                : [...p.likedBy, loggedInUser],
             }
-          : post
+          : p
       )
+    );
+
+    // Show success message
+    messageApi.success(
+      isLiked ? "Post unliked successfully!" : "Liked successfully!"
     );
   };
 
   // toggle to make visible and hide the comment section
-  const toggleComments = (postUser) => {
-    setExpandedPosts((prev) => ({ ...prev, [postUser]: !prev[postUser] }));
+  const toggleComments = (postId) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
   };
 
   // comment input handler
@@ -76,36 +95,22 @@ function Feed() {
     }));
   };
 
-  const showError = () => {
-    messageApi.open({
-      type: "error",
-      content: "Comment cannot be empty!",
-    });
-  };
-
   // to add newcomment
   const handleAddComment = (postId) => {
     const commentText = commentInput[postId]?.trim();
     if (!commentText) {
-      showError();
+      messageApi.error("Comment cannot be empty!");
       return;
     }
 
-    const updatedPosts = posts.map((post) => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments: [
-            ...post.comments,
-            { user: loggedInUser, text: commentText },
-          ],
-        };
-      }
-      return post;
-    });
-    setPosts(updatedPosts);
-    localStorage.setItem("posts", JSON.stringify(updatedPosts));
-    setCommentInput((prev) => ({ ...prev, [postId]: "" })); // Clear input
+    const newComment = { user: loggedInUser, text: commentText };
+
+    // Dispatch action to update Redux and backend
+    dispatch(addPostComment({ postId, comment: newComment }));
+    messageApi.success("Comment added succesfully!");
+
+    // Clear input field after submitting
+    setCommentInput((prev) => ({ ...prev, [postId]: "" }));
   };
 
   return (
@@ -136,7 +141,7 @@ function Feed() {
               {post.likes} Likes
             </Button>
             <Button
-              onClick={() => toggleComments(post.user)}
+              onClick={() => toggleComments(post._id)}
               icon={<CommentOutlined />}
             >
               {post.comments?.length} comments
@@ -145,17 +150,17 @@ function Feed() {
             <Button icon={<ShareAltOutlined />}>Share</Button>
           </div>
           {/* Comments Section */}
-          {expandedPosts[post.user] && (
+          {expandedPosts[post._id] && (
             <div className="comments-section">
               <Input
                 placeholder="Write a comment..."
-                value={commentInput[post.user] || ""}
-                onChange={(e) => handleCommentChange(post.user, e.target.value)}
+                value={commentInput[post._id] || ""}
+                onChange={(e) => handleCommentChange(post._id, e.target.value)}
                 style={{ marginTop: "10px" }}
               />
               <Button
                 type="primary"
-                onClick={() => handleAddComment(post.id)}
+                onClick={() => handleAddComment(post._id)}
                 style={{ marginTop: "5px" }}
               >
                 Add Comment
@@ -163,8 +168,7 @@ function Feed() {
               <div className="comments-list">
                 {post.comments.map((comment, index) => (
                   <div key={index} className="comment">
-                    <strong>{comment.user}</strong>
-                    {comment.text}
+                    <strong>{comment.user}</strong> {comment.text}
                   </div>
                 ))}
               </div>

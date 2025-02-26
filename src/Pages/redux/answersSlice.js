@@ -39,11 +39,29 @@ export const addAnswerComment = createAsyncThunk(
       );
       return { answerId, comment: response.data };
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Error adding comment");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error adding comment"
+      );
     }
   }
 );
 
+// To add or delete the vote
+export const updateVote = createAsyncThunk(
+  "answers/updateVote",
+  async ({ answerId, userId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/public/vote/${answerId}`,
+        { userId },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Vote update failed!");
+    }
+  }
+);
 
 const answersSlice = createSlice({
   name: "answers",
@@ -90,20 +108,46 @@ const answersSlice = createSlice({
       .addCase(addAnswerComment.fulfilled, (state, action) => {
         state.loading = false;
         const { answerId, comment } = action.payload;
-    
+
+        // Find the questionId associated with the answerId
         for (let questionId in state.answers) {
-          const answer = state.answers[questionId].find((a) => a._id === answerId);
+          const answer = state.answers[questionId].find(
+            (a) => a._id === answerId
+          );
           if (answer) {
-            answer.comments = [...(answer.comments || []), {
+            // Ensure comments array exists
+            if (!answer.comments) {
+              answer.comments = [];
+            }
+            // Add the new comment
+            answer.comments.push({
               text: comment.text,
               userId: comment.userId,
-            }];
+            });
+            break; // Exit loop once the answer is found
           }
         }
-      })    
-      .addCase(addAnswerComment.rejected, (state, action) => {
+      })
+      .addCase(updateVote.fulfilled, (state, action) => {
+      
+        const updatedAnswer = action.payload; // The entire updated answer object
+        const { questionId } = updatedAnswer; // Ensure the answer object contains questionId
+      
+        if (state.answers[questionId]) {
+          const answerIndex = state.answers[questionId].findIndex(
+            (a) => a._id === updatedAnswer._id
+          );
+      
+          if (answerIndex !== -1) {
+            // Update the specific answer in the state
+            state.answers[questionId][answerIndex] = updatedAnswer;
+          }
+        }
+      })
+      .addCase(updateVote.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.error.message;
+        console.error("Vote update failed:", action.error); // Log the error
       });
   },
 });

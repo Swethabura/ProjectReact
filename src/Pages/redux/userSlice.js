@@ -31,6 +31,19 @@ export const updateLike = createAsyncThunk("posts/updateLike", async ({ postId, 
   return response.data;
 });
 
+// Add Comment to a Post
+export const addPostComment = createAsyncThunk(
+  "posts/addPostComment",
+  async ({ postId, comment }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/public/post/${postId}/comments`, comment);
+      return { postId, comment: response.data };
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const postsSlice = createSlice({
   name: "posts",
   initialState: {
@@ -73,6 +86,14 @@ const postsSlice = createSlice({
           likes: action.payload.likes, // Update like count
           likedBy: action.payload.likedBy, // Update likedBy array
         };
+      }
+    })
+    // Add Comment
+    .addCase(addPostComment.fulfilled, (state, action) => {
+      const { postId, comment } = action.payload;
+      const post = state.posts.find((p) => p._id === postId);
+      if (post) {
+        post.comments.unshift(comment); // Add new comment to top
       }
     });
   },

@@ -48,15 +48,29 @@ const MainNav = () => {
 
       {/* Center: Navigation Links */}
       <div className="nav-links">
-        <Button type="link" onClick={() => navigate("/main/feed")} className={`link ${location.pathname === "/main/feed" ? "active" : ""}`}>
-          Feed
-        </Button>
-        <Button type="link" onClick={() => navigate("/main/questions")} className={`link ${location.pathname === "/main/questions" ? "active" : ""}`}>
-          Questions
-        </Button>
-        <Button type="link" onClick={() => navigate("/main/maincommunity")} className={`link ${location.pathname === "/main/maincommunity" ? "active" : ""}`}>
-          Community
-        </Button>
+        <div className="nav-links">
+          <Button
+            type="link"
+            onClick={() => navigate("/main/feed")}
+            className="link"
+          >
+            Feed
+          </Button>
+          <Button
+            type="link"
+            onClick={() => navigate("/main/questions")}
+            className="link"
+          >
+            Questions
+          </Button>
+          <Button
+            type="link"
+            onClick={() => navigate("/main/maincommunity")}
+            className="link"
+          >
+            Community
+          </Button>
+        </div>
       </div>
 
       {/* Right: Post Button */}
@@ -67,7 +81,7 @@ const MainNav = () => {
           onChange={toggleTheme}
           checkedChildren="🌙"
           unCheckedChildren="☀️"
-          style={{marginRight:"15px"}}
+          style={{ marginRight: "15px" }}
         />
         <Button type="primary" className="post-btn">
           Post
@@ -81,14 +95,29 @@ const MainNav = () => {
         onClose={closeDrawer}
         open={visible}
         width={250}
-        style={{backgroundColor: "var(--navbar-bg)",
-          color: "var(--text-color)"}}
+        style={{
+          backgroundColor: "var(--navbar-bg)",
+          color: "var(--text-color)",
+        }}
       >
         <p>
           <FileImageOutlined /> Change Profile Picture
         </p>
-        <p>
+        <p
+          onClick={() => {
+            closeDrawer(); // Close the drawer
+            navigate("/main/edit-profile"); // Navigate to edit profile page
+          }}
+        >
           <EditOutlined /> Edit Profile
+        </p>
+        <p
+          onClick={() => {
+            closeDrawer(); // Close the drawer
+            navigate("/main/my-profile"); // Navigate to edit profile page
+          }}
+        >
+          <EditOutlined /> My Profile
         </p>
         <p>
           <TrophyOutlined /> View Achievements
