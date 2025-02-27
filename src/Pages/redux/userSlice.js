@@ -1,33 +1,35 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BASE_URL;
+
 // Fetch All Posts
 export const fetchPosts = createAsyncThunk("posts/fetchPosts", async () => {
-  const response = await axios.get("http://localhost:5000/api/public/posts"); // Your backend endpoint
+  const response = await axios.get(`${apiUrl}/public/posts`); 
   return response.data;
 });
 
 // Add New Post
 export const addPost = createAsyncThunk("posts/addPost", async (newPost) => {
-  const response = await axios.post("http://localhost:5000/api/public/posts", newPost);
+  const response = await axios.post(`${apiUrl}/public/posts`, newPost);
   return response.data; // Returns the newly created post
 });
 
 // Fetch All Questions
 export const fetchQuestions = createAsyncThunk("questions/fetchQuestions", async () => {
-  const response = await axios.get("http://localhost:5000/api/public/questions"); // Your backend endpoint
+  const response = await axios.get(`${apiUrl}/public/questions`); 
   return response.data;
 });
 
 // Add New Question
 export const addQuestion = createAsyncThunk("questions/addQuestion", async (newQuestion) => {
-  const response = await axios.post("http://localhost:5000/api/public/questions", newQuestion);
+  const response = await axios.post(`${apiUrl}/public/questions`, newQuestion);
   return response.data; // Returns the newly created post
 });
 
 // To add or delete the like
 export const updateLike = createAsyncThunk("posts/updateLike", async ({ postId, userId }) => {
-  const response = await axios.put(`http://localhost:5000/api/public/like/${postId}`, { userId });
+  const response = await axios.put(`h${apiUrl}/public/like/${postId}`, { userId });
   return response.data;
 });
 
@@ -36,7 +38,7 @@ export const addPostComment = createAsyncThunk(
   "posts/addPostComment",
   async ({ postId, comment }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/public/post/${postId}/comments`, comment);
+      const response = await axios.post(`${apiUrl}/public/post/${postId}/comments`, comment);
       return { postId, comment: response.data };
     } catch (error) {
       return rejectWithValue(error.response.data);

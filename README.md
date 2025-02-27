@@ -87,5 +87,18 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📝 Setting up the admin and public routes to handle and get the feed and questions.
 - 📝 Backend connection for newPost and newQuestion and also addNewAnswer.
 
+### ✅ **February 25, 2025** 
+- 📝 Adding comment feature for both posts and answers
+- 📌 Adding like feature for the post
+
+### ✅ **February 26, 2025** 
+- 📝 Adding user Profile details edit and saving.
+- 📌 Adding vote feature for the answer.
+
+### ✅ **February 27, 2025** 
+- 📝 Deploying the backend to render.
+- 🛠  Changing the Api paths in fronend.
+- 📌 Saving Post in user Profile.
+
 
 

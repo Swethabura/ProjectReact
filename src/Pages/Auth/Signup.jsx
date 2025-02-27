@@ -15,6 +15,8 @@ function SignupPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [error, setError] = useState({}); // Store errors for specific fields
 
+  const apiUrl = import.meta.env.VITE_BASE_URL;
+
   // Refs for input focus on error
   const usernameRef = useRef(null);
   const passwordRef = useRef(null);
@@ -65,7 +67,7 @@ function SignupPage() {
     // localStorage.setItem("users", JSON.stringify(users));
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch(`${apiUrl}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),

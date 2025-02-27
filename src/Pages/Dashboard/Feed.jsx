@@ -16,6 +16,7 @@ import {
 } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
+import { savePost } from "../redux/profileSlice";
 
 function Feed() {
   const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
@@ -112,6 +113,11 @@ function Feed() {
     // Clear input field after submitting
     setCommentInput((prev) => ({ ...prev, [postId]: "" }));
   };
+  // handle the save post
+  const handleSave = (postId) => {
+    const accountUsername = loggedInUser; // Replace with actual logged-in username
+    dispatch(savePost({ accountUsername, postId }));
+  };
 
   return (
     <div className="feed-container">
@@ -146,7 +152,9 @@ function Feed() {
             >
               {post.comments?.length} comments
             </Button>
-            <Button icon={<SaveOutlined />}>Save</Button>
+            <Button icon={<SaveOutlined />}
+              onClick={()=>handleSave(post._id)}
+            >Save</Button>
             <Button icon={<ShareAltOutlined />}>Share</Button>
           </div>
           {/* Comments Section */}

@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BASE_URL;
+
 // Async action to fetch profile data
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
   async (loggedInUser, { rejectWithValue }) => {
-    // ✅ Accept loggedInUser here
+    // Accept loggedInUser here
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/public/profile/${loggedInUser}`
+        `${apiUrl}/public/profile/${loggedInUser}`
       );
       return response.data; // Make sure backend returns profile + savedPosts + myPosts
     } catch (error) {
@@ -25,7 +27,7 @@ export const updateProfile = createAsyncThunk(
   async (profileData, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/public/profile`,
+        `${apiUrl}/public/profile`,
         profileData
       );
       return response.data;
@@ -37,10 +39,37 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+// to save the post
+export const savePost = createAsyncThunk(
+  "profile/savePost",
+  async ({ accountUsername, postId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${apiUrl}/public/profile/save-post`, { accountUsername, postId });
+      return postId; // Return postId to update Redux state
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Unsave a post
+export const unsavePost = createAsyncThunk(
+  "profile/unsavePost",
+  async ({ accountUsername, postId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${apiUrl}/public/profile/unsave-post`, { accountUsername, postId });
+      return response.data.savedPosts; // Return updated savedPosts array
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
-    profile: null, // ✅ Store everything inside profile
+    profile: null, 
     loading: false,
     error: null,
   },
@@ -74,6 +103,11 @@ const profileSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(unsavePost.fulfilled, (state, action) => {
+        if (state.profile) {
+          state.profile.savedPosts = action.payload; // Update savedPosts in Redux state
+        }
       });
   },
 });

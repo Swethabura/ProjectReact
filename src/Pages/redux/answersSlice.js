@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BASE_URL;
+
 // Add New Answer
 export const addAnswer = createAsyncThunk(
   "answers/addAnswer",
   async (newAnswer) => {
     const response = await axios.post(
-      "http://localhost:5000/api/public/answers",
+      `${apiUrl}/public/answers`,
       newAnswer
     );
     return response.data; // Returns the newly created answer
@@ -19,7 +21,7 @@ export const fetchAnswers = createAsyncThunk(
   async (questionId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/public/${questionId}`
+        `${apiUrl}/public/${questionId}`
       );
       return { questionId, answers: response.data }; // Return questionId to update specific question
     } catch (error) {
@@ -34,7 +36,7 @@ export const addAnswerComment = createAsyncThunk(
   async ({ answerId, userId, text }, thunkAPI) => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/public/answers/${answerId}/comments`,
+        `${apiUrl}/public/answers/${answerId}/comments`,
         { userId, text }
       );
       return { answerId, comment: response.data };
@@ -52,7 +54,7 @@ export const updateVote = createAsyncThunk(
   async ({ answerId, userId }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/public/vote/${answerId}`,
+        `${apiUrl}/public/vote/${answerId}`,
         { userId },
         { headers: { "Content-Type": "application/json" } }
       );

@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import "../../Styles/Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { message } from "antd";
-import logo from "../../assets/devconnect1.png";
+
 
 function LoginPage() {
   const [username, setUsername] = useState("");
@@ -11,6 +11,9 @@ function LoginPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const usernameRef = useRef(null);
+
+  const apiUrl = import.meta.env.VITE_BASE_URL;
+  // console.log(apiUrl);
 
   const errorMsg = (ref, field1, field2) => {
     messageApi.open({
@@ -47,7 +50,7 @@ function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${apiUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

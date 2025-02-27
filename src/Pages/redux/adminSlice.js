@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const apiUrl = import.meta.env.VITE_BASE_URL;
+
 // Fetch admin posts
 export const fetchAdminPosts = createAsyncThunk(
   "admin/fetchPosts",
@@ -8,7 +10,7 @@ export const fetchAdminPosts = createAsyncThunk(
     try {
       const token = localStorage.getItem("token"); // Fetch token from localStorage
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.get("http://localhost:5000/api/admin/posts", config);
+      const response = await axios.get(`${apiUrl}/admin/posts`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -22,7 +24,7 @@ export const fetchAdminQuestions = createAsyncThunk(
     try {
       const token = localStorage.getItem("token"); // Fetch token from localStorage
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.get("http://localhost:5000/api/admin/questions", config);
+      const response = await axios.get(`${apiUrl}/admin/questions`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
