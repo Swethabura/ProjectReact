@@ -12,6 +12,7 @@ export const fetchProfile = createAsyncThunk(
       const response = await axios.get(
         `${apiUrl}/public/profile/${loggedInUser}`
       );
+      // console.log(response.data?.profile)
       return response.data; // Make sure backend returns profile + savedPosts + myPosts
     } catch (error) {
       return rejectWithValue(
@@ -26,18 +27,30 @@ export const updateProfile = createAsyncThunk(
   "profile/updateProfile",
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await axios.put(
-        `${apiUrl}/public/profile`,
-        profileData
-      );
+      let updatedProfile = { ...profileData };
+
+      // If profilePic is a File object, upload it first
+      if (profileData.profilePic instanceof File) {
+        const formData = new FormData();
+        formData.append("profilePic", profileData.profilePic);
+
+        const uploadResponse = await axios.post(`${apiUrl}/public/profile-pic/upload-url`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        updatedProfile.profilePic = uploadResponse.data.filePath; // Store only the URL
+      }
+
+      // Send updated profile data (with profilePic URL) to backend
+      const response = await axios.put(`${apiUrl}/public/profile`, updatedProfile);
+
       return response.data;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || { message: "Update failed" }
-      );
+      return rejectWithValue(error.response?.data || { message: "Update failed" });
     }
   }
 );
+
 
 // to save the post
 export const savePost = createAsyncThunk(
@@ -57,14 +70,34 @@ export const unsavePost = createAsyncThunk(
   "profile/unsavePost",
   async ({ accountUsername, postId }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${apiUrl}/public/profile/unsave-post`, { accountUsername, postId });
-      return response.data.savedPosts; // Return updated savedPosts array
+      console.log("Sending payload:", { accountUsername, postId });
+
+      const response = await axios.post(
+        `${apiUrl}/public/profile/unsave-post`,
+        { accountUsername, postId },
+        { headers: { "Content-Type": "application/json" } } // Ensure JSON is sent
+      );
+      console.log(response.data)
+      return response.data.savedPosts;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      console.error("Axios error:", error.response?.data?.message || error.message);
+      return rejectWithValue(error.response?.data?.message || "Unknown error");
     }
   }
 );
 
+// Save an answer
+export const saveAnswer = createAsyncThunk(
+  "profile/saveAnswer",
+  async ({ accountUsername, answerId }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${apiUrl}/public/profile/save-answer`, { accountUsername, answerId });
+      return answerId; // Return answerId to update Redux state
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const profileSlice = createSlice({
   name: "profile",
@@ -108,7 +141,13 @@ const profileSlice = createSlice({
         if (state.profile) {
           state.profile.savedPosts = action.payload; // Update savedPosts in Redux state
         }
-      });
+      })
+      // to save the answer
+      .addCase(saveAnswer.fulfilled, (state, action) => {
+        if (!state.savedPosts.includes(action.payload)) {
+          state.savedPosts.push(action.payload);    
+        }
+      });    
   },
 });
 

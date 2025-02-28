@@ -1,31 +1,71 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Form, Input, DatePicker, Button, Upload, message, Select, Card } from "antd";
+import {
+  Form,
+  Input,
+  DatePicker,
+  Button,
+  Upload,
+  message,
+  Select,
+  Card,
+} from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import axios from "axios"; // Ensure axios is imported
 import { updateProfile } from "../../redux/profileSlice"; // Ensure this action exists
 import "./EditProfile.css"; // Import CSS for styling
 
 const { Option } = Select;
+
+const apiUrl = import.meta.env.VITE_BASE_URL;
 
 const EditProfile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
+  // Handle file upload
+  const handleUpload = async (info) => {
+    if (info.file.status === "uploading") return; // Don't do anything while uploading
+
+    if (info.file.status === "done") {
+      const response = info.file.response;
+      if (response && response.filePath) {
+        form.setFieldsValue({ profilePic: response.filePath });
+        message.success("Profile picture uploaded successfully!");
+      } else {
+        message.error("Upload failed. Please try again.");
+      }
+    } else if (info.file.status === "error") {
+      message.error("Failed to upload profile picture.");
+    }
+  };
+
   const onFinish = async (values) => {
     try {
-      const loggedInUser = localStorage.getItem("LoggedInUser"); // Assuming user info is stored in localStorage
+      const loggedInUser =localStorage.getItem("LoggedInUser");
       if (!loggedInUser) {
         message.error("User not logged in. Please log in again.");
         return;
       }
-  
+
+      // Convert DatePicker value to "YYYY-MM-DD" format
+      const formattedDob = values.dob ? values.dob.format("YYYY-MM-DD") : null;
+
+      // Extract only the URL from the uploaded profilePic
+      const profilePicUrl =
+        values.profilePic && typeof values.profilePic === "string"
+          ? values.profilePic
+          : values.profilePic?.file?.response?.filePath || null;
+
       const profileData = {
-        accountUsername: loggedInUser, // Ensure username is sent
+        accountUsername: loggedInUser,
         ...values,
+        dob: formattedDob, // Ensure correct date format
+        profilePic: profilePicUrl, // Send only the file URL, not the whole file object
       };
-  
+
       await dispatch(updateProfile(profileData)).unwrap();
       message.success("Profile saved successfully!");
       navigate("/main/my-profile");
@@ -34,7 +74,6 @@ const EditProfile = () => {
       console.error("Error saving profile:", error);
     }
   };
-  
 
   return (
     <div className="edit-profile-container">
@@ -66,11 +105,20 @@ const EditProfile = () => {
           <Form.Item name="profilePic" label="Profile Picture">
             <Upload
               name="profilePic"
-              action="http://localhost:5000/api/public/profile-pic/upload-url"
+              action={`${apiUrl}/public/profile-pic/upload-url`}
               showUploadList={false}
+              beforeUpload={(file) => {
+                const isImage = file.type.startsWith("image/");
+                if (!isImage) {
+                  message.error("You can only upload image files!");
+                  return Upload.LIST_IGNORE;
+                }
+                return true;
+              }}
               onChange={(info) => {
                 if (info.file.status === "done") {
-                  form.setFieldsValue({ profilePic: info.file.response.filePath });
+                  const fileUrl = info.file.response.filePath; // Get the correct URL
+                  form.setFieldsValue({ profilePic: fileUrl }); // Store URL instead of binary
                   message.success("Profile picture uploaded successfully!");
                 } else if (info.file.status === "error") {
                   message.error("Failed to upload profile picture.");

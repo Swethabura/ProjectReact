@@ -17,9 +17,9 @@ const Profile = () => {
   const loggedInUser = localStorage.getItem("LoggedInUser");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(fetchProfile(loggedInUser));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchProfile(loggedInUser));
+  // }, [dispatch]);
 
   useEffect(() => {
     if (loggedInUser) {
@@ -29,9 +29,10 @@ const Profile = () => {
 
   const handleUnsave = (postId) => {
     const accountUsername = loggedInUser;
+    // console.log(accountUsername, postId)
     dispatch(unsavePost({ accountUsername, postId }));
   };
-
+  // console.log(profile?.savedPosts)
   if (loading)
     return (
       <div className="loading-container">
@@ -108,13 +109,13 @@ const Profile = () => {
         <Title level={4}>Saved Posts</Title>
         {profile?.savedPosts && profile?.savedPosts.length > 0 ? (
           <List
-            dataSource={profile.savedPosts}
+            dataSource={profile?.savedPosts}
             renderItem={(post) => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={<Avatar src={post.avatar} />}
-                  title={`Saved from @${post.user}`}
-                  description={post.content.substring(0, 100) + "..."} // Show a preview
+                  avatar={<Avatar src={post?.avatar} />}
+                  title={`Saved from @${post?.user}`}
+                  description={post?.content?.substring(0, 100) + "..."} // Show a preview
                 />
                 <Button
                   type="link"

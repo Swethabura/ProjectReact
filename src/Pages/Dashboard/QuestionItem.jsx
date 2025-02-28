@@ -14,6 +14,7 @@ import {
   updateVote,
 } from "../redux/answersSlice";
 import { useDispatch, useSelector } from "react-redux";
+import {saveAnswer} from "../redux/profileSlice"
 
 const { TextArea } = Input;
 
@@ -90,9 +91,23 @@ function QuestionItem({ question }) {
   // to update the vote
   const handleVote = async (answerId) => {
     try {
-      const result = await dispatch(updateVote({ answerId, userId: loggedInUser })).unwrap();
+      const result = await dispatch(
+        updateVote({ answerId, userId: loggedInUser })
+      ).unwrap();
     } catch (error) {
       console.error("Failed to update vote:", error);
+    }
+  };
+
+  // to save an answer
+  const handleSaveAnswer = async (answerId) => {
+    try {
+      await dispatch(
+        saveAnswer({ accountUsername: loggedInUser, answerId })
+      ).unwrap();
+      messageApi.success("Answer saved successfully!");
+    } catch (error) {
+      messageApi.error("Failed to save answer!");
     }
   };
 
@@ -164,7 +179,12 @@ function QuestionItem({ question }) {
                       : "View Comments"}
                   </Button>,
                   <Button icon={<ShareAltOutlined />}>Share</Button>,
-                  <Button icon={<StarOutlined />}>Save</Button>,
+                  <Button
+                    icon={<StarOutlined />}
+                    onClick={() => handleSaveAnswer(answer._id)}
+                  >
+                    Save
+                  </Button>,
                 ]}
               >
                 <div
