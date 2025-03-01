@@ -51,54 +51,6 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
-
-// to save the post
-export const savePost = createAsyncThunk(
-  "profile/savePost",
-  async ({ accountUsername, postId }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${apiUrl}/public/profile/save-post`, { accountUsername, postId });
-      return postId; // Return postId to update Redux state
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-// Unsave a post
-export const unsavePost = createAsyncThunk(
-  "profile/unsavePost",
-  async ({ accountUsername, postId }, { rejectWithValue }) => {
-    try {
-      console.log("Sending payload:", { accountUsername, postId });
-
-      const response = await axios.post(
-        `${apiUrl}/public/profile/unsave-post`,
-        { accountUsername, postId },
-        { headers: { "Content-Type": "application/json" } } // Ensure JSON is sent
-      );
-      console.log(response.data)
-      return response.data.savedPosts;
-    } catch (error) {
-      console.error("Axios error:", error.response?.data?.message || error.message);
-      return rejectWithValue(error.response?.data?.message || "Unknown error");
-    }
-  }
-);
-
-// Save an answer
-export const saveAnswer = createAsyncThunk(
-  "profile/saveAnswer",
-  async ({ accountUsername, answerId }, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(`${apiUrl}/public/profile/save-answer`, { accountUsername, answerId });
-      return answerId; // Return answerId to update Redux state
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
@@ -136,18 +88,7 @@ const profileSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      .addCase(unsavePost.fulfilled, (state, action) => {
-        if (state.profile) {
-          state.profile.savedPosts = action.payload; // Update savedPosts in Redux state
-        }
-      })
-      // to save the answer
-      .addCase(saveAnswer.fulfilled, (state, action) => {
-        if (!state.savedPosts.includes(action.payload)) {
-          state.savedPosts.push(action.payload);    
-        }
-      });    
+      })    
   },
 });
 

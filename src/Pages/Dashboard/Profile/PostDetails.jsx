@@ -1,35 +1,97 @@
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPosts } from "../../redux/userSlice"; // Import your posts action
-import { Avatar, Card, Spin, Typography } from "antd";
+import { fetchUserCollection, unsavePost, unsaveAnswer } from "../../redux/userCollectionSlice";
+import { Avatar, Card, Spin, Typography, Button, message } from "antd";
 
-const { Title, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 const PostDetails = () => {
-  const { postId } = useParams(); // Get post ID from URL
+  const { postId } = useParams(); // Could be post or answer ID
   const dispatch = useDispatch();
-  const { posts, loading } = useSelector((state) => state.posts); // Get posts from Redux
+  const navigate = useNavigate();
+  const { savedPosts, savedAnswers, loading } = useSelector((state) => state.userCollection);
+  const loggedInUser = localStorage.getItem("LoggedInUser");
+  const [messageApi,contextHolder] = message.useMessage();
+
+  const [postDetails, setPostDetails] = useState(null);
+  const [isAnswer, setIsAnswer] = useState(false);
 
   useEffect(() => {
-    if (posts.length === 0) {
-      dispatch(fetchPosts()); // Fetch posts only if they are not already in Redux state
+    if (loggedInUser) {
+      dispatch(fetchUserCollection(loggedInUser));
     }
-  }, [dispatch, posts]);
+  }, [dispatch, loggedInUser]);
 
-  const post = posts.find((p) => p._id === postId); // Find the post by ID
+  useEffect(() => {
+    const foundPost = savedPosts.find((p) => p._id === postId);
+    const foundAnswer = savedAnswers.find((a) => a._id === postId);
+
+    if (foundPost) {
+      setPostDetails(foundPost);
+      setIsAnswer(false);
+    } else if (foundAnswer) {
+      setPostDetails(foundAnswer);
+      setIsAnswer(true);
+    }
+  }, [savedPosts, savedAnswers, postId]);
+
+  // Unsave function for posts & answers
+  const handleUnsave = () => {
+    if (!postDetails) return;
+  
+    if (isAnswer) {
+      dispatch(unsaveAnswer({ accountUsername: loggedInUser, answerId: postId }))
+        .unwrap()
+        .then(() => {
+          messageApi.success("Answer removed from saved answers.");
+          setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
+        })
+        .catch((error) => {
+          messageApi.error(error || "Failed to remove answer.");
+        });
+    } else {
+      dispatch(unsavePost({ accountUsername: loggedInUser, postId }))
+        .unwrap()
+        .then(() => {
+          messageApi.success("Post removed from saved posts.");
+          setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
+        })
+        .catch((error) => {
+          messageApi.error(error || "Failed to remove post.");
+        });
+    }
+  };  
+
+  const handleBack = () => {
+    navigate("/main/my-profile");
+  };
 
   if (loading) return <Spin size="large" />;
-  if (!post) return <Paragraph>Post not found.</Paragraph>;
+  if (!postDetails) return <Paragraph>Loading post or answer...</Paragraph>;
 
   return (
-    <Card title={`Post from @${post.user || "Unknown"}`} style={{ maxWidth: 600, margin: "auto", marginTop: 20 }}>
-      <Avatar src={post.avatar || "/default-avatar.png"} size={50} />
+    <Card
+      title={isAnswer ? "Saved Answer" : "Saved Post"}
+      style={{ maxWidth: 600, margin: "auto", marginTop: 20 }}
+    >
+      {contextHolder}
+      <Avatar src={postDetails.avatar || "/default-avatar.png"} size={50} />
       <Paragraph>
-        <strong>@{post.user || "Unknown"}</strong>
+        <strong>@{postDetails.user || "Unknown"}</strong>
       </Paragraph>
-      <Paragraph>{post.content}</Paragraph>
-      {post.image && <img src={post.image} alt="Post" style={{ maxWidth: "100%", marginTop: 10 }} />}
+      <Paragraph>{postDetails.content}</Paragraph>
+
+      {postDetails.image && <img src={postDetails.image} alt="Post" style={{ maxWidth: "100%", marginTop: 10 }} />}
+
+      <div style={{ marginTop: 20 }}>
+        <Button type="primary" danger onClick={handleUnsave}>
+          {isAnswer ? "Unsave Answer" : "Unsave Post"}
+        </Button>
+        <Button type="primary" onClick={handleBack} style={{ marginLeft: 10 }}>
+          Back
+        </Button>
+      </div>
     </Card>
   );
 };

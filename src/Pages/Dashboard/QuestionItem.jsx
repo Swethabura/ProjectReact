@@ -14,7 +14,7 @@ import {
   updateVote,
 } from "../redux/answersSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {saveAnswer} from "../redux/profileSlice"
+import { saveAnswer } from "../redux/userCollectionSlice";
 
 const { TextArea } = Input;
 
@@ -100,15 +100,18 @@ function QuestionItem({ question }) {
   };
 
   // to save an answer
-  const handleSaveAnswer = async (answerId) => {
-    try {
-      await dispatch(
-        saveAnswer({ accountUsername: loggedInUser, answerId })
-      ).unwrap();
-      messageApi.success("Answer saved successfully!");
-    } catch (error) {
-      messageApi.error("Failed to save answer!");
-    }
+  const handleSaveAnswer = (answerId) => {
+    const accountUsername = loggedInUser;
+    dispatch(saveAnswer({ answerId, accountUsername }))
+      .unwrap()
+      .then((data) => {
+        // console.log("Success response:", data);
+        messageApi.success("Answer saved successfully!");
+      })
+      .catch((error) => {
+        console.error("Save answer error:", error);
+        messageApi.error(error || "Failed to save answer");
+      });
   };
 
   return (

@@ -1,10 +1,24 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, Card, List, Spin, Typography, Button, Modal } from "antd";
-import { fetchProfile, unsavePost } from "../../redux/profileSlice";
+import {
+  Avatar,
+  Card,
+  List,
+  Spin,
+  Typography,
+  Button,
+  Modal,
+  message,
+} from "antd";
+import { fetchProfile } from "../../redux/profileSlice";
 import "./EditProfile.css"; // Use shared CSS for styling
 import { UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import {
+  fetchUserCollection,
+  unsaveAnswer,
+  unsavePost,
+} from "../../redux/userCollectionSlice";
 
 const { Title, Paragraph } = Typography;
 
@@ -12,8 +26,18 @@ const apiUrl = import.meta.env.VITE_BASE_URL;
 
 const Profile = () => {
   const dispatch = useDispatch();
+  const [messageApi, contextHolder] = message.useMessage();
   const { loading, error } = useSelector((state) => state.profile);
   const profile = useSelector((state) => state.profile.profile);
+  const collection = useSelector((state) => state.userCollection);
+  const {
+    collectionLoading,
+    collectionError,
+    savedPosts,
+    savedAnswers,
+    myPosts,
+    myAnswers,
+  } = collection;
   const loggedInUser = localStorage.getItem("LoggedInUser");
   const navigate = useNavigate();
 
@@ -23,16 +47,40 @@ const Profile = () => {
 
   useEffect(() => {
     if (loggedInUser) {
-      dispatch(fetchProfile(loggedInUser)); // Only fetch if user exists
+      dispatch(fetchProfile(loggedInUser)); // Fetch basic profile
+      dispatch(fetchUserCollection(loggedInUser)); // Fetch saved posts & my posts
     }
   }, [dispatch, loggedInUser]);
 
+  const accountUsername = loggedInUser;
+
+  // to handle unsave the post
   const handleUnsave = (postId) => {
-    const accountUsername = loggedInUser;
     // console.log(accountUsername, postId)
-    dispatch(unsavePost({ accountUsername, postId }));
+    dispatch(unsavePost({ accountUsername, postId }))
+      .unwrap()
+      .then(() => {
+        messageApi.success("Post removed from saved posts.");
+        setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
+      })
+      .catch((error) => {
+        messageApi.error(error || "Failed to remove post.");
+      });
   };
-  // console.log(profile?.savedPosts)
+
+  // to handle unsave the answer
+  const handleUnsaveAnswer = (answerId) => {
+    dispatch(unsaveAnswer({ accountUsername, answerId }))
+      .unwrap()
+      .then(() => {
+        messageApi.success("Answer removed from saved answers.");
+        setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
+      })
+      .catch((error) => {
+        messageApi.error(error || "Failed to remove answer.");
+      });
+  };
+
   if (loading)
     return (
       <div className="loading-container">
@@ -62,11 +110,16 @@ const Profile = () => {
       </div>
     );
   }
-  // console.log(`${apiUrl}/public${profile.profilePic.replace(/\\/g, "/")}`);
-  // console.log(profile.profilePic)
+
+  // handle navigate button
+  const navigateBack = ()=>{
+    navigate("/main/feed");
+  }
+  
   return (
     <div className="profile-container">
       <Card title="My Profile" className="profile-card">
+        {contextHolder}
         <div className="profile-header">
           <Avatar
             size={100}
@@ -105,11 +158,11 @@ const Profile = () => {
               : "Not set"}
           </Paragraph>
         </div>
-
+        {/* display savedpost */}
         <Title level={4}>Saved Posts</Title>
-        {profile?.savedPosts && profile?.savedPosts.length > 0 ? (
+        {savedPosts && savedPosts.length > 0 ? (
           <List
-            dataSource={profile?.savedPosts}
+            dataSource={savedPosts}
             renderItem={(post) => (
               <List.Item>
                 <List.Item.Meta
@@ -136,15 +189,48 @@ const Profile = () => {
         ) : (
           <Paragraph>No saved posts yet.</Paragraph>
         )}
-        <Title level={4}>My Posts</Title>
-        {profile?.myPosts && profile?.myPosts.length > 0 ? (
+        {/* display saved answer */}
+        <Title level={4}>Saved Answers</Title>
+        {savedAnswers && savedAnswers.length > 0 ? (
           <List
-            dataSource={profile?.myPosts}
+            dataSource={savedAnswers}
+            renderItem={(answer) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={answer?.avatar} />}
+                  title={`Saved from @${answer?.user}`}
+                  description={answer?.content?.substring(0, 100) + "..."} // Show a preview
+                />
+                <Button
+                  type="link"
+                  onClick={() => navigate(`/main/post/${answer._id}`)}
+                >
+                  View Answer
+                </Button>
+                <Button
+                  type="link"
+                  danger
+                  onClick={() => handleUnsaveAnswer(answer._id)}
+                >
+                  Unsave
+                </Button>
+              </List.Item>
+            )}
+          />
+        ) : (
+          <Paragraph>No saved answers yet.</Paragraph>
+        )}
+        {/* display my-posts */}
+        <Title level={4}>My Posts</Title>
+        {myPosts && myPosts.length > 0 ? (
+          <List
+            dataSource={myPosts}
             renderItem={(post) => <List.Item>{post}</List.Item>}
           />
         ) : (
           <Paragraph>You haven’t created any posts yet.</Paragraph>
         )}
+        <Button type="primary" onClick={navigateBack}>Back</Button>
       </Card>
     </div>
   );

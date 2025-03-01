@@ -16,7 +16,7 @@ import {
 } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
-import { savePost } from "../redux/profileSlice";
+import { savePost } from "../redux/userCollectionSlice";
 
 function Feed() {
   const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
@@ -114,9 +114,25 @@ function Feed() {
     setCommentInput((prev) => ({ ...prev, [postId]: "" }));
   };
   // handle the save post
+  // const handleSave = (postId) => {
+  //   const accountUsername = loggedInUser; // Replace with actual logged-in username
+  //   dispatch(savePost({ accountUsername, postId }));
+  // };
+
+  // handle the save post
   const handleSave = (postId) => {
-    const accountUsername = loggedInUser; // Replace with actual logged-in username
-    dispatch(savePost({ accountUsername, postId }));
+    const accountUsername = loggedInUser;
+  
+    dispatch(savePost({ accountUsername, postId }))
+      .unwrap()
+      .then((data) => {
+        // console.log("Success response:", data); 
+        messageApi.success("Post saved successfully!");
+      })
+      .catch((error) => {
+        console.error("Save post error:", error); 
+        messageApi.error(error || "Failed to save post");
+      });
   };
 
   return (

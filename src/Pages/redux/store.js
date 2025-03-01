@@ -3,6 +3,7 @@ import {postsReducer,questionsReducer} from "./userSlice";
 import adminReducer from "./adminSlice"
 import { answersReducer } from "./answersSlice";
 import profileReducer from "./profileSlice";
+import userCollectionReducer from "./userCollectionSlice";
 
 const store = configureStore({
     reducer : {
@@ -10,7 +11,8 @@ const store = configureStore({
         questions: questionsReducer,
         admin: adminReducer,
         answers: answersReducer,
-        profile: profileReducer
+        profile: profileReducer,
+        userCollection: userCollectionReducer
     },
 });
 
