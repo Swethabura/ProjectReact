@@ -3,33 +3,27 @@ import axios from "axios";
 
 const apiUrl = import.meta.env.VITE_BASE_URL;
 
-// Async action to fetch profile data
+// Fetch profile data
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
   async (loggedInUser, { rejectWithValue }) => {
-    // Accept loggedInUser here
     try {
-      const response = await axios.get(
-        `${apiUrl}/public/profile/${loggedInUser}`
-      );
-      // console.log(response.data?.profile)
-      return response.data; // Make sure backend returns profile + savedPosts + myPosts
+      const response = await axios.get(`${apiUrl}/public/profile/${loggedInUser}`);
+      return response.data; 
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || { message: "Something went wrong" }
-      );
+      return rejectWithValue(error.response?.data || { message: "Something went wrong" });
     }
   }
 );
 
-// Async action to update profile data
+// Update profile data
 export const updateProfile = createAsyncThunk(
   "profile/updateProfile",
   async (profileData, { rejectWithValue }) => {
     try {
       let updatedProfile = { ...profileData };
 
-      // If profilePic is a File object, upload it first
+      // Upload profile picture if it's a File object
       if (profileData.profilePic instanceof File) {
         const formData = new FormData();
         formData.append("profilePic", profileData.profilePic);
@@ -38,12 +32,11 @@ export const updateProfile = createAsyncThunk(
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        updatedProfile.profilePic = uploadResponse.data.filePath; // Store only the URL
+        updatedProfile.profilePic = uploadResponse.data.filePath; // Store only URL
       }
 
-      // Send updated profile data (with profilePic URL) to backend
+      // Send updated profile data to backend
       const response = await axios.put(`${apiUrl}/public/profile`, updatedProfile);
-
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Update failed" });
@@ -54,7 +47,7 @@ export const updateProfile = createAsyncThunk(
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
-    profile: null, 
+    profile: null, // Only basic profile details
     loading: false,
     error: null,
   },
@@ -67,11 +60,7 @@ const profileSlice = createSlice({
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = {
-          ...action.payload.profile, // Access `profile` inside API response
-          savedPosts: action.payload.profile.savedPosts || [],
-          myPosts: action.payload.profile.myPosts || [],
-        };
+        state.profile = action.payload.profile; // Store only profile data
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.loading = false;
@@ -83,12 +72,12 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.profile = action.payload.profile; // ✅ Update entire profile
+        state.profile = action.payload.profile; // Update profile state
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })    
+      });
   },
 });
 

@@ -113,11 +113,6 @@ function Feed() {
     // Clear input field after submitting
     setCommentInput((prev) => ({ ...prev, [postId]: "" }));
   };
-  // handle the save post
-  // const handleSave = (postId) => {
-  //   const accountUsername = loggedInUser; // Replace with actual logged-in username
-  //   dispatch(savePost({ accountUsername, postId }));
-  // };
 
   // handle the save post
   const handleSave = (postId) => {
@@ -203,4 +198,4 @@ function Feed() {
     </div>
   );
 }
-export default Feed;
+export default Feed; 

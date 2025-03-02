@@ -15,6 +15,7 @@ import "../../Styles/MainNav.css"; // Import your CSS file
 const MainNav = () => {
   const [visible, setVisible] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   // Effect to apply the theme to the document
@@ -36,8 +37,11 @@ const MainNav = () => {
     setVisible(false);
   };
 
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+
   return (
     <nav className="navbar">
+      <div className="nav-left">
       {/* Left: User Avatar */}
       <Avatar
         size="large"
@@ -45,6 +49,7 @@ const MainNav = () => {
         className="user-avatar"
         onClick={showDrawer}
       />
+      </div>
 
       {/* Center: Navigation Links */}
       <div className="nav-links">
@@ -83,9 +88,11 @@ const MainNav = () => {
           unCheckedChildren="☀️"
           style={{ marginRight: "15px" }}
         />
-        <Button type="primary" className="post-btn">
+        {/* <Button type="primary" className="post-btn">
           Post
-        </Button>
+        </Button> */}
+        {/* Hamburger Menu */}
+        <MenuOutlined className="menu-icon" onClick={toggleMenu} />
       </div>
 
       {/* Sidebar (Drawer) */}
@@ -119,9 +126,9 @@ const MainNav = () => {
         >
           <EditOutlined /> My Profile
         </p>
-        <p>
+        {/* <p>
           <TrophyOutlined /> View Achievements
-        </p>
+        </p> */}
         <p>
           <LogoutOutlined /> Logout
         </p>

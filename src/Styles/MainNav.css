@@ -1,70 +1,98 @@
+/* Navbar container */
 .navbar {
   width: 100%;
   display: flex;
+  flex-direction: row; /* Ensures row layout */
   align-items: center;
   justify-content: space-between;
-  background-color: var(--navbar-bg); 
-  color: var(--text-color);
   padding: 10px 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: var(--navbar-bg);
   position: fixed;
+  top: 0;
+  left: 0;
   z-index: 1000;
 }
 
+/* Avatar styling */
 .user-avatar {
   cursor: pointer;
 }
 
+/* Navigation links */
 .nav-links {
   display: flex;
-  gap: 6rem;
+  flex-direction: row;
+  gap: 1.5rem;
 }
 
-.nav-links .link{
+.nav-links .link {
   text-decoration: none;
   color: var(--text-color);
   font-weight: 500;
-  font-size: large;
+  font-size: 1rem;
   transition: transform 0.3s ease-in-out;
 }
 
-.nav-links .link::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  width: 0%;
-  height: 2px;
-  background-color: var(--text-color);
-  transition: width 0.4s ease, left 0.4s ease;
-}
-
-.nav-links :hover {
+.nav-links .link:hover {
   transform: scale(1.1);
   color: var(--text-color);
 }
 
-.nav-links .link:hover::after {
-  width: 100%;
-  left: 0;
-}
-
-/* Keep effect on active link */
-.nav-links .link.active {
-  transform: scale(1.1);
-  color: var(--text-color);
-}
-
-.nav-links .link.active::after {
-  width: 100%;
-  left: 0;
-}
-
+/* Post button */
 .post-btn {
   background-color: #1677ff;
   border: none;
+  padding: 6px 15px;
 }
 
 .post-btn:hover {
   background-color: #0056b3;
+}
+
+/* Mobile navbar */
+.menu-icon {
+  display: none; /* Hide by default */
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide links on smaller screens */
+  }
+  .navbar {
+    flex-wrap: nowrap; /* Prevents flex from wrapping */
+    height: auto; /* Ensures it doesn't stretch */
+  }
+
+  .menu-icon {
+    display: block; /* Show hamburger menu */
+  }
+
+  .navbar {
+    padding: 10px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .user-avatar {
+    margin-right: auto; /* Push to left */
+  }
+
+  .menu-icon {
+    display: block;
+    margin-left: auto;
+  }
 }

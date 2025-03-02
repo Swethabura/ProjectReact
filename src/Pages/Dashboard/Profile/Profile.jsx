@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Avatar,
@@ -11,6 +11,7 @@ import {
   message,
 } from "antd";
 import { fetchProfile } from "../../redux/profileSlice";
+import { fetchPosts } from "../../redux/userSlice";
 import "./EditProfile.css"; // Use shared CSS for styling
 import { UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -18,6 +19,7 @@ import {
   fetchUserCollection,
   unsaveAnswer,
   unsavePost,
+  fetchAnswersByIds,
 } from "../../redux/userCollectionSlice";
 
 const { Title, Paragraph } = Typography;
@@ -36,50 +38,74 @@ const Profile = () => {
     savedPosts,
     savedAnswers,
     myPosts,
-    myAnswers,
+    myAnswers, // IDs of answers created by the user
   } = collection;
   const loggedInUser = localStorage.getItem("LoggedInUser");
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   dispatch(fetchProfile(loggedInUser));
-  // }, [dispatch]);
+  // Redux state for posts
+  const {
+    posts,
+    loading: postsLoading,
+    error: postsError,
+  } = useSelector((state) => state.posts);
+
+  // Local state for fetched answers
+  const [fetchedAnswers, setFetchedAnswers] = useState([]);
+  const [loadingAnswers, setLoadingAnswers] = useState(false);
+  const [errorAnswers, setErrorAnswers] = useState(null);
 
   useEffect(() => {
     if (loggedInUser) {
       dispatch(fetchProfile(loggedInUser)); // Fetch basic profile
       dispatch(fetchUserCollection(loggedInUser)); // Fetch saved posts & my posts
+      dispatch(fetchPosts()); // Fetch all posts
     }
   }, [dispatch, loggedInUser]);
 
-  const accountUsername = loggedInUser;
+  // Fetch answers when `myAnswers` is available
+  useEffect(() => {
+    if (myAnswers && myAnswers.length > 0) {
+      setLoadingAnswers(true);
+      setErrorAnswers(null);
 
-  // to handle unsave the post
-  const handleUnsave = (postId) => {
-    // console.log(accountUsername, postId)
-    dispatch(unsavePost({ accountUsername, postId }))
-      .unwrap()
-      .then(() => {
-        messageApi.success("Post removed from saved posts.");
-        setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
-      })
-      .catch((error) => {
-        messageApi.error(error || "Failed to remove post.");
-      });
-  };
+      dispatch(fetchAnswersByIds(myAnswers))
+        .unwrap()
+        .then((answers) => {
+          setFetchedAnswers(answers); // Store fetched answers in local state
+        })
+        .catch((err) => {
+          setErrorAnswers(err); // Handle errors
+        })
+        .finally(() => {
+          setLoadingAnswers(false); // Stop loading
+        });
+    } else {
+      setFetchedAnswers([]); // Clear answers if no IDs are available
+    }
+  }, [dispatch, myAnswers]);
 
-  // to handle unsave the answer
-  const handleUnsaveAnswer = (answerId) => {
-    dispatch(unsaveAnswer({ accountUsername, answerId }))
-      .unwrap()
-      .then(() => {
-        messageApi.success("Answer removed from saved answers.");
-        setTimeout(() => navigate("/main/my-profile"), 1500); // Small delay
-      })
-      .catch((error) => {
-        messageApi.error(error || "Failed to remove answer.");
-      });
-  };
+  // Filter myPosts
+  const myFilteredPosts = posts?.filter((post) => myPosts?.includes(post._id));
+
+  // Handle loading and error states
+  if (postsLoading || loadingAnswers) {
+    return (
+      <div className="loading-container">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  if (postsError || errorAnswers) {
+    return (
+      <div className="error-container">
+        <Paragraph type="danger">
+          Error: {postsError?.message || errorAnswers?.message}
+        </Paragraph>
+      </div>
+    );
+  }
 
   if (loading)
     return (
@@ -95,7 +121,7 @@ const Profile = () => {
       </div>
     );
 
-  if (!profile || Object.keys(profile).length === 0) {
+  if (!profile) {
     return (
       <div className="empty-profile-container">
         <img
@@ -103,19 +129,19 @@ const Profile = () => {
           alt="Empty Profile"
           className="empty-profile-img"
         />
-        <Title level={4}>Your profile is not updated yet!</Title>
+        <Title level={4}>User does not exist.</Title>
         <Paragraph>
-          Go to the Edit Profile section and update your details.
+          It looks like this profile has not been created yet.
         </Paragraph>
       </div>
     );
   }
 
-  // handle navigate button
-  const navigateBack = ()=>{
+  // Handle navigate button
+  const navigateBack = () => {
     navigate("/main/feed");
-  }
-  
+  };
+
   return (
     <div className="profile-container">
       <Card title="My Profile" className="profile-card">
@@ -158,7 +184,8 @@ const Profile = () => {
               : "Not set"}
           </Paragraph>
         </div>
-        {/* display savedpost */}
+
+        {/* Display Saved Posts */}
         <Title level={4}>Saved Posts</Title>
         {savedPosts && savedPosts.length > 0 ? (
           <List
@@ -189,7 +216,8 @@ const Profile = () => {
         ) : (
           <Paragraph>No saved posts yet.</Paragraph>
         )}
-        {/* display saved answer */}
+
+        {/* Display Saved Answers */}
         <Title level={4}>Saved Answers</Title>
         {savedAnswers && savedAnswers.length > 0 ? (
           <List
@@ -220,17 +248,60 @@ const Profile = () => {
         ) : (
           <Paragraph>No saved answers yet.</Paragraph>
         )}
-        {/* display my-posts */}
+
+        {/* Display My Posts */}
         <Title level={4}>My Posts</Title>
-        {myPosts && myPosts.length > 0 ? (
+        {myFilteredPosts && myFilteredPosts.length > 0 ? (
           <List
-            dataSource={myPosts}
-            renderItem={(post) => <List.Item>{post}</List.Item>}
+            dataSource={myFilteredPosts}
+            renderItem={(post) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={post.avatar} />}
+                  title={`Posted by @${post.user}`}
+                  description={post.content.substring(0, 100) + "..."}
+                />
+                <Button
+                  type="link"
+                  onClick={() => navigate(`/main/post/${post._id}`)}
+                >
+                  View Post
+                </Button>
+              </List.Item>
+            )}
           />
         ) : (
           <Paragraph>You haven’t created any posts yet.</Paragraph>
         )}
-        <Button type="primary" onClick={navigateBack}>Back</Button>
+
+        {/* Display My Answers */}
+        <Title level={4}>My Answers</Title>
+        {fetchedAnswers && fetchedAnswers.length > 0 ? (
+          <List
+            dataSource={fetchedAnswers}
+            renderItem={(answer) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={<Avatar src={answer.avatar} />}
+                  title={`Answered by @${answer.user}`}
+                  description={answer.content.substring(0, 100) + "..."}
+                />
+                <Button
+                  type="link"
+                  onClick={() => navigate(`/main/post/${answer.questionId}`)}
+                >
+                  View Question
+                </Button>
+              </List.Item>
+            )}
+          />
+        ) : (
+          <Paragraph>You haven’t answered any questions yet.</Paragraph>
+        )}
+
+        <Button type="primary" onClick={navigateBack}>
+          Back
+        </Button>
       </Card>
     </div>
   );

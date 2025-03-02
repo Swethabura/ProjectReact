@@ -68,6 +68,19 @@ export const unsaveAnswer = createAsyncThunk(
   }
 );
 
+// Fetch answers by IDs
+export const fetchAnswersByIds = createAsyncThunk(
+  "userCollection/fetchAnswersByIds",
+  async (answerIds, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${apiUrl}/public/answers/by-ids`, { answerIds });
+      return response.data; // Returns the filtered answers
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error fetching answers");
+    }
+  }
+);
+
 const userCollectionSlice = createSlice({
   name: "userCollection",
   initialState: {

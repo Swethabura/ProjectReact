@@ -58,7 +58,18 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         votes: 0,
         votedBy: [],
       };
-      await dispatch(addQuestion(newEntry)); // Dispatch `addNewQuestion`
+      dispatch(addQuestion(newEntry))
+      .unwrap()
+      .then(() => {
+        messageApi.success("Question posted successfully!");
+        setIsModalOpen(false);
+        setTitle("");
+        setContent("");
+        setImage(null);
+      })
+      .catch((error) => {
+        messageApi.error(error || "Failed to post question.");
+      });
     } else {
       newEntry = {
         user: loggedInUser,
@@ -69,7 +80,18 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         likedBy: [],
         comments: [],
       };
-      await dispatch(addPost(newEntry)); // Dispatch `addNewPost`
+      dispatch(addPost(newEntry))
+      .unwrap()
+      .then(() => {
+        messageApi.success("Post added successfully!");
+        setIsModalOpen(false);
+        setTitle("");
+        setContent("");
+        setImage(null);
+      })
+      .catch((error) => {
+        messageApi.error(error || "Failed to add post.");
+      });
     }
 
     setIsModalOpen(false);
