@@ -105,9 +105,25 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📌 fixing errors in saving and unsaving the post
 
 ### ✅ **February 28, 2025** 
-- 📝 Saving and unsaving the answers
+- 📝 Saving and unsaving the Posts
 - 📌 handling the navigation i.e, back buttons
-- 📌 creating another db to handle all the savedpost, saved answers, user-posts and answrs.
+- 📌 creating another db to handle all the savedpost, saved answers, user-posts and answers.
 
+### ✅ **March 01, 2025** 
+- 📝 Saving and unsaving the answers
+- 📌 Fetching the answers through answerId from backend
+- 🛠  handling the data in user-profile.
 
+### ✅ **March 02, 2025** 
+- 📝 Saving the user-created posts and answers
+- 🛠  handling the data in user-profile.
+- 📌 Adding delete for the post
+
+### ✅ **March 03, 2025** 
+- 📝 Saving the user-created questions
+- 📌 Responsive dashboard-Navbar
+- 🛠  Protected Routings to unable access the routes before login.
+- 📌 Seperate Component to show the usersaved posts, answers, user created posts, answers and questions
+- 📌 Logout function
+- 📌 Delete for the questions
 

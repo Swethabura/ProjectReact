@@ -46,6 +46,35 @@ export const addPostComment = createAsyncThunk(
   }
 );
 
+// to delete a post
+export const deletePost = createAsyncThunk("posts/deletePost", async (postId, { getState, rejectWithValue }) => {
+  try {
+    // API call to delete the post
+    await axios.delete(`${apiUrl}/public/posts/${postId}`);
+
+    // Update state after successful deletion
+    const { posts } = getState().posts;
+    return posts.filter((post) => post._id !== postId);
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "Error deleting post");
+  }
+});
+
+// to delete a post
+export const deleteQuestion = createAsyncThunk("questions/deleteQuestion", async (postId, { getState, rejectWithValue }) => {
+  try {
+    // API call to delete the question
+    await axios.delete(`${apiUrl}/public/question/${postId}`);
+
+    // Update state after successful deletion
+    const { questions } = getState().questions;
+    return questions.filter((question) => question._id !== postId);
+  } catch (error) {
+    return rejectWithValue(error.response?.data?.message || "Error deleting post");
+  }
+});
+
+
 const postsSlice = createSlice({
   name: "posts",
   initialState: {
@@ -97,7 +126,11 @@ const postsSlice = createSlice({
       if (post) {
         post.comments.unshift(comment); // Add new comment to top
       }
-    });
+    })
+    // to delete post
+    .addCase(deletePost.fulfilled, (state, action) => {
+      state.posts = action.payload; // Update Redux state
+    })
   },
 });
 
@@ -132,7 +165,11 @@ const questionsSlice = createSlice({
     .addCase(addQuestion.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message;
-    });
+    })
+    // to delete question
+    .addCase(deleteQuestion.fulfilled, (state, action) => {
+      state.questions = action.payload; // Update Redux state
+    })
   },
 });
 

@@ -8,6 +8,7 @@ import { message } from "antd";
 import EditProfile from "./Profile/EditProfile";
 import Profile from "./Profile/Profile";
 import PostDetails from "./Profile/PostDetails";
+import Collection from "./Profile/Collection";
 
 
 
@@ -43,6 +44,7 @@ function MainPage(){
         <Route path="questions" element={<Questions/>} />
         <Route path="edit-profile" element={<EditProfile />} />
         <Route path="my-profile" element={<Profile />} />
+        <Route path="collection" element={<Collection />} />
         <Route path="post/:postId" element={<PostDetails />} />
       </Routes>
       <FloatingButton key={location.pathname}/>

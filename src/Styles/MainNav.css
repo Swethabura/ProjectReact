@@ -13,6 +13,17 @@
   z-index: 1000;
 }
 
+/* Theme Toggle (Adjusted position) */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Add space between elements */
+}
+
+.switch-theme {
+  margin-right: 10px; /* Moves toggle left */
+}
+
 /* Avatar styling */
 .user-avatar {
   cursor: pointer;
@@ -29,13 +40,37 @@
   text-decoration: none;
   color: var(--text-color);
   font-weight: 500;
-  font-size: 1rem;
+  font-size: large;
   transition: transform 0.3s ease-in-out;
+  position: relative;
 }
 
-.nav-links .link:hover {
+/* Underline effect on hover */
+.nav-links .link::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 0%;
+  height: 2px;
+  background-color: var(--text-color);
+  transition: width 0.4s ease, left 0.4s ease;
+}
+
+.nav-links .link:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+/* Keep effect on active link */
+.nav-links .link.active {
   transform: scale(1.1);
   color: var(--text-color);
+}
+
+.nav-links .link.active::after {
+  width: 100%;
+  left: 0;
 }
 
 /* Post button */
@@ -56,6 +91,46 @@
   cursor: pointer;
 }
 
+/* Mobile menu (Slide Down Animation) */
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 60px; /* Below navbar */
+  right: 10px;
+  background-color: var(--navbar-bg);
+  width: 150px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: slideDown 0.3s ease-in-out;
+}
+.mobile-menu .mobile-link {
+  display: block;
+  padding: 10px;
+  text-align: left;
+  width: 100%;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background 0.3s;
+}
+.mobile-menu .mobile-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Slide-down animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .nav-links {
@@ -74,6 +149,10 @@
 
   .menu-icon {
     display: block; /* Show hamburger menu */
+  }
+  /* Show mobile menu when open */
+  .mobile-menu.open {
+    display: flex;
   }
 
   .navbar {

@@ -81,6 +81,45 @@ export const fetchAnswersByIds = createAsyncThunk(
   }
 );
 
+// to delete post id from my-post
+export const deleteMyPost = createAsyncThunk(
+  "userCollection/deleteMyPost",
+  async ({ postId, accountUsername }, { getState, rejectWithValue }) => {
+    try {
+      // API call to delete the post
+      await axios.delete(`${apiUrl}/public/posts/delete`, {
+        data: { postId, accountUsername }, // Send postId & username in body
+      });
+
+      // Update myPosts state in Redux store
+      const { myPosts } = getState().userCollection;
+      return myPosts.filter((id) => id !== postId);
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error deleting post");
+    }
+  }
+);
+
+// To delete question ID from myQuestions
+export const deleteMyQuestion = createAsyncThunk(
+  "userCollection/deleteMyQuestion",
+  async ({ questionId, accountUsername }, { getState, rejectWithValue }) => {
+    try {
+      // API call to delete the question
+      await axios.delete(`${apiUrl}/public/question/deleteQuestion`, {
+        data: { questionId, accountUsername }, // Send questionId & username in body
+      });
+
+      // Update myQuestions state in Redux store
+      const { myQuestions } = getState().userCollection;
+      return myQuestions.filter((id) => id !== questionId);
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error deleting question");
+    }
+  }
+);
+
+
 const userCollectionSlice = createSlice({
   name: "userCollection",
   initialState: {
@@ -88,6 +127,7 @@ const userCollectionSlice = createSlice({
     savedAnswers: [],
     myPosts: [],
     myAnswers: [],
+    myQuestions: [],
     loading: false,
     error: null,
   },
@@ -104,6 +144,7 @@ const userCollectionSlice = createSlice({
         state.savedAnswers = action.payload.savedAnswers;
         state.myPosts = action.payload.myPosts;
         state.myAnswers = action.payload.myAnswers;
+        state.myQuestions = action.payload.myQuestions;
       })
       .addCase(fetchUserCollection.rejected, (state, action) => {
         state.loading = false;
@@ -128,6 +169,17 @@ const userCollectionSlice = createSlice({
       // Unsave Answer
       .addCase(unsaveAnswer.fulfilled, (state, action) => {
         state.savedAnswers = action.payload;
+      })
+      // to delete id from my-post
+      .addCase(deleteMyPost.fulfilled, (state, action) => {
+        state.myPosts = action.payload; // Remove from myPosts
+      })
+      // to delete id from my-questions
+      .addCase(deleteMyQuestion.fulfilled, (state, action) => {
+        state.myQuestions = action.payload;
+      })
+      .addCase(deleteMyQuestion.rejected, (state, action) => {
+        console.error("Failed to delete question:", action.payload);
       });
   },
 });

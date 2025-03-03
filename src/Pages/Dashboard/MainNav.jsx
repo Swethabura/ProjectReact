@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Drawer, Avatar, Button, Switch } from "antd";
+import { Drawer, Avatar, Button, Switch, Modal } from "antd";
 import {
   MenuOutlined,
   UserOutlined,
@@ -7,16 +7,19 @@ import {
   TrophyOutlined,
   LogoutOutlined,
   FileImageOutlined,
-  BulbOutlined,
+  ProfileOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../../Styles/MainNav.css"; // Import your CSS file
 
 const MainNav = () => {
   const [visible, setVisible] = useState(false);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false); // Control the mobile menu
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Effect to apply the theme to the document
   useEffect(() => {
@@ -24,7 +27,16 @@ const MainNav = () => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  //   toggle theme
+  useEffect(() => {
+    if (menuOpen) {
+      document.addEventListener("click", closeMenuOnClickOutside);
+    } else {
+      document.removeEventListener("click", closeMenuOnClickOutside);
+    }
+    return () => document.removeEventListener("click", closeMenuOnClickOutside);
+  }, [menuOpen]);
+
+  // Toggle theme
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
@@ -39,9 +51,26 @@ const MainNav = () => {
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
+  // Handle logout
+  const showLogoutConfirm = () => {
+    setIsModalVisible(true);
+    closeDrawer();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("LoggedInUser"); // Remove user data from localStorage
+    setIsModalVisible(false); // Close the modal
+    navigate("/login"); // Redirect to login page
+  };
+
+  const closeMenuOnClickOutside = (e) => {
+    if (!e.target.closest(".mobile-menu") && !e.target.closest(".menu-icon")) {
+      setMenuOpen(false);
+    }
+  };
+
   return (
     <nav className="navbar">
-      <div className="nav-left">
       {/* Left: User Avatar */}
       <Avatar
         size="large"
@@ -49,51 +78,85 @@ const MainNav = () => {
         className="user-avatar"
         onClick={showDrawer}
       />
+
+      {/* Center: Navigation Links (Hidden in mobile) */}
+      <div className="nav-links">
+        <Button
+          type="link"
+          onClick={() => navigate("/main/feed")}
+          className={`link ${
+            location.pathname === "/main/feed" ? "active" : ""
+          }`}
+        >
+          Feed
+        </Button>
+        <Button
+          type="link"
+          onClick={() => navigate("/main/questions")}
+          className={`link ${
+            location.pathname === "/main/questions" ? "active" : ""
+          }`}
+        >
+          Questions
+        </Button>
+        <Button
+          type="link"
+          onClick={() => navigate("/main/maincommunity")}
+          className={`link ${
+            location.pathname === "/main/maincommunity" ? "active" : ""
+          }`}
+        >
+          Community
+        </Button>
       </div>
 
-      {/* Center: Navigation Links */}
-      <div className="nav-links">
-        <div className="nav-links">
+      {/* Right: Theme Toggle & Hamburger */}
+      <div className="nav-right">
+        <Switch
+          checked={theme === "dark"}
+          onChange={toggleTheme}
+          checkedChildren="🌙"
+          unCheckedChildren="☀️"
+          className="switch-theme"
+        />
+        <MenuOutlined className="menu-icon" onClick={toggleMenu} />
+      </div>
+
+      {/* Mobile Menu (Dropdown) */}
+      {menuOpen && (
+        <div className={`mobile-menu ${menuOpen ? "open" : ""}`}>
           <Button
             type="link"
-            onClick={() => navigate("/main/feed")}
-            className="link"
+            onClick={() => {
+              navigate("/main/feed");
+              setMenuOpen(false);
+            }}
+            className="mobile-link"
           >
             Feed
           </Button>
           <Button
             type="link"
-            onClick={() => navigate("/main/questions")}
-            className="link"
+            onClick={() => {
+              navigate("/main/questions");
+              setMenuOpen(false);
+            }}
+            className="mobile-link"
           >
             Questions
           </Button>
           <Button
             type="link"
-            onClick={() => navigate("/main/maincommunity")}
-            className="link"
+            onClick={() => {
+              navigate("/main/maincommunity");
+              setMenuOpen(false);
+            }}
+            className="mobile-link"
           >
             Community
           </Button>
         </div>
-      </div>
-
-      {/* Right: Post Button */}
-      {/* right: post button and toggle */}
-      <div className="nav-right">
-        <Switch
-          checked={theme == "dark"}
-          onChange={toggleTheme}
-          checkedChildren="🌙"
-          unCheckedChildren="☀️"
-          style={{ marginRight: "15px" }}
-        />
-        {/* <Button type="primary" className="post-btn">
-          Post
-        </Button> */}
-        {/* Hamburger Menu */}
-        <MenuOutlined className="menu-icon" onClick={toggleMenu} />
-      </div>
+      )}
 
       {/* Sidebar (Drawer) */}
       <Drawer
@@ -107,32 +170,60 @@ const MainNav = () => {
           color: "var(--text-color)",
         }}
       >
-        <p>
+        <p style={{ cursor: "pointer" }}>
           <FileImageOutlined /> Change Profile Picture
         </p>
         <p
           onClick={() => {
-            closeDrawer(); // Close the drawer
-            navigate("/main/edit-profile"); // Navigate to edit profile page
+            closeDrawer();
+            navigate("/main/edit-profile");
           }}
+          style={{ cursor: "pointer" }}
         >
           <EditOutlined /> Edit Profile
         </p>
         <p
           onClick={() => {
-            closeDrawer(); // Close the drawer
-            navigate("/main/my-profile"); // Navigate to edit profile page
+            closeDrawer();
+            navigate("/main/my-profile");
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <ProfileOutlined /> My Profile
+        </p>
+        <p
+          onClick={() => {
+            closeDrawer();
+            navigate("/main/collection");
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <BookOutlined /> Collection
+        </p>
+        <p
+          onClick={showLogoutConfirm}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "5px",
           }}
         >
-          <EditOutlined /> My Profile
-        </p>
-        {/* <p>
-          <TrophyOutlined /> View Achievements
-        </p> */}
-        <p>
           <LogoutOutlined /> Logout
         </p>
       </Drawer>
+
+      {/* Logout Confirmation Modal */}
+      <Modal
+        title="Confirm Logout"
+        open={isModalVisible}
+        onOk={handleLogout}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Yes, Logout"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
     </nav>
   );
 };
