@@ -2,30 +2,36 @@
 
 :root {
   /* Light Theme Colors */
-  --primary-color: #005F73; /* Deep Teal for a modern look */
-  --background-color: #F8F9FA; /* Soft Light Gray for minimal glare */
-  --navbar-bg: var(--primary-color); /* Primary color to make navbar stand out */
-  --text-color: #FFFFFF; /* White text for navbar contrast */
-  --secondary-text:#343a40;  /* Subtle Indigo-Gray for secondary text */
-  --border-color: #525f7f; /* Light Gray for soft separation */
-  --accent-hover: #0A9396; /* Cool Cyan for interactive elements */
-  --success-color: #28a745; /* Green for success messages */
-  --error-color: #dc3545; /* Red for error messages */
+  --primary-color: #005F73; 
+  --background-color: #F8F9FA;
+  --navbar-bg: var(--primary-color); 
+  --text-color: #FFFFFF; 
+  --secondary-text:#343a40;  
+  --border-color: #525f7f; 
+  --accent-hover: #0A9396; 
+  --success-color: #28a745; 
+  --error-color: #dc3545; 
   --btn-color:#F3F312;
+  --card-bg-color: #FFF;
+  --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --card-text-color: #001219;
 }
 
 [data-theme="dark"] {
   /* Dark Theme Colors */
-  --primary-color: #3D5A80; /* Muted Blue for a professional look */
-  --background-color: #2b2a2a; /* Deep Black for contrast */
-  --navbar-bg: var(--primary-color); /* Primary color to make navbar pop */
-  --text-color: #eaeaea; /* Almost White for readability */
-  --secondary-text: #e0e0e0;  /* Lighter Gray for secondary text */
-  --border-color: #adb5bd; /* Slightly Lighter Black for borders */
-  --accent-hover: #028090; /* Deep Teal for hover states */
-  --success-color: #2ecc71; /* Bright Green for success messages */
-  --error-color: #ff4d4f; /* Bright Red for error messages */
+  --primary-color: #3D5A80; 
+  --background-color: #202020; 
+  --navbar-bg: var(--primary-color); 
+  --text-color: #eaeaea; 
+  --secondary-text: #e0e0e0;  
+  --border-color: #adb5bd; 
+  --accent-hover: #028090; 
+  --success-color: #2ecc71; 
+  --error-color: #ff4d4f; 
   --btn-color:#F3F312;
+  --card-bg-color: #3D5A80;
+  --card-shadow:0 4px 10px rgba(255, 255, 255, 0.1);
+  --card-text-color: #E0FBFC;
 }
 
 * {

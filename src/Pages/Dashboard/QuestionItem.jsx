@@ -89,15 +89,22 @@ function QuestionItem({ question }) {
   };
 
   // to update the vote
-  const handleVote = async (answerId) => {
-    try {
+  const handleVote = async (answerId, isVoted) => {
       const result = await dispatch(
         updateVote({ answerId, userId: loggedInUser })
-      ).unwrap();
-    } catch (error) {
-      console.error("Failed to update vote:", error);
-    }
-  };
+      ).unwrap()
+      .then(() => {
+        if (isVoted) {
+          messageApi.success("Vote removed successfully!");
+        } else {
+          messageApi.success("Voted successfully!");
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to update vote:", error);
+        messageApi.error("Failed to update vote");
+      });
+  }
 
   // to save an answer
   const handleSaveAnswer = (answerId) => {
@@ -157,7 +164,7 @@ function QuestionItem({ question }) {
                 actions={[
                   <Button
                     type="text"
-                    onClick={() => handleVote(answer._id)}
+                    onClick={() => handleVote(answer._id, answer?.votedBy?.includes(loggedInUser))}
                     icon={
                       answer?.votedBy?.includes(loggedInUser) ? (
                         <LikeFilled style={{ color: "blue" }} />

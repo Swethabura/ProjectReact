@@ -53,14 +53,14 @@ function HomePage() {
         <div className="btns">
           <button className="signup-btn">
             <Link to="/signup" className="sign-up">
-              Sign Up
+              Get Started
             </Link>
           </button>
-          <button className="login-btn">
+          {/* <button className="login-btn">
             <Link to="/login" className="log-in">
               Login
             </Link>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

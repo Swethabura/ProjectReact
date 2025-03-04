@@ -99,7 +99,7 @@ const MainNav = () => {
         >
           Questions
         </Button>
-        <Button
+        {/* <Button
           type="link"
           onClick={() => navigate("/main/maincommunity")}
           className={`link ${
@@ -107,7 +107,7 @@ const MainNav = () => {
           }`}
         >
           Community
-        </Button>
+        </Button> */}
       </div>
 
       {/* Right: Theme Toggle & Hamburger */}

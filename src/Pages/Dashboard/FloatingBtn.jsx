@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../../Styles/FloatingBtn.css";
 import { Button, Input, message, Modal, Upload } from "antd";
@@ -6,7 +6,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { addPost, addQuestion } from "../redux/userSlice";
 
-const FloatingButton = ({ addNewPost, addNewQuestion }) => {
+const FloatingButton = ({ addNewPost, addNewQuestion, isGuest }) => {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [image, setImage] = useState(null);
@@ -44,7 +44,7 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
       return;
     }
 
-    const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
+    const loggedInUser = localStorage.getItem("LoggedInUser");
 
     let newEntry;
     if (isQuestion) {
@@ -99,10 +99,16 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
     setContent("");
     setImage(null);
   };
-
+  const handleCreatePost =  ()=>{
+    if(!isGuest){
+    setIsModalOpen(true);
+    }else{
+      alert("your guest")
+    }
+  }
   return (
     <>
-      <button onClick={() => setIsModalOpen(true)} className="floating-button">
+      <button onClick={ handleCreatePost} className="floating-button" >
         {buttonText}
       </button>
       {contextHolder}

@@ -31,8 +31,8 @@ const Profile = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (!profile) {
-    return <div>It looks like this profile has not been created yet.</div>;
+  if (!profile ) {
+    return <div style={{marginTop:"18vh", color:'blue'}}>It looks like this profile has not been created yet.</div>
   }
 
   // Handle navigate button

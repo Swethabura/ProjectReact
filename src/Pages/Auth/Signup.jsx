@@ -50,11 +50,6 @@ function SignupPage() {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    // const users = JSON.parse(localStorage.getItem("users")) || [];
-    // if (users.find((u) => u.username === username)) {
-    //   showError("Username Already exists!!", usernameRef, "username");
-    //   return;
-    // }
     if (password !== confirmPassword) {
       showError("Passwords do not match!", passwordRef, "confirmPassword");
       return;
@@ -63,8 +58,6 @@ function SignupPage() {
       showError("OTP doesn't match!", otpRef, "otp");
       return;
     }
-    // users.push({ username, email, password });
-    // localStorage.setItem("users", JSON.stringify(users));
 
     try {
       const response = await fetch(`${apiUrl}/auth/register`, {
@@ -156,7 +149,7 @@ function SignupPage() {
           </div>
 
           {/* OTP Input */}
-          <div className="otp-box">{generatedOtp}</div>
+          <div style={{display:"flex", gap:"1rem"}}>
           <div className="floating-label">
             <input
               type="text"
@@ -167,9 +160,10 @@ function SignupPage() {
               className={error.otp ? "error-border" : ""}
               required
             />
-            <label>Enter OTP</label>
+            <label>Enter Captcha</label>
           </div>
-
+          <div className="otp-box">{generatedOtp}</div>
+          </div>
           <button onClick={generateOtp}>Regenerate OTP</button>
           <button type="submit">Sign Up</button>
         </form>

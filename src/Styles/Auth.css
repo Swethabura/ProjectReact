@@ -105,9 +105,9 @@ input:focus {
 .floating-label input:not(:placeholder-shown) + label {
   top: 0;
   left: 10px;
-  font-size: 14px;
+  font-size: 16px;
   color: #007bff;
-  background: rgba(255, 255, 255, 10);
+  background:rgba(233, 231, 231, 0.95);
   padding: 0 5px;
 }
 
@@ -115,7 +115,14 @@ input:focus {
 .otp-box {
   margin: auto;
   font-size: 1.2rem;
-  margin-top: -0.7rem;
+  width: 80%;
+  text-align: center;
+  background-color: #aaa;
+  padding: 2%;
+  letter-spacing: 1.3cap;
+  color: red;
+  border-radius: 0.5rem;
+  /* margin-top: -0.7rem; */
 }
 
 /* Error border */

@@ -3,6 +3,7 @@ import {
   CommentOutlined,
   ShareAltOutlined,
   SaveOutlined,
+  SaveFilled,
   HeartFilled,
   HeartOutlined,
 } from "@ant-design/icons";
@@ -19,7 +20,8 @@ import FloatingButton from "./FloatingBtn";
 import { savePost } from "../redux/userCollectionSlice";
 
 function Feed() {
-  const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
+  
+  const loggedInUser = localStorage.getItem("LoggedInUser");
   const [commentInput, setCommentInput] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({});
   const [messageApi, contextHolder] = message.useMessage();
@@ -112,6 +114,12 @@ function Feed() {
 
     // Clear input field after submitting
     setCommentInput((prev) => ({ ...prev, [postId]: "" }));
+
+    // Close the comment section after adding the comment
+  setExpandedPosts((prev) => ({
+    ...prev,
+    [postId]: false, // Set to false to collapse the section
+  }));
   };
 
   // handle the save post
@@ -129,6 +137,7 @@ function Feed() {
         messageApi.error(error || "Failed to save post");
       });
   };
+
 
   return (
     <div className="feed-container">
