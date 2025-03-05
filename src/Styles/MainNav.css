@@ -11,6 +11,18 @@
   top: 0;
   left: 0;
   z-index: 1000;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+.navleft{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.userName{
+  margin-bottom: -2px;
 }
 
 /* Theme Toggle (Adjusted position) */
@@ -173,5 +185,9 @@
   .menu-icon {
     display: block;
     margin-left: auto;
+  }
+
+  .userName{
+    display: none;
   }
 }

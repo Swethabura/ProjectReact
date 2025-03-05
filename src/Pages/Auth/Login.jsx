@@ -79,7 +79,7 @@ function LoginPage() {
     }
   };
   return (
-    <div className="main-container">
+    <div className="mainContainer">
       <div className="auth-container">
         <h2>Login</h2>
         {/* error has to appear if any */}

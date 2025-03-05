@@ -1,5 +1,5 @@
 .features {
-  width: 100%;
+  width: 100vw;
   background-color: var(--background-light);
   padding-bottom: 3rem;
   transition: background-color 0.3s ease-in-out;
@@ -37,7 +37,7 @@
   align-items: center;
   gap: 2rem;
   background-color: var(--background-light);
-  box-shadow: 0 4px 8px var(--border-color);
+  box-shadow: 0 0 8px var(--border-color);
   padding: 2rem;
   border-radius: 15px;
   margin-bottom: 2rem;

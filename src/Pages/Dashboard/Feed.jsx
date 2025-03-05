@@ -82,6 +82,7 @@ function Feed() {
     );
   };
 
+
   // toggle to make visible and hide the comment section
   const toggleComments = (postId) => {
     setExpandedPosts((prev) => ({
@@ -137,8 +138,7 @@ function Feed() {
         messageApi.error(error || "Failed to save post");
       });
   };
-
-
+  
   return (
     <div className="feed-container">
       {contextHolder}

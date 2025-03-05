@@ -56,11 +56,6 @@ function HomePage() {
               Get Started
             </Link>
           </button>
-          {/* <button className="login-btn">
-            <Link to="/login" className="log-in">
-              Login
-            </Link>
-          </button> */}
         </div>
       </div>
     </div>

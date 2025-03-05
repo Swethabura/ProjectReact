@@ -29,7 +29,7 @@ export const addQuestion = createAsyncThunk("questions/addQuestion", async (newQ
 
 // To add or delete the like
 export const updateLike = createAsyncThunk("posts/updateLike", async ({ postId, userId }) => {
-  const response = await axios.put(`h${apiUrl}/public/like/${postId}`, { userId });
+  const response = await axios.put(`${apiUrl}/public/like/${postId}`, { userId });
   return response.data;
 });
 

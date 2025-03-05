@@ -11,7 +11,9 @@ import {
   BookOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "../../Styles/MainNav.css"; // Import your CSS file
+import { fetchProfile } from "../redux/profileSlice";
 
 const MainNav = () => {
   const [visible, setVisible] = useState(false);
@@ -20,6 +22,8 @@ const MainNav = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const loggedInUser = localStorage.getItem("LoggedInUser");
+  const { loading, error, profile } = useSelector((state) => state.profile);
 
   // Effect to apply the theme to the document
   useEffect(() => {
@@ -72,13 +76,15 @@ const MainNav = () => {
   return (
     <nav className="navbar">
       {/* Left: User Avatar */}
+      <div className="navleft">
       <Avatar
-        size="large"
-        icon={<UserOutlined />}
-        className="user-avatar"
-        onClick={showDrawer}
-      />
+              size="large"
+              src={profile?.profilePic ? profile?.profilePic : null}
+              icon={!profile?.profilePic ? <UserOutlined /> : null}
+            />
+      <h1 className="userName">{loggedInUser}</h1>
 
+</div>
       {/* Center: Navigation Links (Hidden in mobile) */}
       <div className="nav-links">
         <Button
@@ -157,62 +163,6 @@ const MainNav = () => {
           </Button>
         </div>
       )}
-
-      {/* Sidebar (Drawer) */}
-      <Drawer
-        title="Profile Menu"
-        placement="left"
-        onClose={closeDrawer}
-        open={visible}
-        width={250}
-        style={{
-          backgroundColor: "var(--navbar-bg)",
-          color: "var(--text-color)",
-        }}
-      >
-        <p style={{ cursor: "pointer" }}>
-          <FileImageOutlined /> Change Profile Picture
-        </p>
-        <p
-          onClick={() => {
-            closeDrawer();
-            navigate("/main/edit-profile");
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <EditOutlined /> Edit Profile
-        </p>
-        <p
-          onClick={() => {
-            closeDrawer();
-            navigate("/main/my-profile");
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <ProfileOutlined /> My Profile
-        </p>
-        <p
-          onClick={() => {
-            closeDrawer();
-            navigate("/main/collection");
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          <BookOutlined /> Collection
-        </p>
-        <p
-          onClick={showLogoutConfirm}
-          style={{
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-          }}
-        >
-          <LogoutOutlined /> Logout
-        </p>
-      </Drawer>
-
       {/* Logout Confirmation Modal */}
       <Modal
         title="Confirm Logout"

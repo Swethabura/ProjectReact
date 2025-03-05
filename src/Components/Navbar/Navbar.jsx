@@ -30,16 +30,11 @@ function Navbar() {
         </span>
       </div>
 
-      {/* Theme Toggle Button */}
-      <button className="theme-toggle" onClick={toggleTheme}>
-        {theme === "light" ? <FiMoon size={22} /> : <FiSun size={22} />}
-      </button>
-
       {/* Hamburger Menu */}
+      <div className="linkContainer">
       <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
         {menuOpen ? <FiX size={30} /> : <FiMenu size={30} />}
       </div>
-
       <nav className={menuOpen ? "nav-active" : ""}>
         <ul>
           <li>
@@ -91,8 +86,13 @@ function Navbar() {
           <RouterLink to="/login" className="log-in">
             Login
           </RouterLink>
-        </Button>
+        </Button>    
       </nav>
+       {/* Theme Toggle Button */}
+       <button className="theme-toggle" onClick={toggleTheme}>
+        {theme === "light" ? <FiMoon size={22} /> : <FiSun size={22} />}
+      </button>
+      </div>
     </header>
   );
 }

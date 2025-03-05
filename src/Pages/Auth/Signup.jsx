@@ -91,7 +91,7 @@ function SignupPage() {
   };
 
   return (
-    <div className="main-container">
+    <div className="mainContainer">
       <div className="auth-container">
         <h2>Sign-Up</h2>
         {contextHolder}

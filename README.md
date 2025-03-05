@@ -127,3 +127,12 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📌 Logout function
 - 📌 Delete for the questions
 
+### ✅ **March 04, 2025** 
+- 📝 Updating the UI
+- 📌 Adding styles and making the pages responsive
+
+### ✅ **March 05, 2025** 
+- 📝 Profile pic handled succesfully!
+- 📌 Adding styles and making the pages responsive
+- 📌 Created sidebar to visible on desktop and handled with arrow in mobile view.
+

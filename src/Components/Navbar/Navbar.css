@@ -17,6 +17,10 @@ header {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   /* transition: background-color 0.3s ease, color 0.3s ease; */
 }
+.linkContainer{
+  display: flex;
+  gap: 2rem;
+}
 
 .logoSec {
   display: flex;
@@ -166,6 +170,9 @@ nav ul {
   }
   .logo-title p {
     font-size: 1rem;
+  }
+  .linkContainer{
+    gap: 0.8rem;
   }
   .hamburger {
     display: block;
