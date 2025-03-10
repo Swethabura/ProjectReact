@@ -1,19 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=Marcellus&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 .feed-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
   padding-top: 12vh;
-  max-width: 600px;
+  max-width: 650px;
   margin: auto;
-  z-index: 1;
-  overflow: visible;
+  /* background-color: ; */
+  color: var(--text-light);
 }
 
 .feed-card {
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  /* background-color: var(--background-light); */
+  border-radius: 12px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   padding: 15px;
+  background: #fff;
+  transition: transform 0.2s;
+  background-color: var(--card-bg-color);
+}
+
+.feed-card:hover {
+  transform: translateY(-3px);
 }
 
 .post-header {
@@ -24,19 +34,129 @@
 
 .username {
   font-weight: bold;
+  font-size: 18px;
+  font-family: "Merriweather", serif;
+  color: var(--primary-color);
+  letter-spacing: 1.2px;
 }
 
 .post-content {
-  margin-top: 10px;
+  margin: 10px;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 350;
+  /* border: 1px solid red; */
 }
 
 .post-actions {
   display: flex;
-  gap: 10px;
+  gap: 15px;
   margin-top: 15px;
 }
 
 .post-actions button {
   display: flex;
   align-items: center;
+  transition: all 0.2s;
+  background-color: var(--card-bg-color);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  height:2.2rem;
+}
+
+.post-actions button:hover {
+  transform: scale(1.1);
+  background: var(--card-bg-color) !important;
+  color: black !important;
+  border: 1px solid var(--primary-color) !important;
+}
+
+.btn-content{
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 350;
+}
+
+.btn-text{
+  color: black;
+  font-weight: 500;
+}
+
+.liked {
+  color: red;
+}
+
+.saved{
+  color: blue;
+}
+
+.count{
+  font-size: 14px;
+  margin-right: -0.4rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.comments-section {
+  margin-top: 10px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.comments-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.comment {
+  margin-bottom: 5px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 17rem;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+}
+
+@media screen and (max-width: 850px){
+  .post-actions {
+    gap: 10px;
+    margin-left: -10px;
+  }
+  .btn-content{
+    padding: 10px;
+  }
+
+}
+
+@media screen and (max-width: 768px) {
+  .btn-text {
+    display: none;
+  }
+  .post-actions{
+    gap: 18px;
+    margin-left: 0;
+  }
+  .post-actions button{
+    padding: 15px;
+    font-size: 20px;
+  }
+  .btn-content{
+    padding: 25px;
+  }
+
+}
+@media screen and (max-width: 480px){
+  .post-actions button{
+    padding: 15px;
+    font-size: 15px;
+  }
+  .post-actions{
+    gap: 18px;
+    margin-left: -10px;
+  }
 }

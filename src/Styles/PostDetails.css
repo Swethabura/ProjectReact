@@ -1,0 +1,116 @@
+.post-details-container {
+  max-width: 600px;
+  margin: 15vh auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.post-details-container:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.post-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.post-username {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--primary-color);
+  font-family: 'Inter', sans-serif;
+}
+
+.post-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: black;
+  margin-bottom: 15px;
+  font-family: 'Inter', sans-serif;
+}
+
+.post-image {
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.post-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.post-buttons button {
+  transition: all 0.3s;
+}
+
+.post-buttons button:hover {
+  transform: scale(1.05);
+}
+
+/* Adjust the delete button */
+.post-buttons .ant-btn-dangerous {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+  color: white;
+}
+
+.post-buttons .ant-btn-dangerous:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .post-details-container {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .post-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .post-buttons button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .post-username {
+    font-size: 14px;
+  }
+
+  .post-content {
+    font-size: 14px;
+  }
+
+  .post-buttons button {
+    font-size: 14px;
+  }
+}

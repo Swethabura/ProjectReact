@@ -198,16 +198,16 @@ nav ul {
   }
 }
 
+@media screen and (max-width:600px) {
+  .logo-title{
+    display: none;
+  }
+}
+
 /* ⭐ 320px - 480px (Mobile Phones) */
 @media screen and (max-width: 480px) {
   header {
     padding: 0 1rem;
-  }
-  .logo-title h1 {
-    font-size: 1.2rem;
-  }
-  .logo-title p {
-    font-size: 0.8rem;
   }
   .hamburger {
     display: block;

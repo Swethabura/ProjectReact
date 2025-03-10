@@ -181,8 +181,7 @@ input:focus {
 /* Mobile Devices (Below 768px) */
 @media screen and (max-width: 768px) {
   .mainContainer{
-    background: #fcf6f6;
-
+    background: #fcf6f6 !important;
   }
   .auth-container {
     width: 80%;

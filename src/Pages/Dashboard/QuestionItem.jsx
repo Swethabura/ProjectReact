@@ -6,6 +6,8 @@ import {
   ShareAltOutlined,
   StarOutlined,
   LikeFilled,
+  StarFilled,
+  MessageFilled,
 } from "@ant-design/icons";
 import {
   fetchAnswers,
@@ -14,7 +16,8 @@ import {
   updateVote,
 } from "../redux/answersSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAnswer } from "../redux/userCollectionSlice";
+import { saveAnswer, fetchUserCollection } from "../redux/userCollectionSlice";
+import "../../Styles/Questions.css";
 
 const { TextArea } = Input;
 
@@ -31,12 +34,17 @@ function QuestionItem({ question }) {
     (state) => state.answers.answers?.[question._id] || []
   );
   const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
+  const { savedAnswers } = useSelector((state) => state.userCollection);
 
   useEffect(() => {
     if (expanded && question._id) {
       dispatch(fetchAnswers(question._id));
     }
   }, [expanded, dispatch, question._id]);
+
+  useEffect(() => {
+    dispatch(fetchUserCollection(loggedInUser));
+  }, [dispatch, loggedInUser]);
 
   // to sumbit a new answer
   const handleAnswerSubmit = async () => {
@@ -90,9 +98,10 @@ function QuestionItem({ question }) {
 
   // to update the vote
   const handleVote = async (answerId, isVoted) => {
-      const result = await dispatch(
-        updateVote({ answerId, userId: loggedInUser })
-      ).unwrap()
+    const result = await dispatch(
+      updateVote({ answerId, userId: loggedInUser })
+    )
+      .unwrap()
       .then(() => {
         if (isVoted) {
           messageApi.success("Vote removed successfully!");
@@ -104,7 +113,7 @@ function QuestionItem({ question }) {
         console.error("Failed to update vote:", error);
         messageApi.error("Failed to update vote");
       });
-  }
+  };
 
   // to save an answer
   const handleSaveAnswer = (answerId) => {
@@ -114,6 +123,7 @@ function QuestionItem({ question }) {
       .then((data) => {
         // console.log("Success response:", data);
         messageApi.success("Answer saved successfully!");
+        dispatch(fetchUserCollection(loggedInUser));
       })
       .catch((error) => {
         console.error("Save answer error:", error);
@@ -127,26 +137,29 @@ function QuestionItem({ question }) {
       title={
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Avatar src={question.avatar} />
-          <span>{question.user}</span>
+          <span className="username">{question.user}</span>
         </div>
       }
+      className="question-card"
     >
       {contextHolder}
-      <h3>{question.title}</h3>
-      <p>{question.content}</p>
-      {question.image && (
-        <img
-          src={question.image}
-          alt="Question"
-          style={{ width: "50%", marginTop: 10 }}
-        />
-      )}
+      <h3 className="que-title">{question.title}</h3>
+      <p className="que-text">{question.content}</p>
+      {question.image && <Image src={question.image} alt="Question" />}
 
-      <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-        <Button type="primary" onClick={() => setModalVisible(true)}>
+      <div className="show-hide-section">
+        <Button
+          type="primary"
+          onClick={() => setModalVisible(true)}
+          style={{ fontSize: "18px" }}
+        >
           Answer
         </Button>
-        <Button type="default" onClick={() => setExpanded(!expanded)}>
+        <Button
+          type="default"
+          onClick={() => setExpanded(!expanded)}
+          style={{ fontSize: "18px" }}
+        >
           {expanded ? "Hide Answers" : "See Answers"}
         </Button>
       </div>
@@ -160,42 +173,11 @@ function QuestionItem({ question }) {
 
             return (
               <List.Item
-                style={{ width: "100%", overflow: "hidden" }}
-                actions={[
-                  <Button
-                    type="text"
-                    onClick={() => handleVote(answer._id, answer?.votedBy?.includes(loggedInUser))}
-                    icon={
-                      answer?.votedBy?.includes(loggedInUser) ? (
-                        <LikeFilled style={{ color: "blue" }} />
-                      ) : (
-                        <LikeOutlined />
-                      )
-                    }
-                  >
-                    {answer.votes}
-                  </Button>,
-                  <Button
-                    icon={<MessageOutlined />}
-                    onClick={() =>
-                      setCommentExpanded((prev) => ({
-                        ...prev,
-                        [answer._id]: !prev[answer._id],
-                      }))
-                    }
-                  >
-                    {commentExpanded[answer._id]
-                      ? "Hide Comments"
-                      : "View Comments"}
-                  </Button>,
-                  <Button icon={<ShareAltOutlined />}>Share</Button>,
-                  <Button
-                    icon={<StarOutlined />}
-                    onClick={() => handleSaveAnswer(answer._id)}
-                  >
-                    Save
-                  </Button>,
-                ]}
+                style={{
+                  width: "100%",
+                  overflow: "hidden",
+                  flexDirection: "column",
+                }}
               >
                 <div
                   style={{
@@ -206,10 +188,21 @@ function QuestionItem({ question }) {
                 >
                   <List.Item.Meta
                     avatar={<Avatar src={answer.avatar} />}
-                    title={answer.user}
+                    title={
+                      <span
+                        style={{
+                          fontSize: "16px",
+                          fontFamily: "'Inter', sans-serif",
+                          color: "var(--primary-color)",
+                          fontWeight: "450",
+                        }}
+                      >
+                        {answer.user}
+                      </span>
+                    }
                     description={
                       <>
-                        <p>{answer.content}</p>
+                        <p className="answer-text">{answer.content}</p>
                         {answer.image && (
                           <Image
                             src={answer.image}
@@ -225,6 +218,74 @@ function QuestionItem({ question }) {
                     }
                   />
 
+                  {/* Button Row */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: "15px",
+                      marginTop: "10px",
+                      flexWrap: "wrap",
+                    }}
+                    className="question-actions"
+                  >
+                    <Button
+                      className="btn-content"
+                      onClick={() =>
+                        handleVote(
+                          answer._id,
+                          answer?.votedBy?.includes(loggedInUser)
+                        )
+                      }
+                    >
+                      {isLiked ? (
+                        <LikeFilled style={{ color: "blue" }} />
+                      ) : (
+                        <LikeOutlined />
+                      )}
+                      <span className="count">{answer.votes}</span>
+                      <span className="btn-text">Likes</span>
+                    </Button>
+
+                    <Button
+                      className="btn-content"
+                      onClick={() =>
+                        setCommentExpanded((prev) => ({
+                          ...prev,
+                          [answer._id]: !prev[answer._id],
+                        }))
+                      }
+                    >
+                      {commentExpanded[answer._id] ? (
+                        <MessageFilled style={{color:"blue"}} />
+                      ) : (
+                        <MessageOutlined />
+                      )}
+                      <span className="btn-text">
+                        {commentExpanded[answer._id]
+                          ? "Hide Comments"
+                          : "Comments"}
+                      </span>
+                    </Button>
+
+                    <Button className="btn-content">
+                      <ShareAltOutlined />
+                      <span className="btn-text">Share</span>
+                    </Button>
+
+                    <Button
+                      className="btn-content"
+                      onClick={() => handleSaveAnswer(answer._id)}
+                    >
+                      {savedAnswers.some((a) => a._id === answer._id) ? (
+                        <StarFilled className="saved" />
+                      ) : (
+                        <StarOutlined />
+                      )}
+                      <span className="btn-text">Save</span>
+                    </Button>
+                  </div>
+
                   {/* Comment Section */}
                   {commentExpanded[answer._id] && (
                     <div
@@ -233,16 +294,12 @@ function QuestionItem({ question }) {
                         border: "1px solid #ddd",
                         borderRadius: "5px",
                         padding: "10px",
-                        backgroundColor: "#f9f9f9",
                       }}
                     >
                       {/* Scrollable Comments Container */}
                       <div
-                        style={{
-                          maxHeight: "250px",
-                          overflowY: "auto",
-                          marginBottom: "10px",
-                        }}
+                        className="commentSectionContainer"
+                        style={{ maxHeight: "250px", overflowY: "scroll" }}
                       >
                         <List
                           itemLayout="horizontal"
@@ -253,8 +310,16 @@ function QuestionItem({ question }) {
                                 avatar={
                                   <Avatar src="https://via.placeholder.com/30" />
                                 }
-                                title={<span>{comment.user}</span>}
-                                description={<span>{comment.text}</span>}
+                                title={
+                                  <span className="comment-user">
+                                    {comment.user}
+                                  </span>
+                                }
+                                description={
+                                  <span className="comment-text">
+                                    {comment.text}
+                                  </span>
+                                }
                               />
                             </List.Item>
                           )}
@@ -268,6 +333,7 @@ function QuestionItem({ question }) {
                           gap: "10px",
                           alignItems: "center",
                         }}
+                        className="comment-section"
                       >
                         <TextArea
                           value={commentInputs[answer._id] || ""}
@@ -280,11 +346,12 @@ function QuestionItem({ question }) {
                           rows={2}
                           placeholder="Write a comment..."
                           autoFocus
-                          style={{ flex: 1, textAlign: "left" }}
+                          className="comment-input"
                         />
                         <Button
                           type="primary"
                           onClick={() => handleCommentSubmit(answer._id)}
+                          className="comment-btn"
                         >
                           Post
                         </Button>

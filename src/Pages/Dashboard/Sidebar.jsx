@@ -26,16 +26,6 @@ const Sidebar = () => {
       {/* Sidebar (Fixed on large screens, Collapsible on small screens) */}
       <div className={`sidebar ${isOpen ? "open" : ""}`}>
         <div className="sidebar-content">
-        {/* <p style={{ cursor: "pointer" }}>
-          <FileImageOutlined /> Change Profile Picture
-        </p> */}
-        {/* <p
-          onClick={()=>{navigate("/main/edit-profile"); setIsOpen(!isOpen);}
-          }
-          style={{ cursor: "pointer" }}
-        >
-          <EditOutlined /> Edit Profile
-        </p> */}
         <p
           onClick={()=>{navigate("/main/my-profile");
             setIsOpen(!isOpen);}

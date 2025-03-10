@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Card,
-  List,
-  Spin,
-  Typography,
-  Button,
-  message,
-} from "antd";
+import { Card, List, Spin, Typography, Button, message, Row, Col } from "antd";
 import {
   fetchUserCollection,
   unsaveAnswer,
@@ -24,7 +17,6 @@ const Collection = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
-  // Redux state for collections
   const collection = useSelector((state) => state.userCollection);
   const {
     collectionLoading,
@@ -36,7 +28,6 @@ const Collection = () => {
     myQuestions,
   } = collection;
 
-  // Redux state for posts and questions
   const {
     posts,
     loading: postsLoading,
@@ -49,7 +40,6 @@ const Collection = () => {
     error: questionsError,
   } = useSelector((state) => state.questions);
 
-  // Local state for fetched answers
   const [fetchedAnswers, setFetchedAnswers] = useState([]);
   const [loadingAnswers, setLoadingAnswers] = useState(false);
   const [errorAnswers, setErrorAnswers] = useState(null);
@@ -58,233 +48,193 @@ const Collection = () => {
 
   useEffect(() => {
     if (loggedInUser) {
-      dispatch(fetchUserCollection(loggedInUser)); // Fetch saved posts & my posts
-      dispatch(fetchPosts()); // Fetch all posts
-      dispatch(fetchQuestions()); // Fetch all questions
+      dispatch(fetchUserCollection(loggedInUser));
+      dispatch(fetchPosts());
+      dispatch(fetchQuestions());
     }
   }, [dispatch, loggedInUser]);
 
-  // Fetch answers when `myAnswers` is available
   useEffect(() => {
     if (myAnswers && myAnswers.length > 0) {
       setLoadingAnswers(true);
-      setErrorAnswers(null);
-
       dispatch(fetchAnswersByIds(myAnswers))
         .unwrap()
-        .then((answers) => {
-          setFetchedAnswers(answers); // Store fetched answers in local state
-        })
-        .catch((err) => {
-          setErrorAnswers(err); // Handle errors
-        })
-        .finally(() => {
-          setLoadingAnswers(false); // Stop loading
-        });
+        .then(setFetchedAnswers)
+        .catch(setErrorAnswers)
+        .finally(() => setLoadingAnswers(false));
     } else {
-      setFetchedAnswers([]); // Clear answers if no IDs are available
+      setFetchedAnswers([]);
     }
   }, [dispatch, myAnswers]);
 
-  // Filter myPosts and myQuestions
   const myFilteredPosts = posts?.filter((post) => myPosts?.includes(post._id));
   const myFilteredQuestions = questions?.filter((question) =>
     myQuestions?.includes(question._id)
   );
 
-  // Handle loading and error states
   if (postsLoading || questionsLoading || collectionLoading || loadingAnswers) {
-    return <Spin size="large" />;
+    return <Spin size="large" style={{ display: "block", margin: "auto" }} />;
   }
 
   if (postsError || questionsError || collectionError || errorAnswers) {
     return (
-      <div>
-        Error:{" "}
-        {postsError?.message ||
-          questionsError?.message ||
-          collectionError?.message ||
-          errorAnswers?.message}
-      </div>
+      <Paragraph>Error loading content. Please try again later.</Paragraph>
     );
   }
 
-  // Handle unsave post
   const handleUnsave = (postId) => {
     dispatch(unsavePost({ accountUsername: loggedInUser, postId }))
       .unwrap()
       .then(() => {
         messageApi.success("Post removed from saved posts.");
+        dispatch(fetchUserCollection(loggedInUser));
       })
-      .catch((error) => {
-        messageApi.error(error || "Failed to remove post.");
-      });
+      .catch(() => messageApi.error("Failed to remove post."));
   };
 
-  // Handle unsave answers
   const handleUnsaveAnswer = (answerId) => {
     dispatch(unsaveAnswer({ accountUsername: loggedInUser, answerId }))
       .unwrap()
-      .then(() => {
-        messageApi.success("Answer removed from saved answers.");
-      })
-      .catch((error) => {
-        messageApi.error(error || "Failed to remove answer.");
-      });
+      .then(() => messageApi.success("Answer removed from saved answers."))
+      .catch(() => messageApi.error("Failed to remove answer."));
   };
 
   return (
     <div>
       {contextHolder}
-
-      {/* Display Saved Posts */}
-      <Card title="Saved Posts">
-        {savedPosts && savedPosts.length > 0 ? (
-          <List
-            dataSource={savedPosts}
-            renderItem={(post) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="link"
-                    onClick={() => navigate(`/main/post/${post._id}`)}
+      <Row gutter={[16, 16]}>
+        {/* Saved Posts */}
+        <Col xs={24} >
+          <Card title={<span style={{fontFamily:"'Inter', sans-serif",color:"var(--primary-color)" }}>Saved Posts</span>} style={{marginTop:"10vh", background:"var(--card-bg-color)" }}>
+            {savedPosts?.length > 0 ? (
+              <List
+                dataSource={savedPosts}
+                renderItem={(post) => (
+                  <List.Item
+                    actions={[
+                      <Button
+                        type="link"
+                        onClick={() => navigate(`/main/post/${post._id}`)}
+                      >
+                        <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>View Post</span>
+                      </Button>,
+                      // <Button
+                      //   type="link"
+                      //   onClick={() => handleUnsave(post._id)}
+                      // >
+                      //   <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>Unsave</span>
+                      // </Button>,
+                    ]}
                   >
-                    View Post
-                  </Button>,
-                  <Button type="link" onClick={() => handleUnsave(post._id)}>
-                    Unsave
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`Saved from @${post?.user}`}
-                  description={`${post?.content?.substring(0, 100)}...`}
-                />
-              </List.Item>
+                    <List.Item.Meta
+                      title={<span style={{fontFamily:"'Inter', sans-serif"}}>{`Saved from @${post?.user}`}</span>}
+                      description={<span style={{fontFamily:"'Inter', sans-serif", color:"black", fontWeight:"350"}}>{`${post?.content?.substring(0, 100)}...`}</span>}
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Paragraph style={{color:"black", fontWeight:"350",fontFamily:"'Inter', sans-serif"}}>No saved posts yet.</Paragraph>
             )}
-          />
-        ) : (
-          <Paragraph>No saved posts yet.</Paragraph>
-        )}
-      </Card>
+          </Card>
+        </Col>
 
-      {/* Display Saved Answers */}
-      <Card title="Saved Answers">
-        {savedAnswers && savedAnswers.length > 0 ? (
-          <List
-            dataSource={savedAnswers}
-            renderItem={(answer) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="link"
-                    onClick={() => navigate(`/main/post/${answer._id}`)}
+        {/* Saved Answers */}
+        <Col xs={24} >
+          <Card title={<span style={{fontFamily:"'Inter', sans-serif",color:"var(--primary-color)"}}>Saved Answers</span>} style={{background:"var(--card-bg-color)" }}>
+            {savedAnswers?.length > 0 ? (
+              <List
+                dataSource={savedAnswers}
+                renderItem={(answer) => (
+                  <List.Item
+                    actions={[
+                      <Button
+                        type="link"
+                        onClick={() => navigate(`/main/post/${answer._id}`)}
+                      >
+                        <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>View Answer</span>
+                      </Button>,
+                      // <Button
+                      //   type="link"
+                      //   onClick={() => handleUnsaveAnswer(answer._id)}
+                      // >
+                      //   <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>Unsave</span>
+                      // </Button>,
+                    ]}
                   >
-                    View Answer
-                  </Button>,
-                  <Button
-                    type="link"
-                    onClick={() => handleUnsaveAnswer(answer._id)}
-                  >
-                    Unsave
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`Saved from @${answer?.user}`}
-                  description={`${answer?.content?.substring(0, 100)}...`}
-                />
-              </List.Item>
+                    <List.Item.Meta
+                      title={<span style={{fontFamily:"'Inter', sans-serif"}}>{`Saved from @${answer?.user}`}</span>}
+                      description={<span style={{fontFamily:"'Inter', sans-serif", fontWeight:"350", color:"black"}}>{`${answer?.content?.substring(0, 100)}...`}</span>}
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Paragraph style={{color:"black", fontWeight:"350",fontFamily:"'Inter', sans-serif"}}>No saved answers yet.</Paragraph>
             )}
-          />
-        ) : (
-          <Paragraph>No saved answers yet.</Paragraph>
-        )}
-      </Card>
+          </Card>
+        </Col>
 
-      {/* Display My Posts */}
-      <Card title="My Posts">
-        {myFilteredPosts && myFilteredPosts.length > 0 ? (
-          <List
-            dataSource={myFilteredPosts}
-            renderItem={(post) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="link"
-                    onClick={() => navigate(`/main/post/${post._id}`)}
+        {/* My Posts */}
+        <Col xs={24}>
+          <Card title={<span style={{fontFamily:"'Inter', sans-serif",color:"var(--primary-color)" }}>My Posts</span>} style={{background:"var(--card-bg-color)" }}>
+            {myFilteredPosts?.length > 0 ? (
+              <List
+                dataSource={myFilteredPosts}
+                renderItem={(post) => (
+                  <List.Item
+                    actions={[
+                      <Button
+                        type="link"
+                        onClick={() => navigate(`/main/post/${post._id}`)}
+                      >
+                        <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>View Post</span>
+                      </Button>,
+                    ]}
                   >
-                    View Post
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`Posted by @${post.user}`}
-                  description={`${post.content.substring(0, 100)}...`}
-                />
-              </List.Item>
+                    <List.Item.Meta
+                      title={<span style={{fontFamily:"'Inter', sans-serif"}}>{`Posted by @${post.user}`}</span>}
+                      description={<span style={{fontFamily:"'Inter', sans-serif", color:"black", fontWeight:"350"}}>{`${post.content.substring(0, 100)}...`}</span>}
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Paragraph style={{color:"black", fontWeight:"350",fontFamily:"'Inter', sans-serif"}}>You haven’t created any posts yet.</Paragraph>
             )}
-          />
-        ) : (
-          <Paragraph>You haven’t created any posts yet.</Paragraph>
-        )}
-      </Card>
+          </Card>
+        </Col>
 
-      {/* Display My Questions */}
-      <Card title="My Questions">
-        {myFilteredQuestions && myFilteredQuestions.length > 0 ? (
-          <List
-            dataSource={myFilteredQuestions}
-            renderItem={(question) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="link"
-                    onClick={() => navigate(`/main/post/${question._id}`)}
+        {/* My Questions */}
+        <Col xs={24}>
+          <Card title={<span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>My Questions</span>} style={{background:"var(--card-bg-color)"}}>
+            {myFilteredQuestions?.length > 0 ? (
+              <List
+                dataSource={myFilteredQuestions}
+                renderItem={(question) => (
+                  <List.Item
+                    actions={[
+                      <Button
+                        type="link"
+                        onClick={() => navigate(`/main/post/${question._id}`)}
+                      >
+                        <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>View Question</span>
+                      </Button>,
+                    ]}
                   >
-                    View Question
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`Asked by @${question.user}`}
-                  description={`${question.content.substring(0, 100)}...`}
-                />
-              </List.Item>
+                    <List.Item.Meta
+                      title={<span style={{fontFamily:"'Inter', sans-serif"}}>{`Asked by @${question.user}`}</span>}
+                      description={<span style={{fontFamily:"'Inter', sans-serif", color:"black", fontWeight:"350"}}>{`${question.content.substring(0, 100)}...`}</span>}
+                    />
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Paragraph style={{color:"black", fontWeight:"350",fontFamily:"'Inter', sans-serif"}}>You haven’t created any questions yet.</Paragraph>
             )}
-          />
-        ) : (
-          <Paragraph>You haven’t created any questions yet.</Paragraph>
-        )}
-      </Card>
-
-      {/* Display My Answers */}
-      <Card title="My Answers">
-        {fetchedAnswers && fetchedAnswers.length > 0 ? (
-          <List
-            dataSource={fetchedAnswers}
-            renderItem={(answer) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="link"
-                    onClick={() => navigate(`/main/post/${answer._id}`)}
-                  >
-                    View Question
-                  </Button>,
-                ]}
-              >
-                <List.Item.Meta
-                  title={`Answered by @${answer.user}`}
-                  description={`${answer.content.substring(0, 100)}...`}
-                />
-              </List.Item>
-            )}
-          />
-        ) : (
-          <Paragraph>You haven’t answered any questions yet.</Paragraph>
-        )}
-      </Card>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };

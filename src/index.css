@@ -12,9 +12,7 @@
   --success-color: #28a745; 
   --error-color: #dc3545; 
   --btn-color:#F3F312;
-  --card-bg-color: #FFF;
-  --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  --card-text-color: #001219;
+  --card-bg-color: #fff;
 }
 
 [data-theme="dark"] {
@@ -29,9 +27,7 @@
   --success-color: #2ecc71; 
   --error-color: #ff4d4f; 
   --btn-color:#F3F312;
-  --card-bg-color: #3D5A80;
-  --card-shadow:0 4px 10px rgba(255, 255, 255, 0.1);
-  --card-text-color: #E0FBFC;
+  --card-bg-color: whitesmoke;
 }
 
 * {

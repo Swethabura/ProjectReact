@@ -1,11 +1,12 @@
 import { Avatar, Card, Button, Image, Input, message, Spin } from "antd";
 import {
-  CommentOutlined,
   ShareAltOutlined,
   SaveOutlined,
   SaveFilled,
   HeartFilled,
   HeartOutlined,
+  MessageFilled,
+  MessageOutlined,
 } from "@ant-design/icons";
 import "../../Styles/Feed.css";
 import { useEffect, useState } from "react";
@@ -17,15 +18,15 @@ import {
 } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
-import { savePost } from "../redux/userCollectionSlice";
+import { savePost, fetchUserCollection } from "../redux/userCollectionSlice";
 
 function Feed() {
-  
   const loggedInUser = localStorage.getItem("LoggedInUser");
   const [commentInput, setCommentInput] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({});
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
+  const { savedPosts } = useSelector((state) => state.userCollection);
   const {
     posts: fetchedPosts,
     loading,
@@ -34,15 +35,19 @@ function Feed() {
   const [posts, setPosts] = useState([]); // Store posts locally
 
   useEffect(() => {
-    dispatch(fetchPosts()); // Fetch posts from API
+    dispatch(fetchPosts());
   }, [dispatch]);
 
   useEffect(() => {
     setPosts(fetchedPosts); // Update local state when Redux state changes
   }, [fetchedPosts]);
 
-  if (loading) return <Spin size="large" />;
-  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
+  useEffect(() => {
+    dispatch(fetchUserCollection(loggedInUser));
+  }, [dispatch, loggedInUser]);
+
+  if (loading) return <Spin size="large" className="loading-spinner" />;
+  if (error) return <p className="error-message">Error: {error}</p>;
 
   // Function to add new post
   const addNewPost = (newPost) => {
@@ -82,7 +87,6 @@ function Feed() {
     );
   };
 
-
   // toggle to make visible and hide the comment section
   const toggleComments = (postId) => {
     setExpandedPosts((prev) => ({
@@ -117,86 +121,107 @@ function Feed() {
     setCommentInput((prev) => ({ ...prev, [postId]: "" }));
 
     // Close the comment section after adding the comment
-  setExpandedPosts((prev) => ({
-    ...prev,
-    [postId]: false, // Set to false to collapse the section
-  }));
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: false, // Set to false to collapse the section
+    }));
   };
 
   // handle the save post
   const handleSave = (postId) => {
     const accountUsername = loggedInUser;
-  
+
     dispatch(savePost({ accountUsername, postId }))
       .unwrap()
       .then((data) => {
-        // console.log("Success response:", data); 
+        // console.log("Success response:", data);
         messageApi.success("Post saved successfully!");
+        dispatch(fetchUserCollection(loggedInUser));
       })
       .catch((error) => {
-        console.error("Save post error:", error); 
+        console.error("Save post error:", error);
         messageApi.error(error || "Failed to save post");
       });
   };
-  
+
   return (
     <div className="feed-container">
       {contextHolder}
       <FloatingButton addNewPost={(post) => dispatch(addPost(post))} />
       {posts.map((post) => (
-        <Card key={post.id} className="feed-card">
+        <Card key={post._id} className="feed-card">
           <div className="post-header">
-            <Avatar src={post.avatar} />
+            <Avatar src={post.avatar} className="post-avatar" />
             <span className="username">{post.user}</span>
           </div>
           <p className="post-content">{post.content}</p>
           {post.image && (
-            <Image src={post.image} alt="Post-image" className="post-image" />
+            <Image src={post.image} alt="Post" className="post-image" />
           )}
           <div className="post-actions">
             <Button
-              icon={
-                post.likedBy.includes(loggedInUser) ? (
-                  <HeartFilled style={{ color: "red" }} />
-                ) : (
-                  <HeartOutlined />
-                )
-              }
+              className="btn-content"
               onClick={() => handleLike(post._id)}
             >
-              {post.likes} Likes
+              {post.likedBy.includes(loggedInUser) ? (
+                <HeartFilled className="liked" />
+              ) : (
+                <HeartOutlined />
+              )}
+              <span className="count">{post.likes}</span>
+              <span className="btn-text">Likes</span> {/* Separate text */}
             </Button>
+
             <Button
+              className="btn-content"
               onClick={() => toggleComments(post._id)}
-              icon={<CommentOutlined />}
             >
-              {post.comments?.length} comments
+              {expandedPosts[post._id] ? (
+                <MessageFilled style={{color:"blue"}}/>
+              ) : (
+                <MessageOutlined />
+              )}
+              <span className="count">{post.comments?.length}</span>
+              <span className="btn-text">Comments</span>
             </Button>
-            <Button icon={<SaveOutlined />}
-              onClick={()=>handleSave(post._id)}
-            >Save</Button>
-            <Button icon={<ShareAltOutlined />}>Share</Button>
+
+            <Button
+              className="btn-content"
+              onClick={() => handleSave(post._id)}
+            >
+              {savedPosts.some((p) => p._id === post._id) ? (
+                <SaveFilled className="saved" />
+              ) : (
+                <SaveOutlined />
+              )}
+              <span className="btn-text">Save</span>
+            </Button>
+
+            <Button className="btn-content">
+              <ShareAltOutlined />
+              <span className="btn-text">Share</span> {/* Separate text */}
+            </Button>
           </div>
-          {/* Comments Section */}
           {expandedPosts[post._id] && (
             <div className="comments-section">
               <Input
                 placeholder="Write a comment..."
                 value={commentInput[post._id] || ""}
                 onChange={(e) => handleCommentChange(post._id, e.target.value)}
-                style={{ marginTop: "10px" }}
+                style={{ fontSize: "16px" }}
               />
               <Button
                 type="primary"
                 onClick={() => handleAddComment(post._id)}
-                style={{ marginTop: "5px" }}
+                style={{ fontSize: "16px" }}
               >
-                Add Comment
+                Add
               </Button>
               <div className="comments-list">
                 {post.comments.map((comment, index) => (
                   <div key={index} className="comment">
-                    <strong>{comment.user}</strong> {comment.text}
+                    <strong className="comment-user">{comment.user}:</strong>
+                    <span className="comment-text"> {comment.text}</span>
                   </div>
                 ))}
               </div>
@@ -207,4 +232,4 @@ function Feed() {
     </div>
   );
 }
-export default Feed; 
+export default Feed;

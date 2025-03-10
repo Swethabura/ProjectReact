@@ -38,11 +38,11 @@ const Profile = () => {
     }
   }, [dispatch, loggedInUser]);
 
-  if (loading) return <Spin size="large" />;
+  if (loading) return <Spin size="large" className="loading-spinner" />;
   if (error) return <div>Error: {error.message}</div>;
   if (!profile)
     return (
-      <div style={{ marginTop: "18vh", color: "blue" }}>
+      <div style={{ marginTop: "20vh", color: "blue" }}>
         It looks like this profile has not been created yet.
       </div>
     );
@@ -124,49 +124,51 @@ const Profile = () => {
       </Paragraph>
 
       {/* Edit Button */}
+      <div className="editAndBackBtns">
       <Button
         type="primary"
         icon={<EditOutlined />}
         onClick={showModal}
-        style={{ marginRight: "10px" }}
+        className="editProfile-btn"
       >
         Edit
       </Button>
-      <Button onClick={() => navigate("/main/feed")}>Back</Button>
-
+      <Button onClick={() => navigate("/main/feed")} className="back-btn">Back</Button>
+      </div>
       {/* Modal for Edit Profile */}
       <Modal
-        title="Edit Profile"
+        title={<span style={{fontSize:"18px", fontFamily:"'Inter', sans-serif"}}>Edit Profile</span>}
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}
+        style={{margin:"-8vh auto"}}
       >
         <Form form={form} onFinish={onFinish} layout="vertical">
-          <Form.Item name="username" label="Username">
+          <Form.Item name="username" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Username</span>}>
             <Input placeholder="Enter your username" />
           </Form.Item>
-          <Form.Item name="gender" label="Gender">
+          <Form.Item name="gender" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Gender</span>}>
             <Select placeholder="Select your gender">
               <Option value="Male">Male</Option>
               <Option value="Female">Female</Option>
               <Option value="Other">Other</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="education" label="Education">
+          <Form.Item name="education" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Education</span>}>
             <Input placeholder="Enter your education" />
           </Form.Item>
-          <Form.Item name="address" label="Address">
+          <Form.Item name="address" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Address</span>}>
             <Input placeholder="Enter your address" />
           </Form.Item>
-          <Form.Item name="dob" label="Date of Birth">
+          <Form.Item name="dob" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Date of Birth</span>}>
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
-          <Form.Item name="email" label="Email">
+          <Form.Item name="email" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Email</span>}>
             <Input placeholder="Enter your email" />
           </Form.Item>
 
           {/* Profile Picture Upload */}
-          <Form.Item name="profilePic" label="Profile Picture">
+          <Form.Item name="profilePic" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Profile Picture</span>}>
             {previewImage && (
               <img
                 src={previewImage}
@@ -184,13 +186,13 @@ const Profile = () => {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              style={{ display: "block" }}
+              style={{ display: "block", fontFamily:"'Inter', sans-serif", background:"var(--card-bg-color)", border:"1px solid rgba(0,0,0,0.3)" }}
             />
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Save
+            <Button type="primary" htmlType="submit" >
+            <span style={{fontFamily:"'Inter', sans-serif"}}>Submit</span>
             </Button>
           </Form.Item>
         </Form>

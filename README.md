@@ -136,3 +136,9 @@ Users can share progress, ask questions, and collaborate in a structured way.
 - 📌 Adding styles and making the pages responsive
 - 📌 Created sidebar to visible on desktop and handled with arrow in mobile view.
 
+### ✅ **March 06, 2025** 
+- 📌 Adding styles and making the pages responsive
+
+### ✅ **March 10, 2025** 
+- 📌 Adding styles and making the pages responsive
+

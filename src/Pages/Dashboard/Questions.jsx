@@ -16,7 +16,7 @@ function Questions() {
       dispatch(fetchQuestions());
     },[dispatch])
 
-  if (loading) return <Spin size="large" />;
+  if (loading) return <Spin size="large" className="loading-spinner"/>;
   if (error) return <p style={{ color: "red" }}>Error: {error}</p>
 
    // Function to add new Question
@@ -26,7 +26,6 @@ function Questions() {
 
   return (
     <div className="questions">
-      <Title level={2}>Questions</Title>
       {questions.length === 0 ? (
         <p>No questions yet. Be the first to ask!</p>
       ) : (

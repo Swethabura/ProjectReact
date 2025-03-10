@@ -153,7 +153,7 @@ const userCollectionSlice = createSlice({
       // to save a post
       .addCase(savePost.fulfilled, (state, action) => {
         if (state.userCollection) {
-          state.userCollection.savedPosts = action.payload; 
+          state.savedPosts = action.payload; 
         }
       })
       // to unsave a post
@@ -163,7 +163,7 @@ const userCollectionSlice = createSlice({
       // Save Answer
       .addCase(saveAnswer.fulfilled, (state, action) => {
         if (state.userCollection) {
-          state.userCollection.savedAnswers = action.payload;
+          state.savedAnswers = action.payload;
         }
       })
       // Unsave Answer
