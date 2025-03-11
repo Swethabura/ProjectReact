@@ -9,6 +9,7 @@ import SignupPage from "./Pages/Auth/Signup";
 import Mainpage from "./Pages/Dashboard/MainPage";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import SharedPost from "./Pages/SharedPost";
 
 // Layout component with Navbar
 function Layout({ children }) {
@@ -50,6 +51,7 @@ function App() {
       />{" "}
       {/* Nested Routes */}
       <Route path="/admin/*" element={<AdminDashboard />} />
+      <Route path="/sharedpost/:postId" element={<SharedPost />} />
     </Routes>
   );
 }
