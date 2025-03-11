@@ -38,6 +38,11 @@ function QuestionItem({ question }) {
   const { savedAnswers } = useSelector((state) => state.userCollection);
   const { loading, error, profile } = useSelector((state) => state.profile);
 
+  // State for Share Modal
+  const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
+  const [selectedAnswerId, setSelectedAnswerId] = useState(null);
+
   useEffect(() => {
     if (expanded && question._id) {
       dispatch(fetchAnswers(question._id));
@@ -48,13 +53,13 @@ function QuestionItem({ question }) {
     dispatch(fetchUserCollection(loggedInUser));
   }, [dispatch, loggedInUser]);
 
-   useEffect(() => {
-      if (loggedInUser) {
-        dispatch(fetchProfile(loggedInUser));
-      }
-    }, [dispatch, loggedInUser]);
-  
-    const profilePic = profile?.profilePic
+  useEffect(() => {
+    if (loggedInUser) {
+      dispatch(fetchProfile(loggedInUser));
+    }
+  }, [dispatch, loggedInUser]);
+
+  const profilePic = profile?.profilePic;
 
   // to sumbit a new answer
   const handleAnswerSubmit = async () => {
@@ -66,7 +71,7 @@ function QuestionItem({ question }) {
       questionId: question._id,
       user: loggedInUser,
       content: answerInput,
-      avatar: profilePic? profilePic:`https://via.placeholder.com/40`,
+      avatar: profilePic ? profilePic : `https://via.placeholder.com/40`,
       image,
     };
     try {
@@ -139,6 +144,37 @@ function QuestionItem({ question }) {
         console.error("Save answer error:", error);
         messageApi.error(error || "Failed to save answer");
       });
+  };
+
+  // Function to generate shareable link
+  const getShareableLink = (questionId, answerId) => {
+    const baseUrl =
+      import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:5174";
+    return `${baseUrl}shared-answer/${questionId}/${answerId}`;
+  };
+
+  // Handle Share Button Click
+  const handleShareClick = (questionId, answerId) => {
+    setSelectedQuestionId(questionId);
+    setSelectedAnswerId(answerId);
+    setIsShareModalVisible(true);
+  };
+
+  // Copy Link to Clipboard
+  const handleCopyToClipboard = () => {
+    const link = getShareableLink(selectedQuestionId, selectedAnswerId);
+    navigator.clipboard.writeText(link).then(() => {
+      messageApi.success("Link copied to clipboard!");
+      setIsShareModalVisible(false);
+    });
+  };
+
+  // Share via WhatsApp
+  const handleShareViaWhatsApp = () => {
+    const link = getShareableLink(selectedQuestionId, selectedAnswerId);
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(link)}`;
+    window.open(whatsappUrl, "_blank");
+    setIsShareModalVisible(false);
   };
 
   return (
@@ -267,7 +303,7 @@ function QuestionItem({ question }) {
                       }
                     >
                       {commentExpanded[answer._id] ? (
-                        <MessageFilled style={{color:"blue"}} />
+                        <MessageFilled style={{ color: "blue" }} />
                       ) : (
                         <MessageOutlined />
                       )}
@@ -280,7 +316,14 @@ function QuestionItem({ question }) {
 
                     <Button className="btn-content">
                       <ShareAltOutlined />
-                      <span className="btn-text">Share</span>
+                      <span
+                        className="btn-text"
+                        onClick={() =>
+                          handleShareClick(question._id, answer._id)
+                        }
+                      >
+                        Share
+                      </span>
                     </Button>
 
                     <Button
@@ -388,6 +431,25 @@ function QuestionItem({ question }) {
           onChange={(e) => setAnswerInput(e.target.value)}
           rows={4}
         />
+      </Modal>
+      {/* Share Modal */}
+      <Modal
+        title="Share Post"
+        open={isShareModalVisible}
+        onCancel={() => setIsShareModalVisible(false)}
+        footer={null}
+      >
+        <Button
+          block
+          type="primary"
+          onClick={handleCopyToClipboard}
+          style={{ marginBottom: "10px" }}
+        >
+          Copy Link to Clipboard
+        </Button>
+        <Button block type="default" onClick={handleShareViaWhatsApp}>
+          Share via WhatsApp
+        </Button>
       </Modal>
     </Card>
   );

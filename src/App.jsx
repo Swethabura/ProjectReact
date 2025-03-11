@@ -10,6 +10,7 @@ import Mainpage from "./Pages/Dashboard/MainPage";
 import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import SharedPost from "./Pages/SharedPost";
+import SharedAnswer from "./Pages/SharedAnswer";
 
 // Layout component with Navbar
 function Layout({ children }) {
@@ -52,6 +53,7 @@ function App() {
       {/* Nested Routes */}
       <Route path="/admin/*" element={<AdminDashboard />} />
       <Route path="/sharedpost/:postId" element={<SharedPost />} />
+      <Route path="/shared-answer/:questionId/:answerId" element={<SharedAnswer />} />
     </Routes>
   );
 }
