@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchAnswers } from "./redux/answersSlice";
 import { Card, Avatar, Button, Spin } from "antd";
+import "../Styles/PostDetails.css"
 
 function SharedAnswer() {
   const { questionId, answerId } = useParams();
@@ -31,20 +32,20 @@ function SharedAnswer() {
   if (!answer) return <p style={{ color: "black" }}>Answer not found or removed.</p>;
 
   return (
-    <div className="shared-answer-container">
-      <Card className="feed-card">
+    <div style={{overflowY:"hidden"}}>
+      <Card className="post-details-container">
         <div className="post-header">
-          <Avatar src={answer.avatar} />
-          <span>{answer.user}</span>
+          <Avatar src={answer.avatar} className="post-avatar"/>
+          <span className="post-username">{answer.user}</span>
         </div>
-        <p>{answer.content}</p>
+        <p className="post-content">{answer.content}</p>
 
         <Button
           type="primary"
           onClick={() => navigate("/login")}
-          style={{ marginTop: "10px" }}
+          style={{ marginTop: "10px", display:"flex", justifyContent:"center", alignItems:"center"}}
         >
-          Start Your Journey
+          <span style={{fontSize:"18px"}}>Start Your Journey</span>
         </Button>
       </Card>
     </div>

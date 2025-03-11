@@ -142,3 +142,8 @@ Users can share progress, ask questions, and collaborate in a structured way.
 ### ✅ **March 10, 2025** 
 - 📌 Adding styles and making the pages responsive
 
+### ✅ **March 05, 2025** 
+- 📝 Sharing posts and answers handled succesfully!
+- 📌 Adding styles and making the pages responsive
+- 📌 Created all the required pages in the frontend for admin dashboard.
+

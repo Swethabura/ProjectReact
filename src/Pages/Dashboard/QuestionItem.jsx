@@ -150,7 +150,7 @@ function QuestionItem({ question }) {
   const getShareableLink = (questionId, answerId) => {
     const baseUrl =
       import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:5174";
-    return `${baseUrl}shared-answer/${questionId}/${answerId}`;
+    return `${baseUrl}/shared-answer/${questionId}/${answerId}`;
   };
 
   // Handle Share Button Click

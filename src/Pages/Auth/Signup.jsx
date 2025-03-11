@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
 import "../../Styles/Auth.css";
 import { message } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -14,6 +15,7 @@ function SignupPage() {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [error, setError] = useState({}); // Store errors for specific fields
+  const [isLoading, setIsLoading] = useState(false);
 
   const apiUrl = import.meta.env.VITE_BASE_URL;
 
@@ -59,15 +61,20 @@ function SignupPage() {
       return;
     }
 
+    setIsLoading(true);
+
     try {
       const response = await fetch(`${apiUrl}/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ username, password, email }),
       });
 
       const data = await response.json();
       if (!response.ok) {
+        setIsLoading(false);
         showError(data.msg, usernameRef, "username");
         return;
       }
@@ -77,6 +84,7 @@ function SignupPage() {
         navigate("/login"); // Delay navigation to allow message to appear
       }, 1500);
     } catch (error) {
+      setIsLoading(false);
       showError("Something went wrong! Try again after sometime!", null, "");
     }
   };
@@ -165,7 +173,25 @@ function SignupPage() {
           <div className="otp-box">{generatedOtp}</div>
           </div>
           <button onClick={generateOtp}>Regenerate OTP</button>
-          <button type="submit">Sign Up</button>
+          {/* Submit Button with Spinner */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {isLoading ? (
+              <>
+                <LoadingOutlined style={{ marginRight: "5px" }} />
+                Signing Up...
+              </>
+            ) : (
+              "Sign Up"
+            )}
+          </button>
         </form>
         <p>
           Already registered?{"  --  "}

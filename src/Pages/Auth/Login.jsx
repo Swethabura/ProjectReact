@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import "../../Styles/Auth.css";
 import { Link, useNavigate } from "react-router-dom";
-import { message } from "antd";
+import { message,Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 
 function LoginPage() {
@@ -11,6 +12,7 @@ function LoginPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const usernameRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
   const apiUrl = import.meta.env.VITE_BASE_URL;
   // console.log(apiUrl);
@@ -48,6 +50,7 @@ function LoginPage() {
   // login handle
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await fetch(`${apiUrl}/auth/login`, {
@@ -60,6 +63,7 @@ function LoginPage() {
 
       const data = await response.json();
       if (!response.ok) {
+        setLoading(false);
         errorMsg(data.message);
         return;
       }
@@ -75,6 +79,7 @@ function LoginPage() {
         navigate("/main"); // Redirect normal user to main dashboard
       }
     } catch (error) {
+      setLoading(false);
       errorMsg("Something went wrong. Please try again!");
     }
   };
@@ -109,9 +114,27 @@ function LoginPage() {
             />
             <label>Enter Password</label>
           </div>
-          <button type="submit">Login</button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="login-btn"
+          >
+            {loading ? (
+              <>
+                <LoadingOutlined style={{ marginRight: "5px" }} />
+                &nbsp; Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
+          </button>
         </form>
-        <button style={{ marginTop: "1rem" }} onClick={guestHandleLogin}>
+        {/* ✅ Guest Login */}
+        <button
+          style={{ marginTop: "1rem" }}
+          onClick={guestHandleLogin}
+          disabled={loading}
+        >
           Login as Guest
         </button>
         <p>
