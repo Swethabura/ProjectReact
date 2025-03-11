@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../../Styles/FloatingBtn.css";
 import { Button, Input, message, Modal, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addPost, addQuestion } from "../redux/userSlice";
+import { fetchProfile } from "../redux/profileSlice";
 
 const FloatingButton = ({ addNewPost, addNewQuestion }) => {
   const location = useLocation();
@@ -14,6 +15,17 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
   const [content, setContent] = useState("");
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useDispatch();
+  const loggedInUser = localStorage.getItem("LoggedInUser");
+  const { loading, error, profile } = useSelector((state) => state.profile);
+
+  useEffect(() => {
+    if (loggedInUser) {
+      dispatch(fetchProfile(loggedInUser));
+    }
+  }, [dispatch, loggedInUser]);
+
+  const profilePic = profile?.profilePic
+  
 
   let buttonText = "";
   let isQuestion = false;
@@ -40,17 +52,17 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
       return;
     }
     if (!content.trim()) {
-      showError(isQuestion ? "Question cannot be empty!" : "Post cannot be empty!");
+      showError(
+        isQuestion ? "Question cannot be empty!" : "Post cannot be empty!"
+      );
       return;
     }
-
-    const loggedInUser = localStorage.getItem("LoggedInUser");
 
     let newEntry;
     if (isQuestion) {
       newEntry = {
         user: loggedInUser,
-        avatar: `https://via.placeholder.com/40`, // Placeholder avatar
+        avatar: profilePic ? profilePic : `https://via.placeholder.com/40`, // Placeholder avatar
         title,
         content,
         image: image || "",
@@ -59,21 +71,21 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         votedBy: [],
       };
       dispatch(addQuestion(newEntry))
-      .unwrap()
-      .then(() => {
-        messageApi.success("Question posted successfully!");
-        setIsModalOpen(false);
-        setTitle("");
-        setContent("");
-        setImage(null);
-      })
-      .catch((error) => {
-        messageApi.error(error || "Failed to post question.");
-      });
+        .unwrap()
+        .then(() => {
+          messageApi.success("Question posted successfully!");
+          setIsModalOpen(false);
+          setTitle("");
+          setContent("");
+          setImage(null);
+        })
+        .catch((error) => {
+          messageApi.error(error || "Failed to post question.");
+        });
     } else {
       newEntry = {
         user: loggedInUser,
-        avatar: `https://via.placeholder.com/40`, // Placeholder avatar
+        avatar: profilePic ? profilePic:`https://via.placeholder.com/40`, // Placeholder avatar
         content,
         image: image || "",
         likes: 0,
@@ -81,17 +93,17 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         comments: [],
       };
       dispatch(addPost(newEntry))
-      .unwrap()
-      .then(() => {
-        messageApi.success("Post added successfully!");
-        setIsModalOpen(false);
-        setTitle("");
-        setContent("");
-        setImage(null);
-      })
-      .catch((error) => {
-        messageApi.error(error || "Failed to add post.");
-      });
+        .unwrap()
+        .then(() => {
+          messageApi.success("Post added successfully!");
+          setIsModalOpen(false);
+          setTitle("");
+          setContent("");
+          setImage(null);
+        })
+        .catch((error) => {
+          messageApi.error(error || "Failed to add post.");
+        });
     }
 
     setIsModalOpen(false);
@@ -99,12 +111,12 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
     setContent("");
     setImage(null);
   };
-  const handleCreatePost =  ()=>{
+  const handleCreatePost = () => {
     setIsModalOpen(true);
-  }
+  };
   return (
     <>
-      <button onClick={ handleCreatePost} className="floating-button" >
+      <button onClick={handleCreatePost} className="floating-button">
         {buttonText}
       </button>
       {contextHolder}
@@ -126,7 +138,9 @@ const FloatingButton = ({ addNewPost, addNewQuestion }) => {
         )}
         <Input.TextArea
           rows={3}
-          placeholder={isQuestion ? "Describe your question..." : "What's on your mind?"}
+          placeholder={
+            isQuestion ? "Describe your question..." : "What's on your mind?"
+          }
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />

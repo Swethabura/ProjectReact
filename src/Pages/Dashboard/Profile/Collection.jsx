@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Card, List, Spin, Typography, Button, message, Row, Col } from "antd";
 import {
   fetchUserCollection,
-  unsaveAnswer,
-  unsavePost,
   fetchAnswersByIds,
 } from "../../redux/userCollectionSlice";
 import { fetchPosts, fetchQuestions } from "../../redux/userSlice";
@@ -82,23 +80,6 @@ const Collection = () => {
     );
   }
 
-  const handleUnsave = (postId) => {
-    dispatch(unsavePost({ accountUsername: loggedInUser, postId }))
-      .unwrap()
-      .then(() => {
-        messageApi.success("Post removed from saved posts.");
-        dispatch(fetchUserCollection(loggedInUser));
-      })
-      .catch(() => messageApi.error("Failed to remove post."));
-  };
-
-  const handleUnsaveAnswer = (answerId) => {
-    dispatch(unsaveAnswer({ accountUsername: loggedInUser, answerId }))
-      .unwrap()
-      .then(() => messageApi.success("Answer removed from saved answers."))
-      .catch(() => messageApi.error("Failed to remove answer."));
-  };
-
   return (
     <div>
       {contextHolder}
@@ -118,12 +99,6 @@ const Collection = () => {
                       >
                         <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>View Post</span>
                       </Button>,
-                      // <Button
-                      //   type="link"
-                      //   onClick={() => handleUnsave(post._id)}
-                      // >
-                      //   <span style={{fontFamily:"'Inter', sans-serif", color:"var(--primary-color)"}}>Unsave</span>
-                      // </Button>,
                     ]}
                   >
                     <List.Item.Meta

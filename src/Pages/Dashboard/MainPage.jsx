@@ -10,6 +10,7 @@ import Profile from "./Profile/Profile";
 import PostDetails from "./Profile/PostDetails";
 import Collection from "./Profile/Collection";
 import '../../Styles/MainPage.css'
+import ProtectedRoute from "../../ProtectedRoute";
 
 function MainPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -48,7 +49,11 @@ function MainPage() {
           <Route path="questions" element={<Questions />} />
           <Route path="my-profile" element={<Profile />} />
           <Route path="collection" element={<Collection />} />
-          <Route path="post/:postId" element={<PostDetails />} />
+          
+          <Route path="post/:postId" element={<ProtectedRoute><PostDetails /></ProtectedRoute>} />
+          
+        {/* Handle unknown routes */}
+        <Route path="*" element={<p>Page Not Found</p>} />
         </Routes>
         <FloatingButton key={location.pathname} />
       </div>

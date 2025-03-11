@@ -18,6 +18,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { saveAnswer, fetchUserCollection } from "../redux/userCollectionSlice";
 import "../../Styles/Questions.css";
+import { fetchProfile } from "../redux/profileSlice";
 
 const { TextArea } = Input;
 
@@ -35,6 +36,7 @@ function QuestionItem({ question }) {
   );
   const loggedInUser = localStorage.getItem("LoggedInUser") || "Guest";
   const { savedAnswers } = useSelector((state) => state.userCollection);
+  const { loading, error, profile } = useSelector((state) => state.profile);
 
   useEffect(() => {
     if (expanded && question._id) {
@@ -46,6 +48,14 @@ function QuestionItem({ question }) {
     dispatch(fetchUserCollection(loggedInUser));
   }, [dispatch, loggedInUser]);
 
+   useEffect(() => {
+      if (loggedInUser) {
+        dispatch(fetchProfile(loggedInUser));
+      }
+    }, [dispatch, loggedInUser]);
+  
+    const profilePic = profile?.profilePic
+
   // to sumbit a new answer
   const handleAnswerSubmit = async () => {
     if (!answerInput.trim()) {
@@ -56,7 +66,7 @@ function QuestionItem({ question }) {
       questionId: question._id,
       user: loggedInUser,
       content: answerInput,
-      avatar: `https://via.placeholder.com/40`,
+      avatar: profilePic? profilePic:`https://via.placeholder.com/40`,
       image,
     };
     try {

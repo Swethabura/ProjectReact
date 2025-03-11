@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_BASE_URL;; // Replace with your backend URL
+const apiUrl = import.meta.env.VITE_BASE_URL; // Replace with your backend URL
 
 // Fetch user collection (saved posts, saved answers, my posts, my answers)
 export const fetchUserCollection = createAsyncThunk(

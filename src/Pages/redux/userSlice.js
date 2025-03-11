@@ -50,7 +50,7 @@ export const addPostComment = createAsyncThunk(
 export const deletePost = createAsyncThunk("posts/deletePost", async (postId, { getState, rejectWithValue }) => {
   try {
     // API call to delete the post
-    await axios.delete(`${apiUrl}/public/posts/${postId}`);
+    await axios.delete(`${apiUrl}/public/post/${postId}`);
 
     // Update state after successful deletion
     const { posts } = getState().posts;

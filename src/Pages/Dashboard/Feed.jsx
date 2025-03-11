@@ -1,4 +1,4 @@
-import { Avatar, Card, Button, Image, Input, message, Spin } from "antd";
+import { Avatar, Card, Button, Image, Input, message, Spin, Modal } from "antd";
 import {
   ShareAltOutlined,
   SaveOutlined,
@@ -19,6 +19,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
 import { savePost, fetchUserCollection } from "../redux/userCollectionSlice";
+import { useSearchParams } from "react-router-dom";
 
 function Feed() {
   const loggedInUser = localStorage.getItem("LoggedInUser");
@@ -33,6 +34,10 @@ function Feed() {
     error,
   } = useSelector((state) => state.posts);
   const [posts, setPosts] = useState([]); // Store posts locally
+
+   // State for Share Modal
+   const [isShareModalVisible, setIsShareModalVisible] = useState(false);
+   const [selectedPostId, setSelectedPostId] = useState(null); 
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -144,6 +149,37 @@ function Feed() {
       });
   };
 
+  // Function to generate shareable link
+  const getShareableLink = (postId) => {
+    const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:3000";
+    return `${baseUrl}/main/post/${postId}`;
+  };
+
+  // Handle Share Button Click
+  const handleShareClick = (postId) => {
+    setSelectedPostId(postId);
+    setIsShareModalVisible(true);
+  };
+
+  // Copy Link to Clipboard
+  const handleCopyToClipboard = () => {
+    const link = getShareableLink(selectedPostId);
+    navigator.clipboard.writeText(link).then(() => {
+      messageApi.success("Link copied to clipboard!");
+      setIsShareModalVisible(false);
+    });
+  };
+
+  // Share via WhatsApp
+  const handleShareViaWhatsApp = () => {
+    const link = getShareableLink(selectedPostId);
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(link)}`;
+    window.open(whatsappUrl, "_blank");
+    setIsShareModalVisible(false);
+  };
+
+
+
   return (
     <div className="feed-container">
       {contextHolder}
@@ -197,9 +233,9 @@ function Feed() {
               <span className="btn-text">Save</span>
             </Button>
 
-            <Button className="btn-content">
+            <Button className="btn-content" onClick={() => handleShareClick(post._id)}>
               <ShareAltOutlined />
-              <span className="btn-text">Share</span> {/* Separate text */}
+              <span className="btn-text">Share</span> 
             </Button>
           </div>
           {expandedPosts[post._id] && (
@@ -229,6 +265,25 @@ function Feed() {
           )}
         </Card>
       ))}
+      {/* Share Modal */}
+      <Modal
+        title="Share Post"
+        open={isShareModalVisible}
+        onCancel={() => setIsShareModalVisible(false)}
+        footer={null}
+      >
+        <Button
+          block
+          type="primary"
+          onClick={handleCopyToClipboard}
+          style={{ marginBottom: "10px" }}
+        >
+          Copy Link to Clipboard
+        </Button>
+        <Button block type="default" onClick={handleShareViaWhatsApp}>
+          Share via WhatsApp
+        </Button>
+      </Modal>
     </div>
   );
 }

@@ -31,25 +31,20 @@ const Sidebar = () => {
             setIsOpen(!isOpen);}
           }
           
-          style={{ cursor: "pointer" }}
+          className="sidebar-btn"
         >
           <ProfileOutlined /> My Profile
         </p>
         <p
           onClick={()=>{navigate("/main/collection");setIsOpen(!isOpen);}
         }
-          style={{ cursor: "pointer" }}
+          className="sidebar-btn"
         >
           <BookOutlined /> Collection
         </p>
         <p
           onClick={showLogoutConfirm}
-          style={{
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-          }}
+          className="sidebar-btn"
         >
           <LogoutOutlined /> Logout
         </p>
@@ -62,12 +57,12 @@ const Sidebar = () => {
       </button>
       {/* Logout Confirmation Modal */}
       <Modal
-        title="Confirm Logout"
+        title={<span style={{fontFamily: "'Inter', sans-serif", color:"var(--primary-color)"}}>Confirm Logout</span>}
         open={isModalVisible}
         onOk={handleLogout}
         onCancel={() => setIsModalVisible(false)}
         okText="Yes, Logout"
-        cancelText="Cancel"
+        cancelText={<span style={{color:"black"}}>Cancel</span>}
       >
         <p>Are you sure you want to log out?</p>
       </Modal>

@@ -66,12 +66,12 @@ const PostDetails = () => {
         .unwrap()
         .then((data) => setPostDetails(data[0]))
         .catch(() => messageApi.error("Failed to fetch answer details"));
-    } else if (foundMyPost) {
-      setPostDetails(foundMyPost);
-      setPostType("myPost");
     } else if (foundPost) {
       setPostDetails(foundPost);
       setPostType("savedPost");
+    }else if (foundMyPost) {
+      setPostDetails(foundMyPost);
+      setPostType("myPost");
     } else if (foundMyQuestion) {
       setPostDetails(foundMyQuestion);
       setPostType("myQuestion");
