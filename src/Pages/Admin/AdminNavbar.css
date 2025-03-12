@@ -5,6 +5,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: fixed;
+    width: 100vw;
+    z-index: 11;
   }
   
   .nav-links {
@@ -33,6 +36,9 @@
     left: 0;
     padding: 20px;
   }
+.admindashboard-container{
+  margin-top: 18vh;
+}
   
   @media (max-width: 768px) {
     .nav-links {

@@ -46,6 +46,37 @@ export const fetchAdminQuestions = createAsyncThunk(
     }
   }
 );
+// Delete Question (Admin)
+export const adminDeleteQuestion = createAsyncThunk(
+  "admin/deleteQuestion",
+  async (questionId, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${apiUrl}/admin/questions/${questionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return questionId; 
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Delete Post (Admin)
+export const adminDeletePost = createAsyncThunk(
+  "admin/deletePost",
+  async (postId, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${apiUrl}/admin/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return postId;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  }
+);
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
@@ -92,6 +123,21 @@ const adminSlice = createSlice({
       })
       .addCase(fetchAdminQuestions.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+      })
+      // Delete Question
+      .addCase(adminDeleteQuestion.fulfilled, (state, action) => {
+        state.questions = state.questions.filter(q => q._id !== action.payload);
+      })
+      .addCase(adminDeleteQuestion.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      
+      // Delete Post
+      .addCase(adminDeletePost.fulfilled, (state, action) => {
+        state.posts = state.posts.filter(p => p._id !== action.payload);
+      })
+      .addCase(adminDeletePost.rejected, (state, action) => {
         state.error = action.payload;
       });
   },
