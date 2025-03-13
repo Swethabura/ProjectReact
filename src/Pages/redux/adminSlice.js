@@ -77,12 +77,43 @@ export const adminDeletePost = createAsyncThunk(
     }
   }
 );
+// **Fetch All Users with Search**
+export const fetchUsers = createAsyncThunk(
+  "admin/fetchUsers",
+  async (search = "", { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const response = await axios.get(`${apiUrl}/admin/users?search=${search}`, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error fetching users");
+    }
+  }
+);
+
+// **Delete User**
+export const deleteUser = createAsyncThunk(
+  "admin/deleteUser",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.delete(`${apiUrl}/admin/user/${userId}`, config);
+      return userId;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Error deleting user");
+    }
+  }
+);
+
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
     stats: null,
     posts: [],
     questions: [],
+    users: [],
     loading: false,
     error: null,
   },
@@ -138,6 +169,31 @@ const adminSlice = createSlice({
         state.posts = state.posts.filter(p => p._id !== action.payload);
       })
       .addCase(adminDeletePost.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      // Fetch Users
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Delete User
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = state.users.filter((user) => user._id !== action.payload);
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

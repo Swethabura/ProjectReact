@@ -74,7 +74,7 @@ function LoginPage() {
       localStorage.setItem("UserRole", data.user.role); // Save role in localStorage
       // Redirect based on role
       if (data.user.role === "admin") {
-        navigate("/admin/posts"); // Redirect admin to admin dashboard
+        navigate("/admin"); // Redirect admin to admin dashboard
       } else {
         navigate("/main"); // Redirect normal user to main dashboard
       }

@@ -1,52 +1,148 @@
 .admin-navbar {
-    background-color: #2c3e50;
-    padding: 15px 20px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    width: 100vw;
-    z-index: 11;
-  }
-  
-  .nav-links {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .nav-links a {
-    color: white;
-    text-decoration: none;
-  }
-  
-  .hamburger {
-    display: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .nav-links.open {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    background-color: #34495e;
-    width: 100%;
-    top: 60px;
-    left: 0;
-    padding: 20px;
-  }
-.admindashboard-container{
-  margin-top: 18vh;
+  background:var(--primary-color);
+  padding: 15px 20px;
+  color: white;
+  position: fixed;
+  width: 100%;
+  z-index: 11;
+  top: 0;
+  display: block;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 20px;
+}
+
+/* Left Section */
+.navbar-left h2 {
+  width: 50%;
+  margin: 0;
+  padding-left: 12px;
+  font-size: 1.8rem;
+  text-align: center;
+  /* border: 1px solid white; */
+}
+.navbar-left {
+  flex: 1.2;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   
-  @media (max-width: 768px) {
-    .nav-links {
-      display: none;
-    }
-    
-    .hamburger {
-      display: block;
-    }
+  /* border: 1px solid white; */
+}
+.navbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end; /* Ensures right items stay at the right */
+  gap: 10px;
+}
+
+/* Centered Nav Links */
+.nav-links {
+  flex: 2; /* Takes more space to center the links */
+  display: flex;
+  justify-content: center;
+}
+
+.nav-links .link{
+  color: var(--text-color);
+  text-decoration: none;
+  margin-right: 2rem;
+  background: var(--primary-color);
+  border: none;
+  cursor: pointer;
+}
+
+/* Right Section */
+.navbar-right {
+  display: flex;
+  gap: 10px;
+  align-items: center; 
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Logout Button */
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Hamburger Menu (Hidden on Larger Screens) */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+}
+
+@media (max-width: 1024px){
+  .navbar-left h2{
+    display: none;
+  }
+}
+
+@media (max-width: 900px){
+  .nav-links .link{
+    font-size: 1.2rem;
+    margin-right: 1rem;
   }
   
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .admin-navbar{
+    display: block;
+  }
+  .nav-links {
+    display: none; /* Hide by default */
+    position: absolute;
+    top: 90px;
+    left: 0;
+    width: 100%;
+    background: var(--primary-color);
+    flex-direction: column;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .nav-links.open {
+    display: flex; /* Show when the menu is toggled */
+  }
+  .hamburger {
+    display: block; /* Ensure hamburger is visible */
+  }
+  .navbar-right{
+    margin-right: 2%;
+  }
+  .nav-links .link.active::after{
+    width: 15%;
+    left: 42.5%;
+  }
+}
+
+@media (max-width: 480px){
+  .adminLogout{
+    display: none;
+  }
+}

@@ -42,6 +42,7 @@ function App() {
       {/* Routes without Navbar */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/admin/*" element={<AdminDashboard />} />
       <Route
         path="/main/*"
         element={
@@ -51,7 +52,6 @@ function App() {
         }
       />{" "}
       {/* Nested Routes */}
-      <Route path="/admin/*" element={<AdminDashboard />} />
       <Route path="/sharedpost/:postId" element={<SharedPost />} />
       <Route path="/shared-answer/:questionId/:answerId" element={<SharedAnswer />} />
     </Routes>

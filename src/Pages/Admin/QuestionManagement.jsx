@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Avatar, Modal, Spin, notification } from "antd";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { Table, Button, Avatar, Modal, Spin, notification, Input } from "antd";
+import { DeleteOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchQuestions } from "../redux/userSlice";
 import { fetchAnswers } from "../redux/answersSlice";
 import { adminDeleteQuestion, fetchAdminQuestions } from "../redux/adminSlice";
 import "./AdminDashboard.css";
@@ -15,10 +14,13 @@ notification.config({
 const QuestionManagement = () => {
   const dispatch = useDispatch();
   const { questions, loading } = useSelector((state) => state.admin);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const { answers, loading: loadingAnswers } = useSelector(
     (state) => state.answers
   );
+
+  const [searchTerm, setSearchTerm] = useState(""); // Search input state
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -33,15 +35,31 @@ const QuestionManagement = () => {
     }
   }, [questions, dispatch]);
 
+  // Search Functionality: Filters questions based on username, title, or content
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilteredQuestions(questions); // Show all questions if no search
+      return;
+    }
+
+    const filtered = questions.filter(
+      (q) =>
+        q.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        q.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    setFilteredQuestions(filtered);
+  }, [searchTerm, questions]);
+
   const handleDelete = async (questionId) => {
     try {
       await dispatch(adminDeleteQuestion(questionId)).unwrap();
       notification.success({
         message: "Success",
         description: "Question deleted successfully!",
-        placement: "topRight",
       });
-  
+
       setTimeout(() => {
         dispatch(fetchAdminQuestions());
       }, 500); // Re-fetch updated list
@@ -49,7 +67,6 @@ const QuestionManagement = () => {
       notification.error({
         message: "Error",
         description: "Failed to delete question!",
-        placement: "topRight",
       });
     }
   };
@@ -59,7 +76,6 @@ const QuestionManagement = () => {
     setIsModalOpen(true);
     dispatch(fetchAnswers(question._id));
   };
-  // console.log(answers);
 
   const handleCloseModal = () => {
     setSelectedQuestion(null);
@@ -89,9 +105,9 @@ const QuestionManagement = () => {
       dataIndex: "content",
       key: "content",
       render: (text, record) =>
-        text.length > 100 ? (
+        text.length > 50 ? (
           <>
-            {text.slice(0, 100)}...
+            {text.slice(0, 50)}...
             <Button
               type="link"
               onClick={() => handleViewMore(record)}
@@ -109,7 +125,7 @@ const QuestionManagement = () => {
       dataIndex: "_id",
       key: "answers",
       render: (questionId) => {
-        const answerList = answers[questionId] || []; // Retrieve answers using questionId
+        const answerList = answers[questionId] || [];
         return <span>{answerList.length}</span>;
       },
     },
@@ -136,18 +152,28 @@ const QuestionManagement = () => {
   ];
 
   return (
-    <div className="admin-container" style={{marginTop:"10vh"}}>
-      <h2>Question Management</h2>
+    <div className="admin-container" style={{ marginTop: "18vh" }}>
+      {/* <h2>Question Management</h2> */}
+
+      {/* 🔍 Search Input Field */}
+      <Input
+        prefix={<SearchOutlined />}
+        placeholder="Search by username, title, or content"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ width: 300, margin: "0 0 18px 5px" }}
+      />
+
       <Table
         columns={columns}
-        dataSource={questions}
+        dataSource={filteredQuestions} // ✅ Uses filtered questions
         rowKey="_id"
         loading={loading}
         pagination={{ pageSize: 5 }}
       />
 
-       {/* MODAL FOR VIEWING FULL QUESTION & ANSWERS */}
-       <Modal
+      {/* MODAL FOR VIEWING FULL QUESTION & ANSWERS */}
+      <Modal
         title="Question Details"
         open={isModalOpen}
         onCancel={handleCloseModal}
@@ -174,8 +200,12 @@ const QuestionManagement = () => {
                 {(answers[selectedQuestion._id] || []).length > 0 ? (
                   answers[selectedQuestion._id].map((answer) => (
                     <div key={answer._id} style={{ marginBottom: "10px" }}>
-                      <Avatar src={answer.avatar || "https://via.placeholder.com/40"} />
-                      <strong style={{ marginLeft: "8px" }}>{answer.user}:</strong>
+                      <Avatar
+                        src={answer.avatar || "https://via.placeholder.com/40"}
+                      />
+                      <strong style={{ marginLeft: "8px" }}>
+                        {answer.user}:
+                      </strong>
                       <p>{answer.content}</p>
                     </div>
                   ))

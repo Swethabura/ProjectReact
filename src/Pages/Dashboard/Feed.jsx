@@ -151,7 +151,7 @@ function Feed() {
 
   // Function to generate shareable link
   const getShareableLink = (postId) => {
-    const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:5174";
+    const baseUrl = import.meta.env.VITE_REACT_APP_BASE_URL || "http://localhost:5173";
     return `${baseUrl}/sharedpost/${postId}`;
   };
 
