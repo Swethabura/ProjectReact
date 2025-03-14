@@ -119,7 +119,7 @@ const UserManagement = () => {
         value={searchText}
         onChange={(e) => handleSearch(e.target.value)}
         enterButton
-        style={{ width: 300, marginBottom: 20 }}
+        style={{ width: '100%', maxWidth: '400px', marginBottom: '15px' }}
       />
 
       {/* Table */}

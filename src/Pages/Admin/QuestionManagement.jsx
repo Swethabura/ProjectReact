@@ -6,6 +6,8 @@ import { fetchAnswers } from "../redux/answersSlice";
 import { adminDeleteQuestion, fetchAdminQuestions } from "../redux/adminSlice";
 import "./AdminDashboard.css";
 
+const { Search } = Input; // Uniform Search Component
+
 notification.config({
   placement: "topRight",
   top: 50, // Moves notifications below navbar
@@ -90,7 +92,7 @@ const QuestionManagement = () => {
       render: (text, record) => (
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <Avatar src={record.avatar || "https://via.placeholder.com/40"} />
-          <span>{text}</span>
+          <span style={{fontFamily:"'Inter', sans-serif"}}>{text}</span>
         </div>
       ),
     },
@@ -98,7 +100,7 @@ const QuestionManagement = () => {
       title: "Title",
       dataIndex: "title",
       key: "title",
-      render: (text) => <strong>{text}</strong>,
+      render: (text) => <span style={{fontFamily:"'Inter', sans-serif"}}>{text}</span>,
     },
     {
       title: "Content",
@@ -126,19 +128,18 @@ const QuestionManagement = () => {
       key: "answers",
       render: (questionId) => {
         const answerList = answers[questionId] || [];
-        return <span>{answerList.length}</span>;
+        return <span style={{fontFamily:"'Inter', sans-serif"}}>{answerList.length}</span>;
       },
     },
     {
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <>
+        <div className="action-buttons">
           <Button
             type="primary"
             icon={<EyeOutlined />}
             onClick={() => handleViewMore(record)}
-            style={{ marginRight: 8 }}
           />
           <Button
             type="primary"
@@ -146,7 +147,7 @@ const QuestionManagement = () => {
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record._id)}
           />
-        </>
+        </div>
       ),
     },
   ];
@@ -155,13 +156,14 @@ const QuestionManagement = () => {
     <div className="admin-container" style={{ marginTop: "18vh" }}>
       {/* <h2>Question Management</h2> */}
 
-      {/* 🔍 Search Input Field */}
-      <Input
-        prefix={<SearchOutlined />}
+      {/* Search Input Field */}
+      <Search
         placeholder="Search by username, title, or content"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ width: 300, margin: "0 0 18px 5px" }}
+        enterButton
+        allowClear
+        style={{ width: '100%', maxWidth: '400px', marginBottom: '15px' }}
       />
 
       <Table
@@ -170,6 +172,7 @@ const QuestionManagement = () => {
         rowKey="_id"
         loading={loading}
         pagination={{ pageSize: 5 }}
+        bordered
       />
 
       {/* MODAL FOR VIEWING FULL QUESTION & ANSWERS */}

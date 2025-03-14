@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Avatar, Button, Input, List, Modal, message, Image } from "antd";
+import { Card, Avatar, Button, Input, List, Modal, message, Image, Divider } from "antd";
 import {
   LikeOutlined,
   MessageOutlined,
@@ -205,12 +205,14 @@ function QuestionItem({ question }) {
           type="default"
           onClick={() => setExpanded(!expanded)}
           style={{ fontSize: "18px" }}
+          className="hideBtn"
         >
           {expanded ? "Hide Answers" : "See Answers"}
         </Button>
       </div>
-
-      {expanded && (
+      {expanded &&  (
+        <>
+        <Divider />
         <List
           itemLayout="horizontal"
           dataSource={answers}
@@ -231,7 +233,7 @@ function QuestionItem({ question }) {
                     flexDirection: "column",
                     width: "100%",
                   }}
-                >
+                > 
                   <List.Item.Meta
                     avatar={<Avatar src={answer.avatar} />}
                     title={
@@ -416,6 +418,8 @@ function QuestionItem({ question }) {
             );
           }}
         />
+        </>
+
       )}
 
       <Modal

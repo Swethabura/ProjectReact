@@ -6,6 +6,8 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
 
+const { Search } = Input; // Consistent Search Component
+
 const PostManagement = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -76,7 +78,7 @@ const PostManagement = () => {
       render: (text, record) => (
         <div className="user-info">
           <Avatar src={record.avatar} />
-          <span>{text}</span>
+          <span style={{fontFamily:"'Inter', sans-serif", paddingLeft:"10px"}}>{text}</span>
         </div>
       ),
     },
@@ -113,13 +115,15 @@ const PostManagement = () => {
   return (
     <div className="admindashboard-container" style={{marginTop:"18vh"}}>
       {/* Search Input */}
-      <Input.Search
-        placeholder="Search by username or post content"
-        style={{ marginBottom: "20px", width: "300px"}}
-        allowClear
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      {/* Search Bar - Now Consistent with User Management */}
+    <Search
+      placeholder="Search by username or post content"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      enterButton
+      allowClear
+      style={{ width: '100%', maxWidth: '400px', marginBottom: '15px' }}
+    />
 
       {/* Table Display */}
       <Table
@@ -127,6 +131,7 @@ const PostManagement = () => {
         dataSource={filteredPosts} // ✅ Ensure search results are displayed
         rowKey="_id"
         pagination={{ pageSize: 5 }}
+        bordered
       />
     </div>
   );

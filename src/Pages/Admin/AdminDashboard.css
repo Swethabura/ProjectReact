@@ -109,6 +109,12 @@
   font-size: 0.95rem;
 }
 
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .stats-container {
@@ -130,6 +136,22 @@
   .dashboard-home h1, .user-container h1{
     display: block;
   }
+  .action-buttons {
+    flex-direction: row !important; /* Keep buttons side by side */
+    align-items: center;
+  }
+
+  .ant-btn {
+    font-size: 14px; /* Reduce button size */
+    padding: 6px 8px;
+  }
+  .ant-input-wrapper {
+    width: 100% !important;
+  }
+  .ant-input-search-button {
+    height: 31.5px !important;
+    margin-top: -2px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -147,5 +169,9 @@
 
   .user-management-container {
     padding: 10px;
+  }
+  .ant-input-search-button {
+    height: 31.5px !important;
+    margin-top: 0;
   }
 }

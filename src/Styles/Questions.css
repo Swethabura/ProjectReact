@@ -89,16 +89,20 @@
 .show-hide-section button{
   margin-right: 1rem;
   transition: all 0.2s;
-  background-color: var(--card-bg-color);
-  border: 1px solid rgba(0, 0, 0, 0.3);
   height:2.2rem;
-  color: black;
 }
 .show-hide-section button:hover{
-  transform: scale(1.1);
+  transform: scale(1.1); 
+  border: 1px solid var(--primary-color) !important;
+}
+.show-hide-section .hideBtn{
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background-color: var(--card-bg-color);
+  color: black;
+}
+.show-hide-section .hideBtn:hover{
   background: var(--card-bg-color) !important;
   color: black !important;
-  border: 1px solid var(--primary-color) !important;
 }
 .commentSectionContainer{
     max-height: "250px";
