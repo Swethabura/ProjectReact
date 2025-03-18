@@ -2,6 +2,7 @@
   text-align: center;
   padding-top: 17.5vh;
   color: var(--text-light); /* Uses text color from index.css */
+  font-weight: 500;
 }
 
 /* Carousel Styling */

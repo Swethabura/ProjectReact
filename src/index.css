@@ -13,6 +13,7 @@
   --error-color: #dc3545; 
   --btn-color:#F3F312;
   --card-bg-color: #fff;
+  --text-light: black;
 }
 
 [data-theme="dark"] {
@@ -28,6 +29,7 @@
   --error-color: #ff4d4f; 
   --btn-color:#F3F312;
   --card-bg-color: whitesmoke;
+  --text-light:#eaeaea;
 }
 
 * {

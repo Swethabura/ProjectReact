@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 // Import images
-import codeTogether from "../../assets/code-together.jpg";
+import codeTogether from "../../assets/code-together.webp";
 import collaborateLearn from "../../assets/collaborate-together.png";
 import showcaseWork from "../../assets/showcase-work.jpg";
 
@@ -43,10 +43,10 @@ function HomePage() {
       <div className="intro-section">
         <h1>DevConnect – Code. Connect. Collaborate.</h1>
         <p>
-          Join a thriving community of developers, learners, and innovators.
-          Share your knowledge, showcase your projects, and engage in meaningful
-          discussions. Whether you're a beginner or a seasoned coder, DevConnect
-          is your space to grow, learn, and build together.
+          Join a growing network of developers and learners. Share your
+          knowledge, ask and answer questions, and showcase your expertise.
+          Whether you're a beginner or an experienced coder, DevConnect is your
+          space to learn and collaborate.
         </p>
 
         {/* Sign Up & Login Buttons */}

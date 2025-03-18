@@ -10,19 +10,19 @@ function ContactPage() {
       </p>
       <div className="contact-info">
         <p>
-          📧 Email: <a href="mailto:email@example.com">email@example.com</a>
+          📧 Email: <a href="mailto:email@example.com">swethabura01@gmail.com</a>
         </p>
         <p>
-          🐦 Twitter/X:{" "}
+        🔗 LinkedIn: {" "}
           <a
-            href="https://twitter.com/yourhandle"
+            href="https://www.linkedin.com/in/swetha-bura-866720252"
             target="_blank"
             rel="noopener noreferrer"
           >
-            @yourhandle
+            Swetha Bura
           </a>
         </p>
-        <p>
+        {/* <p>
           💬 Join Our Community:{" "}
           <a
             href="https://discord.gg/example"
@@ -31,7 +31,7 @@ function ContactPage() {
           >
             DevConnect Forum/Discord
           </a>
-        </p>
+        </p> */}
       </div>
       <p>Let’s build and grow together! 🚀</p>
     </div>

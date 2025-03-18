@@ -6,13 +6,15 @@ function CommunityPage() {
     <div className="community">
       <h1>Community - A Thriving Developer Network</h1>
       <div className="image-container">
-      <img src={image} alt="Developer Community" />
+        <img src={image} alt="Developer Community" />
       </div>
       <p>
-        DevConnect is more than just a platform—it's a community-driven space
-        where developers of all levels come together to share knowledge,
-        collaborate, and grow. Whether you're a beginner or an expert, you'll
-        find like-minded individuals who are passionate about coding.
+        At DevConnect, you're not just a user—you’re part of a growing network
+        of developers. Share your experiences, discuss coding challenges, and
+        explore new ideas. From troubleshooting errors to celebrating
+        milestones, the community is here to support your journey. Engage,
+        learn, and contribute as you connect with developers who share your
+        passion.
       </p>
     </div>
   );

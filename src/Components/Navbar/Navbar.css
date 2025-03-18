@@ -196,6 +196,10 @@ nav ul {
     display: flex;
     padding: 1rem 0;
   }
+  .theme-toggle{
+    margin-right: 2rem;
+    padding-top: 5px;
+  }
 }
 
 @media screen and (max-width:600px) {

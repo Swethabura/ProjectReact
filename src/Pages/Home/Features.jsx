@@ -1,7 +1,7 @@
 import "../../Styles/Features.css";
-import img1 from "../../assets/featureImg-1.jpg";
+import img1 from "../../assets/featureImg-1.webp";
 import img2 from "../../assets/featureImg-2.jpg";
-import img3 from "../../assets/featureImg-3.png";
+import img3 from "../../assets/featureImg-3.jpg";
 import img4 from "../../assets/featureImg-4.webp";
 
 function FeaturesPage() {
@@ -18,12 +18,11 @@ function FeaturesPage() {
         {/* First Feature */}
         <div className="feature">
           <div className="feature-content">
-            <h2>🤝 Collaborate on Projects</h2>
+            <h2>🌍 Engage with the Developer Community</h2>
             <p>
-              Connect with developers who share your interests and work together
-              on real-world projects. Whether it's open-source contributions or
-              personal initiatives, DevConnect helps you find the right team
-              members, discuss ideas, and track progress seamlessly.
+            Share your thoughts, updates, and insights with the community. Like, 
+              comment, and interact with posts from fellow developers, making learning 
+              a collaborative experience.
             </p>
           </div>
           <div className="feature-img">
@@ -37,12 +36,11 @@ function FeaturesPage() {
             <img src={img2} alt="Discuss & Solve Coding Errors" />
           </div>
           <div className="feature-content">
-            <h2>💡 Discuss & Solve Coding Errors</h2>
+            <h2>💡 Ask & Answer Coding Questions</h2>
             <p>
-              Struggling with a bug? Get quick solutions from the community!
-              Post your errors, discuss possible fixes, and learn from
-              experienced developers. Engage in meaningful discussions and
-              refine your problem-solving skills.
+            Facing a coding challenge? Post your questions and get insights from 
+              experienced developers. Help others by sharing your knowledge, and grow 
+              your problem-solving skills in the process.
             </p>
           </div>
         </div>
@@ -50,12 +48,11 @@ function FeaturesPage() {
         {/* Third Feature */}
         <div className="feature">
           <div className="feature-content">
-            <h2>🚀 Showcase Your GitHub Projects</h2>
+            <h2>📢 Share Your Projects & Insights</h2>
             <p>
-              Highlight your work by linking your GitHub repositories directly
-              to your DevConnect profile. Share your progress, get feedback, and
-              attract potential collaborators who are interested in your
-              projects.
+            Showcase your work by sharing project updates, coding experiences, and 
+              key learnings through posts. Get feedback, inspire others, and build your 
+              presence in the developer space.
             </p>
           </div>
           <div className="feature-img">
@@ -64,7 +61,7 @@ function FeaturesPage() {
         </div>
 
         {/* Fourth Feature */}
-        <div className="feature feature-reverse">
+        {/* <div className="feature feature-reverse">
           <div className="feature-img">
             <img src={img4} alt="AI-Powered Learning" />
           </div>
@@ -78,7 +75,7 @@ function FeaturesPage() {
               make the most of your learning journey.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

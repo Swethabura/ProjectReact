@@ -123,7 +123,7 @@ const MainNav = () => {
           >
             Questions
           </Button>
-          <Button
+          {/* <Button
             type="link"
             onClick={() => {
               navigate("/main/maincommunity");
@@ -132,7 +132,7 @@ const MainNav = () => {
             className="mobile-link"
           >
             Community
-          </Button>
+          </Button> */}
         </div>
       )}
     </nav>
