@@ -154,10 +154,11 @@ nav ul {
   .navlinks {
     font-size: 1.1rem;
   }
-  .login-btn {
+  .login-Btn {
     font-size: 0.9rem;
     padding: 0.4rem 1.2rem;
   }
+  
 }
 
 /* ⭐ 768px - 1024px (Tablets) */
@@ -165,47 +166,48 @@ nav ul {
   header {
     padding: 0 2rem;
   }
-  .logo-title h1 {
+  .logo-title strong {
     font-size: 1.5rem;
   }
   .logo-title p {
     font-size: 1rem;
   }
-  .linkContainer{
+  .linkContainer {
     gap: 0.8rem;
   }
   .hamburger {
-    display: block;
+    display: block !important; /* Ensure hamburger is visible */
   }
+
+  /* Hide nav by default */
   nav {
+    display: none ; /* Hide nav links */
     position: absolute;
     top: 12vh;
     left: 0;
     width: 100%;
-    background-color: var(--navbar-bg); 
+    background-color: var(--navbar-bg);
     flex-direction: column;
     align-items: center;
-    display: none;
     transition: all 0.3s ease-in-out;
   }
+
+  /* Show nav when active */
+  nav.nav-active {
+    display: flex;
+    padding: 1rem 0;
+  }
+
   nav ul {
     flex-direction: column;
     gap: 1.5rem;
   }
-  .nav-active {
-    display: flex;
-    padding: 1rem 0;
-  }
-  .theme-toggle{
+
+  .theme-toggle {
     margin-right: 2rem;
     padding-top: 5px;
   }
-}
-
-@media screen and (max-width:600px) {
-  .logo-title{
-    display: none;
-  }
+  
 }
 
 /* ⭐ 320px - 480px (Mobile Phones) */
@@ -214,10 +216,17 @@ nav ul {
     padding: 0 1rem;
   }
   .hamburger {
-    display: block;
+    display: block; /* Ensure hamburger is visible */
   }
   nav button {
     width: 90%;
     margin: 1rem 0;
   }
-} 
+  .theme-toggle {
+    margin-right: 3rem;
+    padding-top: 5px;
+  }
+  .logo-title{
+    display: none;
+  }
+}

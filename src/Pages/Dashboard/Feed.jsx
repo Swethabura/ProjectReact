@@ -10,6 +10,7 @@ import {
 } from "@ant-design/icons";
 import "../../Styles/Feed.css";
 import { useEffect, useState } from "react";
+import { savePostAsGuest,unsavePostAsGuest,isPostSavedByGuest } from "../../utils/guestUtils";
 import {
   fetchPosts,
   addPost,
@@ -18,11 +19,11 @@ import {
 } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FloatingButton from "./FloatingBtn";
-import { savePost, fetchUserCollection } from "../redux/userCollectionSlice";
-import { useSearchParams } from "react-router-dom";
+import { savePost, fetchUserCollection, unsavePost } from "../redux/userCollectionSlice";
 
 function Feed() {
   const loggedInUser = localStorage.getItem("LoggedInUser");
+  const [savedPostIds, setSavedPostIds] = useState(new Set());
   const [commentInput, setCommentInput] = useState({});
   const [expandedPosts, setExpandedPosts] = useState({});
   const [messageApi, contextHolder] = message.useMessage();
@@ -34,6 +35,8 @@ function Feed() {
     error,
   } = useSelector((state) => state.posts);
   const [posts, setPosts] = useState([]); // Store posts locally
+
+  // console.log(savedPostIds)
 
    // State for Share Modal
    const [isShareModalVisible, setIsShareModalVisible] = useState(false);
@@ -47,9 +50,22 @@ function Feed() {
     setPosts(fetchedPosts); // Update local state when Redux state changes
   }, [fetchedPosts]);
 
+  // Initialize savedPostIds for both normal and guest users
   useEffect(() => {
-    dispatch(fetchUserCollection(loggedInUser));
+    if (loggedInUser === "Guest") {
+      const guestSavedPosts = JSON.parse(localStorage.getItem("guestSavedPosts")) || [];
+      setSavedPostIds(new Set(guestSavedPosts));
+    } else {
+      dispatch(fetchUserCollection(loggedInUser));
+    }
   }, [dispatch, loggedInUser]);
+
+  useEffect(() => {
+    if (loggedInUser !== "Guest") {
+      const savedIds = new Set(savedPosts.map((post) => post._id));
+      setSavedPostIds(savedIds);
+    }
+  }, [savedPosts, loggedInUser]);
 
   if (loading) return <Spin size="large" className="loading-spinner" />;
   if (error) return <p className="error-message">Error: {error}</p>;
@@ -132,21 +148,37 @@ function Feed() {
     }));
   };
 
-  // handle the save post
-  const handleSave = (postId) => {
-    const accountUsername = loggedInUser;
-
-    dispatch(savePost({ accountUsername, postId }))
-      .unwrap()
-      .then((data) => {
-        // console.log("Success response:", data);
-        messageApi.success("Post saved successfully!");
-        dispatch(fetchUserCollection(loggedInUser));
-      })
-      .catch((error) => {
-        console.error("Save post error:", error);
-        messageApi.error(error || "Failed to save post");
+  // Handle Save/Unsave Post
+  const handleToggleSave = async (postId) => {
+    if (savedPostIds.has(postId)) {
+      // Unsave Logic
+      if (loggedInUser === "Guest") {
+        unsavePostAsGuest(postId);
+      } else {
+        dispatch(unsavePost({ accountUsername: loggedInUser, postId }));
+      }
+      setSavedPostIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
       });
+      messageApi.success("Post unsaved successfully!");
+    } else {
+      // Save Logic
+      if (loggedInUser === "Guest") {
+        savePostAsGuest(postId);
+      } else {
+        try {
+          await dispatch(savePost({ accountUsername: loggedInUser, postId }));
+          dispatch(fetchUserCollection(loggedInUser));
+        } catch (error) {
+          messageApi.error(error || "Failed to save post");
+          return;
+        }
+      }
+      setSavedPostIds((prev) => new Set(prev).add(postId));
+      messageApi.success("Post saved successfully!");
+    }
   };
 
   // Function to generate shareable link
@@ -177,8 +209,6 @@ function Feed() {
     window.open(whatsappUrl, "_blank");
     setIsShareModalVisible(false);
   };
-
-
 
   return (
     <div className="feed-container">
@@ -221,16 +251,16 @@ function Feed() {
               <span className="btn-text">Comments</span>
             </Button>
 
-            <Button
-              className="btn-content"
-              onClick={() => handleSave(post._id)}
-            >
-              {savedPosts.some((p) => p._id === post._id) ? (
+            {/* Save/Unsave Button */}
+            <Button className="btn-content" onClick={() => handleToggleSave(post._id)}>
+              {savedPostIds.has(post._id) ? (
                 <SaveFilled className="saved" />
               ) : (
                 <SaveOutlined />
               )}
-              <span className="btn-text">Save</span>
+              <span className="btn-text">
+                {savedPostIds.has(post._id) ? "Saved" : "Save"}
+              </span>
             </Button>
 
             <Button className="btn-content" onClick={() => handleShareClick(post._id)}>

@@ -31,35 +31,43 @@ const Profile = () => {
 
   const { loading, error, profile } = useSelector((state) => state.profile);
   const loggedInUser = localStorage.getItem("LoggedInUser");
+  const isGuest = loggedInUser === "Guest";
 
   useEffect(() => {
-    if (loggedInUser) {
+    if (loggedInUser && !isGuest) {
       dispatch(fetchProfile(loggedInUser));
     }
-  }, [dispatch, loggedInUser]);
+  }, [dispatch, loggedInUser, isGuest]);
 
   if (loading) return <Spin size="large" className="loading-spinner" />;
   if (error) return <div>Error: {error.message}</div>;
-  if (!profile)
-    return (
-      <div style={{ marginTop: "20vh", color: "blue" }}>
-        It looks like this profile has not been created yet.
-      </div>
-    );
+
+  // Fallback for Guest Profile
+  const guestProfile = {
+    username: "Guest",
+    gender: "Not specified",
+    education: "Not specified",
+    address: "Not available",
+    dob: null,
+    email: "Not provided",
+    profilePic: null,
+  };
+
+  const displayProfile = isGuest ? guestProfile : profile;
 
   // Handle Edit Button Click
   const showModal = () => {
     setIsModalOpen(true);
     form.setFieldsValue({
-      username: profile.username,
-      gender: profile.gender,
-      education: profile.education,
-      address: profile.address,
-      dob: profile.dob ? null : profile.dob,
-      email: profile.email,
-      profilePic: profile.profilePic, // Keep existing profile pic
+      username: displayProfile.username,
+      gender: displayProfile.gender,
+      education: displayProfile.education,
+      address: displayProfile.address,
+      dob: displayProfile.dob ? null : displayProfile.dob,
+      email: displayProfile.email,
+      profilePic: displayProfile.profilePic,
     });
-    setPreviewImage(profile.profilePic || null);
+    setPreviewImage(displayProfile.profilePic || null);
   };
 
   // Handle Modal Close
@@ -73,21 +81,28 @@ const Profile = () => {
     if (file) {
       Resizer.imageFileResizer(
         file,
-        300, // Max width
-        300, // Max height
-        "JPEG", // Format
-        80, // Quality (0-100)
-        0, // Rotation
+        300,
+        300,
+        "JPEG",
+        80,
+        0,
         (uri) => {
-          setPreviewImage(uri); // Show preview
-          form.setFieldsValue({ profilePic: uri.split(",")[1] }); // Store Base64 (without metadata)
+          setPreviewImage(uri);
+          form.setFieldsValue({ profilePic: uri.split(",")[1] });
         },
         "base64"
       );
     }
   };
+
   // Handle Form Submission
   const onFinish = async (values) => {
+    if (isGuest) {
+      message.warning("Profile changes are not saved in guest mode.");
+      setIsModalOpen(false);
+      return;
+    }
+
     try {
       const formattedDob = values.dob ? values.dob.format("YYYY-MM-DD") : null;
 
@@ -95,7 +110,7 @@ const Profile = () => {
         accountUsername: loggedInUser,
         ...values,
         dob: formattedDob,
-        profilePic: previewImage || profile.profilePic, // Keep existing pic if none uploaded
+        profilePic: previewImage || profile.profilePic,
       };
 
       await dispatch(updateProfile(profileData)).unwrap();
@@ -110,65 +125,74 @@ const Profile = () => {
     <Card className="profile-card">
       <Avatar
         size={100}
-        src={profile.profilePic ? profile.profilePic : null}
-        icon={!profile.profilePic ? <UserOutlined /> : null}
+        src={displayProfile?.profilePic}
+        icon={!displayProfile?.profilePic ? <UserOutlined /> : null}
       />
-      <Title level={3}>{profile.username || "Not specified"}</Title>
-      <Paragraph>Gender: {profile.gender || "Not specified"}</Paragraph>
-      <Paragraph>Email: {profile.email || "Not provided"}</Paragraph>
-      <Paragraph>Education: {profile.education || "Not specified"}</Paragraph>
-      <Paragraph>Address: {profile.address || "Not available"}</Paragraph>
+      <Title level={3}>{displayProfile.username}</Title>
+      <Paragraph>Gender: {displayProfile.gender}</Paragraph>
+      <Paragraph>Email: {displayProfile.email}</Paragraph>
+      <Paragraph>Education: {displayProfile.education}</Paragraph>
+      <Paragraph>Address: {displayProfile.address}</Paragraph>
       <Paragraph>
         Date of Birth:{" "}
-        {profile.dob ? new Date(profile.dob).toLocaleDateString() : "Not set"}
+        {displayProfile.dob
+          ? new Date(displayProfile.dob).toLocaleDateString()
+          : "Not set"}
       </Paragraph>
 
       {/* Edit Button */}
       <div className="editAndBackBtns">
-      <Button
-        type="primary"
-        icon={<EditOutlined />}
-        onClick={showModal}
-        className="editProfile-btn"
-      >
-        Edit
-      </Button>
-      <Button onClick={() => navigate("/main/feed")} className="back-btn">Back</Button>
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={showModal}
+          className="editProfile-btn"
+        >
+          Edit
+        </Button>
+        <Button onClick={() => navigate("/main/feed")} className="back-btn">
+          Back
+        </Button>
       </div>
+
       {/* Modal for Edit Profile */}
       <Modal
-        title={<span style={{fontSize:"18px", fontFamily:"'Inter', sans-serif"}}>Edit Profile</span>}
+        title={
+          <span style={{ fontSize: "18px", fontFamily: "'Inter', sans-serif" }}>
+            Edit Profile
+          </span>
+        }
         open={isModalOpen}
         onCancel={handleCancel}
         footer={null}
-        style={{margin:"-8vh auto"}}
+        style={{ margin: "-8vh auto" }}
       >
         <Form form={form} onFinish={onFinish} layout="vertical">
-          <Form.Item name="username" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Username</span>}>
-            <Input placeholder="Enter your username" />
+          <Form.Item name="username" label="Username">
+            <Input placeholder="Enter your username" disabled={isGuest} />
           </Form.Item>
-          <Form.Item name="gender" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Gender</span>}>
-            <Select placeholder="Select your gender">
+          <Form.Item name="gender" label="Gender">
+            <Select placeholder="Select your gender" disabled={isGuest}>
               <Option value="Male">Male</Option>
               <Option value="Female">Female</Option>
               <Option value="Other">Other</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="education" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Education</span>}>
-            <Input placeholder="Enter your education" />
+          <Form.Item name="education" label="Education">
+            <Input placeholder="Enter your education" disabled={isGuest} />
           </Form.Item>
-          <Form.Item name="address" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Address</span>}>
-            <Input placeholder="Enter your address" />
+          <Form.Item name="address" label="Address">
+            <Input placeholder="Enter your address" disabled={isGuest} />
           </Form.Item>
-          <Form.Item name="dob" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Date of Birth</span>}>
-            <DatePicker style={{ width: "100%" }} />
+          <Form.Item name="dob" label="Date of Birth">
+            <DatePicker style={{ width: "100%" }} disabled={isGuest} />
           </Form.Item>
-          <Form.Item name="email" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Email</span>}>
-            <Input placeholder="Enter your email" />
+          <Form.Item name="email" label="Email">
+            <Input placeholder="Enter your email" disabled={isGuest} />
           </Form.Item>
 
           {/* Profile Picture Upload */}
-          <Form.Item name="profilePic" label={<span style={{fontFamily:"'Inter', sans-serif"}}>Profile Picture</span>}>
+          <Form.Item name="profilePic" label="Profile Picture">
             {previewImage && (
               <img
                 src={previewImage}
@@ -186,13 +210,19 @@ const Profile = () => {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              style={{ display: "block", fontFamily:"'Inter', sans-serif", background:"var(--card-bg-color)", border:"1px solid rgba(0,0,0,0.3)" }}
+              style={{
+                display: "block",
+                fontFamily: "'Inter', sans-serif",
+                background: "var(--card-bg-color)",
+                border: "1px solid rgba(0,0,0,0.3)",
+              }}
+              disabled={isGuest}
             />
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" >
-            <span style={{fontFamily:"'Inter', sans-serif"}}>Submit</span>
+            <Button type="primary" htmlType="submit">
+              Submit
             </Button>
           </Form.Item>
         </Form>

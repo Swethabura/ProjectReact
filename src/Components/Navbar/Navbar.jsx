@@ -23,7 +23,7 @@ function Navbar() {
     <header>
       <div className="logoSec">
         <div className="logo">
-          <img src={logoLight} alt="logo" width={65} height={60} />
+          <img src={logoLight} alt="logo" width={55} height={50} />
         </div>
         <span className="logo-title">
           <strong>DevConnect</strong> Code. Connect. Collaborate

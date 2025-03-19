@@ -48,33 +48,59 @@ const PostDetails = () => {
   }, [dispatch, loggedInUser]);
 
   useEffect(() => {
-    const foundPost = savedPosts.find((p) => p._id === postId);
-    const foundAnswer = savedAnswers.find((a) => a._id === postId);
-    const foundMyPost = allposts.find(
-      (p) => myPosts.includes(p._id) && p._id === postId
-    );
-    const foundMyQuestion = allQuestions.find(
-      (q) => myQuestions.includes(q._id) && q._id === postId
-    );
+    if (loggedInUser === "Guest") {
+      const guestSavedPosts =
+        JSON.parse(localStorage.getItem("guestSavedPosts")) || [];
+      const guestSavedAnswers =
+        JSON.parse(localStorage.getItem("guestSavedAnswers")) || [];
 
-    if (foundAnswer) {
-      setPostDetails(foundAnswer);
-      setPostType("savedAnswer");
-    } else if (myAnswers.includes(postId)) {
-      setPostType("myAnswer");
-      dispatch(fetchAnswersByIds([postId]))
-        .unwrap()
-        .then((data) => setPostDetails(data[0]))
-        .catch(() => messageApi.error("Failed to fetch answer details"));
-    } else if (foundPost) {
-      setPostDetails(foundPost);
-      setPostType("savedPost");
-    }else if (foundMyPost) {
-      setPostDetails(foundMyPost);
-      setPostType("myPost");
-    } else if (foundMyQuestion) {
-      setPostDetails(foundMyQuestion);
-      setPostType("myQuestion");
+      // Check for saved answers and dispatch to fetch details
+      if (guestSavedAnswers.includes(postId)) {
+        dispatch(fetchAnswersByIds([postId]))
+          .unwrap()
+          .then((data) => {
+            setPostDetails(data[0]);
+            setPostType("savedAnswer");
+          })
+          .catch(() => messageApi.error("Failed to fetch answer details"));
+      }
+      // Check for saved posts using allposts
+      else if (guestSavedPosts.includes(postId)) {
+        const foundPost = allposts.find((p) => p._id === postId);
+        if (foundPost) {
+          setPostDetails(foundPost);
+          setPostType("savedPost");
+        }
+      }
+    } else {
+      const foundPost = savedPosts.find((p) => p._id === postId);
+      const foundAnswer = savedAnswers.find((a) => a._id === postId);
+      const foundMyPost = allposts.find(
+        (p) => myPosts.includes(p._id) && p._id === postId
+      );
+      const foundMyQuestion = allQuestions.find(
+        (q) => myQuestions.includes(q._id) && q._id === postId
+      );
+
+      if (foundAnswer) {
+        setPostDetails(foundAnswer);
+        setPostType("savedAnswer");
+      } else if (myAnswers.includes(postId)) {
+        setPostType("myAnswer");
+        dispatch(fetchAnswersByIds([postId]))
+          .unwrap()
+          .then((data) => setPostDetails(data[0]))
+          .catch(() => messageApi.error("Failed to fetch answer details"));
+      } else if (foundPost) {
+        setPostDetails(foundPost);
+        setPostType("savedPost");
+      } else if (foundMyPost) {
+        setPostDetails(foundMyPost);
+        setPostType("myPost");
+      } else if (foundMyQuestion) {
+        setPostDetails(foundMyQuestion);
+        setPostType("myQuestion");
+      }
     }
   }, [
     savedPosts,
@@ -83,18 +109,40 @@ const PostDetails = () => {
     myAnswers,
     myQuestions,
     postId,
+    allposts,
+    allQuestions,
     dispatch,
+    loggedInUser,
   ]);
 
   const handleUnsave = () => {
-    if (postType === "savedAnswer") {
-      dispatch(
-        unsaveAnswer({ accountUsername: loggedInUser, answerId: postId })
-      );
-      messageApi.success("Answer unsaved.");
-    } else if (postType === "savedPost") {
-      dispatch(unsavePost({ accountUsername: loggedInUser, postId }));
-      messageApi.success("Post unsaved.");
+    if (loggedInUser === "Guest") {
+      if (postType === "savedAnswer") {
+        const guestSavedAnswers =
+          JSON.parse(localStorage.getItem("guestSavedAnswers")) || [];
+        const updatedAnswers = guestSavedAnswers.filter((id) => id !== postId);
+        localStorage.setItem(
+          "guestSavedAnswers",
+          JSON.stringify(updatedAnswers)
+        );
+        messageApi.success("Answer unsaved.");
+      } else if (postType === "savedPost") {
+        const guestSavedPosts =
+          JSON.parse(localStorage.getItem("guestSavedPosts")) || [];
+        const updatedPosts = guestSavedPosts.filter((id) => id !== postId);
+        localStorage.setItem("guestSavedPosts", JSON.stringify(updatedPosts));
+        messageApi.success("Post unsaved.");
+      }
+    } else {
+      if (postType === "savedAnswer") {
+        dispatch(
+          unsaveAnswer({ accountUsername: loggedInUser, answerId: postId })
+        );
+        messageApi.success("Answer unsaved.");
+      } else if (postType === "savedPost") {
+        dispatch(unsavePost({ accountUsername: loggedInUser, postId }));
+        messageApi.success("Post unsaved.");
+      }
     }
     setTimeout(() => navigate("/main/collection"), 1500);
   };

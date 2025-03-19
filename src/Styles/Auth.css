@@ -30,6 +30,20 @@
   background: rgba(0, 0, 0, 0.4);
   z-index: -1;
 }
+.app-logo{
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  /* border: 1px solid red; */
+}
+.app-name{
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
 
 /* Main Authentication Container */
 .auth-container {
@@ -61,7 +75,7 @@
 }
 
 /* Form Styling */
-form {
+.auth-container form {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -69,7 +83,7 @@ form {
   max-width: 400px;
 }
 
-input {
+.auth-container input {
   width: 100%;
   padding: 12px;
   font-size: 16px;
@@ -80,7 +94,7 @@ input {
   background: rgba(255, 255, 255, 0.2);
 }
 
-input:focus {
+.auth-container input:focus {
   border-color: #007bff;
 }
 
@@ -216,4 +230,16 @@ input:focus {
   .auth-container button {
     font-size: 1rem;
   }
+}
+@media screen and (max-width: 360px){
+  .auth-container{
+    width: 80% !important;
+    padding: 1rem 0;
+    /* border: 1px solid red; */
+  }
+  .auth-container form {
+    /* border: 1px solid red; */
+    width: 80%;
+  }
+
 }

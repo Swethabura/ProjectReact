@@ -47,6 +47,43 @@ function LoginPage() {
     navigate("/main"); //navigate to main page/dashboard
   };
 
+  const guestHandleAdminLogin = async (e) => {
+    setLoading(true);
+  
+    try {
+      const response = await fetch(`${apiUrl}/auth/guest-admin-login`, {
+        method: "POST",
+      });
+  
+      const data = await response.json();
+      if (!response.ok) {
+        messageApi.open({
+          type: "error",
+          content: data.message || "Failed to login as Guest Admin.",
+        });
+        setLoading(false);
+        return;
+      }
+  
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("LoggedInUser", "AdminGuest");
+      localStorage.setItem("UserRole", "admin");
+  
+      // messageApi.open({
+      //   type: "success",
+      //   content: "Logged in as Guest Admin successfully!",
+      // });
+  
+      navigate("/admin");
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Something went wrong. Please try again!",
+      });
+      setLoading(false);
+    }
+  };   
+
   // login handle
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -129,13 +166,21 @@ function LoginPage() {
             )}
           </button>
         </form>
-        {/* ✅ Guest Login */}
+        {/* ✅ Guest user Login */}
         <button
           style={{ marginTop: "1rem" }}
           onClick={guestHandleLogin}
           disabled={loading}
         >
           Login as Guest
+        </button>
+        {/* ✅ Guest admin Login */}
+        <button
+          style={{ marginTop: "1rem" }}
+          onClick={guestHandleAdminLogin}
+          disabled={loading}
+        >
+          Login as Guest Admin
         </button>
         <p>
           New User?{" "}

@@ -4,6 +4,7 @@ import { Link as RouterLink } from "react-router-dom";
 import "../../Styles/Auth.css";
 import { message } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import logo from "../../assets/devconnect1.png"
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -100,6 +101,10 @@ function SignupPage() {
 
   return (
     <div className="mainContainer">
+      <div className="app-logo">
+        <img src={logo} alt="logo" width={50} height={50}/>
+        <h1 className="app-name">DevConnect</h1>
+      </div>
       <div className="auth-container">
         <h2>Sign-Up</h2>
         {contextHolder}
@@ -172,7 +177,7 @@ function SignupPage() {
           </div>
           <div className="otp-box">{generatedOtp}</div>
           </div>
-          <button onClick={generateOtp}>Regenerate OTP</button>
+          <button onClick={generateOtp}>Regenerate Captcha</button>
           {/* Submit Button with Spinner */}
           <button
             type="submit"

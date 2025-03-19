@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Card, Avatar, Button, Input, List, Modal, message, Image, Divider } from "antd";
+import {
+  Card,
+  Avatar,
+  Button,
+  Input,
+  List,
+  Modal,
+  message,
+  Image,
+  Divider,
+} from "antd";
 import {
   LikeOutlined,
   MessageOutlined,
@@ -16,14 +26,24 @@ import {
   updateVote,
 } from "../redux/answersSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { saveAnswer, fetchUserCollection } from "../redux/userCollectionSlice";
+import {
+  saveAnswer,
+  fetchUserCollection,
+  unsaveAnswer,
+} from "../redux/userCollectionSlice";
 import "../../Styles/Questions.css";
 import { fetchProfile } from "../redux/profileSlice";
+import {
+  saveAnswerAsGuest,
+  unsaveAnswerAsGuest,
+  isAnswerSavedByGuest,
+} from "../../utils/guestUtils";
 
 const { TextArea } = Input;
 
 function QuestionItem({ question }) {
   const dispatch = useDispatch();
+  const [savedAnswerIds, setSavedAnswerIds] = useState(new Set());
   const [answerInput, setAnswerInput] = useState("");
   const [image, setImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,6 +58,8 @@ function QuestionItem({ question }) {
   const { savedAnswers } = useSelector((state) => state.userCollection);
   const { loading, error, profile } = useSelector((state) => state.profile);
 
+  // console.log(savedAnswerIds)
+
   // State for Share Modal
   const [isShareModalVisible, setIsShareModalVisible] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState(null);
@@ -50,8 +72,21 @@ function QuestionItem({ question }) {
   }, [expanded, dispatch, question._id]);
 
   useEffect(() => {
-    dispatch(fetchUserCollection(loggedInUser));
+    if (loggedInUser === "Guest") {
+      const guestSavedAnswers =
+        JSON.parse(localStorage.getItem("guestSavedAnswers")) || [];
+      setSavedAnswerIds(new Set(guestSavedAnswers));
+    } else {
+      dispatch(fetchUserCollection(loggedInUser));
+    }
   }, [dispatch, loggedInUser]);
+
+   useEffect(() => {
+      if (loggedInUser !== "Guest") {
+        const savedIds = new Set(savedAnswers.map((answer) => answer._id));
+        setSavedAnswerIds(savedIds);
+      }
+    }, [savedAnswers, loggedInUser]);
 
   useEffect(() => {
     if (loggedInUser) {
@@ -130,20 +165,39 @@ function QuestionItem({ question }) {
       });
   };
 
-  // to save an answer
-  const handleSaveAnswer = (answerId) => {
-    const accountUsername = loggedInUser;
-    dispatch(saveAnswer({ answerId, accountUsername }))
-      .unwrap()
-      .then((data) => {
-        // console.log("Success response:", data);
-        messageApi.success("Answer saved successfully!");
-        dispatch(fetchUserCollection(loggedInUser));
-      })
-      .catch((error) => {
-        console.error("Save answer error:", error);
-        messageApi.error(error || "Failed to save answer");
+  // Handle Save/Unsave Answer
+  const handleToggleSave = async (answerId) => {
+    if (savedAnswerIds.has(answerId)) {
+      // Unsave Logic
+      if (loggedInUser === "Guest") {
+        unsaveAnswerAsGuest(answerId);
+      } else {
+        dispatch(unsaveAnswer({ accountUsername: loggedInUser, answerId }));
+      }
+      setSavedAnswerIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(answerId);
+        return newSet;
       });
+      messageApi.success("Answer unsaved successfully!");
+    } else {
+      // Save Logic
+      if (loggedInUser === "Guest") {
+        saveAnswerAsGuest(answerId);
+      } else {
+        try {
+          await dispatch(
+            saveAnswer({ answerId, accountUsername: loggedInUser })
+          );
+          dispatch(fetchUserCollection(loggedInUser));
+        } catch (error) {
+          messageApi.error(error || "Failed to save answer");
+          return;
+        }
+      }
+      setSavedAnswerIds((prev) => new Set(prev).add(answerId));
+      messageApi.success("Answer saved successfully!");
+    }
   };
 
   // Function to generate shareable link
@@ -210,216 +264,217 @@ function QuestionItem({ question }) {
           {expanded ? "Hide Answers" : "See Answers"}
         </Button>
       </div>
-      {expanded &&  (
+      {expanded && (
         <>
-        <Divider />
-        <List
-          itemLayout="horizontal"
-          dataSource={answers}
-          renderItem={(answer) => {
-            const isLiked = answer?.votedBy?.includes(loggedInUser);
+          <Divider />
+          <List
+            itemLayout="horizontal"
+            dataSource={answers}
+            renderItem={(answer) => {
+              const isLiked = answer?.votedBy?.includes(loggedInUser);
 
-            return (
-              <List.Item
-                style={{
-                  width: "100%",
-                  overflow: "hidden",
-                  flexDirection: "column",
-                }}
-              >
-                <div
+              return (
+                <List.Item
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
                     width: "100%",
+                    overflow: "hidden",
+                    flexDirection: "column",
                   }}
-                > 
-                  <List.Item.Meta
-                    avatar={<Avatar src={answer.avatar} />}
-                    title={
-                      <span
-                        style={{
-                          fontSize: "16px",
-                          fontFamily: "'Inter', sans-serif",
-                          color: "var(--primary-color)",
-                          fontWeight: "450",
-                        }}
-                      >
-                        {answer.user}
-                      </span>
-                    }
-                    description={
-                      <>
-                        <p className="answer-text">{answer.content}</p>
-                        {answer.image && (
-                          <Image
-                            src={answer.image}
-                            alt="Answer"
-                            style={{
-                              width: "100%",
-                              marginTop: 10,
-                              borderRadius: 5,
-                            }}
-                          />
-                        )}
-                      </>
-                    }
-                  />
-
-                  {/* Button Row */}
+                >
                   <div
                     style={{
                       display: "flex",
-                      flexDirection: "row",
-                      gap: "15px",
-                      marginTop: "10px",
-                      flexWrap: "wrap",
+                      flexDirection: "column",
+                      width: "100%",
                     }}
-                    className="question-actions"
                   >
-                    <Button
-                      className="btn-content"
-                      onClick={() =>
-                        handleVote(
-                          answer._id,
-                          answer?.votedBy?.includes(loggedInUser)
-                        )
+                    <List.Item.Meta
+                      avatar={<Avatar src={answer.avatar} />}
+                      title={
+                        <span
+                          style={{
+                            fontSize: "16px",
+                            fontFamily: "'Inter', sans-serif",
+                            color: "var(--primary-color)",
+                            fontWeight: "450",
+                          }}
+                        >
+                          {answer.user}
+                        </span>
                       }
-                    >
-                      {isLiked ? (
-                        <LikeFilled style={{ color: "blue" }} />
-                      ) : (
-                        <LikeOutlined />
-                      )}
-                      <span className="count">{answer.votes}</span>
-                      <span className="btn-text">Likes</span>
-                    </Button>
-
-                    <Button
-                      className="btn-content"
-                      onClick={() =>
-                        setCommentExpanded((prev) => ({
-                          ...prev,
-                          [answer._id]: !prev[answer._id],
-                        }))
+                      description={
+                        <>
+                          <p className="answer-text">{answer.content}</p>
+                          {answer.image && (
+                            <Image
+                              src={answer.image}
+                              alt="Answer"
+                              style={{
+                                width: "100%",
+                                marginTop: 10,
+                                borderRadius: 5,
+                              }}
+                            />
+                          )}
+                        </>
                       }
-                    >
-                      {commentExpanded[answer._id] ? (
-                        <MessageFilled style={{ color: "blue" }} />
-                      ) : (
-                        <MessageOutlined />
-                      )}
-                      <span className="btn-text">
-                        {commentExpanded[answer._id]
-                          ? "Hide Comments"
-                          : "Comments"}
-                      </span>
-                    </Button>
+                    />
 
-                    <Button className="btn-content">
-                      <ShareAltOutlined />
-                      <span
-                        className="btn-text"
-                        onClick={() =>
-                          handleShareClick(question._id, answer._id)
-                        }
-                      >
-                        Share
-                      </span>
-                    </Button>
-
-                    <Button
-                      className="btn-content"
-                      onClick={() => handleSaveAnswer(answer._id)}
-                    >
-                      {savedAnswers.some((a) => a._id === answer._id) ? (
-                        <StarFilled className="saved" />
-                      ) : (
-                        <StarOutlined />
-                      )}
-                      <span className="btn-text">Save</span>
-                    </Button>
-                  </div>
-
-                  {/* Comment Section */}
-                  {commentExpanded[answer._id] && (
+                    {/* Button Row */}
                     <div
                       style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "15px",
                         marginTop: "10px",
-                        border: "1px solid #ddd",
-                        borderRadius: "5px",
-                        padding: "10px",
+                        flexWrap: "wrap",
                       }}
+                      className="question-actions"
                     >
-                      {/* Scrollable Comments Container */}
-                      <div
-                        className="commentSectionContainer"
-                        style={{ maxHeight: "250px", overflowY: "scroll" }}
+                      <Button
+                        className="btn-content"
+                        onClick={() =>
+                          handleVote(
+                            answer._id,
+                            answer?.votedBy?.includes(loggedInUser)
+                          )
+                        }
                       >
-                        <List
-                          itemLayout="horizontal"
-                          dataSource={answer.comments}
-                          renderItem={(comment) => (
-                            <List.Item style={{ alignItems: "flex-start" }}>
-                              <List.Item.Meta
-                                avatar={
-                                  <Avatar src="https://via.placeholder.com/30" />
-                                }
-                                title={
-                                  <span className="comment-user">
-                                    {comment.user}
-                                  </span>
-                                }
-                                description={
-                                  <span className="comment-text">
-                                    {comment.text}
-                                  </span>
-                                }
-                              />
-                            </List.Item>
-                          )}
-                        />
-                      </div>
+                        {isLiked ? (
+                          <LikeFilled style={{ color: "blue" }} />
+                        ) : (
+                          <LikeOutlined />
+                        )}
+                        <span className="count">{answer.votes}</span>
+                        <span className="btn-text">Likes</span>
+                      </Button>
 
-                      {/* Fixed Input Box at the Bottom */}
+                      <Button
+                        className="btn-content"
+                        onClick={() =>
+                          setCommentExpanded((prev) => ({
+                            ...prev,
+                            [answer._id]: !prev[answer._id],
+                          }))
+                        }
+                      >
+                        {commentExpanded[answer._id] ? (
+                          <MessageFilled style={{ color: "blue" }} />
+                        ) : (
+                          <MessageOutlined />
+                        )}
+                        <span className="btn-text">
+                          {commentExpanded[answer._id]
+                            ? "Hide Comments"
+                            : "Comments"}
+                        </span>
+                      </Button>
+
+                      <Button className="btn-content">
+                        <ShareAltOutlined />
+                        <span
+                          className="btn-text"
+                          onClick={() =>
+                            handleShareClick(question._id, answer._id)
+                          }
+                        >
+                          Share
+                        </span>
+                      </Button>
+                      {/* Save/Unsave Button */}
+                      <Button
+                        className="btn-content"
+                        onClick={() => handleToggleSave(answer._id)}
+                      >
+                        {savedAnswerIds.has(answer._id) ? (
+                          <StarFilled className="saved" />
+                        ) : (
+                          <StarOutlined />
+                        )}
+                        <span className="btn-text">
+                          {savedAnswerIds.has(answer._id) ? "Saved" : "Save"}
+                        </span>
+                      </Button>
+                    </div>
+
+                    {/* Comment Section */}
+                    {commentExpanded[answer._id] && (
                       <div
                         style={{
-                          display: "flex",
-                          gap: "10px",
-                          alignItems: "center",
+                          marginTop: "10px",
+                          border: "1px solid #ddd",
+                          borderRadius: "5px",
+                          padding: "10px",
                         }}
-                        className="comment-section"
                       >
-                        <TextArea
-                          value={commentInputs[answer._id] || ""}
-                          onChange={(e) =>
-                            setCommentInputs((prev) => ({
-                              ...prev,
-                              [answer._id]: e.target.value,
-                            }))
-                          }
-                          rows={2}
-                          placeholder="Write a comment..."
-                          autoFocus
-                          className="comment-input"
-                        />
-                        <Button
-                          type="primary"
-                          onClick={() => handleCommentSubmit(answer._id)}
-                          className="comment-btn"
+                        {/* Scrollable Comments Container */}
+                        <div
+                          className="commentSectionContainer"
+                          style={{ maxHeight: "250px", overflowY: "scroll" }}
                         >
-                          Post
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </List.Item>
-            );
-          }}
-        />
-        </>
+                          <List
+                            itemLayout="horizontal"
+                            dataSource={answer.comments}
+                            renderItem={(comment) => (
+                              <List.Item style={{ alignItems: "flex-start" }}>
+                                <List.Item.Meta
+                                  avatar={
+                                    <Avatar src="https://via.placeholder.com/30" />
+                                  }
+                                  title={
+                                    <span className="comment-user">
+                                      {comment.user}
+                                    </span>
+                                  }
+                                  description={
+                                    <span className="comment-text">
+                                      {comment.text}
+                                    </span>
+                                  }
+                                />
+                              </List.Item>
+                            )}
+                          />
+                        </div>
 
+                        {/* Fixed Input Box at the Bottom */}
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "10px",
+                            alignItems: "center",
+                          }}
+                          className="comment-section"
+                        >
+                          <TextArea
+                            value={commentInputs[answer._id] || ""}
+                            onChange={(e) =>
+                              setCommentInputs((prev) => ({
+                                ...prev,
+                                [answer._id]: e.target.value,
+                              }))
+                            }
+                            rows={2}
+                            placeholder="Write a comment..."
+                            autoFocus
+                            className="comment-input"
+                          />
+                          <Button
+                            type="primary"
+                            onClick={() => handleCommentSubmit(answer._id)}
+                            className="comment-btn"
+                          >
+                            Post
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </List.Item>
+              );
+            }}
+          />
+        </>
       )}
 
       <Modal
