@@ -3,6 +3,7 @@ import "../../Styles/Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { message,Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import logo from "../../assets/devconnect1.png";
 
 
 function LoginPage() {
@@ -122,6 +123,10 @@ function LoginPage() {
   };
   return (
     <div className="mainContainer">
+      <div className="app-logo">
+              <img src={logo} alt="logo" width={50} height={50}/>
+              <h1 className="app-name">DevConnect</h1>
+            </div>
       <div className="auth-container">
         <h2>Login</h2>
         {/* error has to appear if any */}
@@ -166,19 +171,21 @@ function LoginPage() {
             )}
           </button>
         </form>
-        {/* ✅ Guest user Login */}
+        {/* Guest user Login */}
         <button
           style={{ marginTop: "1rem" }}
           onClick={guestHandleLogin}
           disabled={loading}
+          className="guest-button"
         >
           Login as Guest
         </button>
-        {/* ✅ Guest admin Login */}
+        {/* Guest admin Login */}
         <button
           style={{ marginTop: "1rem" }}
           onClick={guestHandleAdminLogin}
           disabled={loading}
+          className="guest-button"
         >
           Login as Guest Admin
         </button>

@@ -148,6 +148,11 @@
   .btn-content{
     padding: 25px;
   }
+  .post-header{
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
 
 }
 @media screen and (max-width: 480px){
@@ -159,4 +164,11 @@
     gap: 18px;
     margin-left: -10px;
   }
+}
+
+@media screen and (max-width: 380px){
+  .post-actions{
+    gap: 12px;
+  }
+  
 }

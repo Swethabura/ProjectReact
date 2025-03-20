@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .questions {
-  padding-top: 12vh;
+  padding-top: 12vh !important;
   padding-left: 5vw;
   padding-right: 5vw;
 }
@@ -193,10 +193,30 @@
     }
   }
 
+  .question-actions .btn-content:hover{
+    transform: scale(1);
+  }
+
+  .show-hide-section button:hover{
+    transform: scale(1);
+  }
+
 }
 
 @media (max-width:500px) {
-    .commentSectionContainer{
-        max-height: 150px;
-    }
+  .commentSectionContainer{
+    max-height: 150px;
+  }
+}
+
+@media (max-width:380px){
+  .hideBtn{
+    width: 58% !important;
+  }
+  .question-actions{
+    gap: 10px !important;
+  }
+  .question-actions .btn-content {
+    padding: 0.9rem;
+  }
 }

@@ -134,11 +134,12 @@ const MainNav = () => {
 
       {/* Mobile Drawer (For Avatar Click) */}
       <Drawer
-        title="My Profile"
+        title={<span style={{fontSize:"1.2rem"}}>My Profile</span>}
         placement="left"
         closable={true}
         onClose={toggleDrawer}
         open={isDrawerVisible}
+        className="drawer"
       >
         <p
           onClick={() => {
@@ -156,7 +157,7 @@ const MainNav = () => {
         >
           <BookOutlined /> Collection
         </p>
-        <p onClick={showLogoutConfirm}>
+        <p onClick={showLogoutConfirm} >
           <LogoutOutlined /> Logout
         </p>
       </Drawer>

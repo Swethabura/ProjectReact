@@ -135,6 +135,11 @@
   background-color: rgba(255, 255, 255, 0.1);
   transform: scale(1.1);
 }
+.drawer{
+  background: var(--primary-color) !important;
+  color: var(--text-color);
+  font-size: 1.2rem;
+}
 
 /* Slide-down animation */
 @keyframes slideDown {

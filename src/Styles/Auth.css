@@ -241,5 +241,8 @@
     /* border: 1px solid red; */
     width: 80%;
   }
+  .guest-button{
+    width: 80% !important;
+  }
 
 }

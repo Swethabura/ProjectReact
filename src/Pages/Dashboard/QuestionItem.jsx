@@ -269,6 +269,7 @@ function QuestionItem({ question }) {
           <Divider />
           <List
             itemLayout="horizontal"
+            locale={{ emptyText: 'No Answers' }}
             dataSource={answers}
             renderItem={(answer) => {
               const isLiked = answer?.votedBy?.includes(loggedInUser);
